@@ -2,7 +2,7 @@ import subprocess
 import os
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
-from toolbox.library import printStars, return_txt, freeSpaceCheck, serverDriveCheck
+from toolbox.library import printStars, return_txt, serverDriveCheck
 from toolbox.toolbox import menuError, menuUbuntuUpdates, menuRebootServer, finish_node
 from toolbox.allsysinfo import allSysInfo
 from config import validatorToolbox
@@ -34,29 +34,34 @@ def menu_findora() -> None:
 def refresh_stats() -> None:
     print(f'* Coming soon!')
     printStars()
+    input("Press ENTER to continue.")
 
 def check_balance_menu() -> None:
     print(f'* Coming soon!')
     printStars()
+    input("Press ENTER to continue.")
 
 def operating_system_updates() -> None:
     print(f'* Coming soon!')
     printStars()
+    input("Press ENTER to continue.")
 
 def server_disk_check() -> None:
     print(f'* Coming soon!')
     printStars()
+    input("Press ENTER to continue.")
 
 def coming_soon() -> None:
     print(f'* Coming soon!')
     printStars()
+    input("Press ENTER to continue.")
 
 def run_findora_menu() -> None:
     menu_options = {
         1: refresh_stats,
         2: check_balance_menu,
         12: menuUbuntuUpdates,
-        13: server_disk_check,
+        13: serverDriveCheck,
         14: coming_soon,
         15: allSysInfo,
         999: menuRebootServer,
