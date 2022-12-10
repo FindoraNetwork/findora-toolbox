@@ -91,10 +91,18 @@ def run_findora_menu() -> None:
     menu_options = {
         1: refresh_stats,
         2: check_balance_menu,
+        3: coming_soon,
+        4: coming_soon,
+        5: coming_soon,
+        6: coming_soon,
+        7: coming_soon,
+        8: coming_soon,
+        9: coming_soon,
         10: coming_soon,
         11: coming_soon,
         12: coming_soon,
         13: server_disk_check,
+        14: coming_soon,
         15: allSysInfo,
         999: menuRebootServer,
     }
