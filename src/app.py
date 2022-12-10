@@ -1,13 +1,13 @@
 import os
 import subprocess
 from subprocess import run
-from toolbox.library import loader_intro, print_stars, docker_check, container_running
-from library import run_findora_menu, findora_installer, update_findora_container
+from toolbox.library import loader_intro, print_stars, docker_check, container_running, finish_node, menu_error
+from library import run_findora_menu, findora_installer, update_findora_container, refresh_wallet_stats, run_clean_script
 from colorama import Fore
 from config import easy_env_fra
 # Check the status and print a message
 
-def main() -> None:
+def main(count) -> None:
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
@@ -30,14 +30,32 @@ def main() -> None:
 
     else:
         # Container is not running, ruh roh!
-        print(f"* The container '{easy_env_fra.container_name}' is not running.")
-        print(f"* We will attempt to get the findorad container online now, press ctrl+c to cancel or enter to continue.")
-        print_stars()
-        input()
-        update_findora_container(1)
+        if count == 0:
+            print(f"* The container '{easy_env_fra.container_name}' is not running.")
+            print(f"* We will attempt to get the findorad container online now, press ctrl+c to cancel or enter to continue.")
+            print_stars()
+            input()
+            update_findora_container(1)
+        else:
+            menu_options = {
+                0: finish_node,
+                1: refresh_wallet_stats,
+                2: run_clean_script
+            }
+            print(f"* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
+            try:
+                option = int(input("Enter your option: "))
+            except ValueError:
+                menu_error()
+                main(1)
+            os.system("clear")
+            menu_options[option]()
+            main(1)
     print_stars()
 
 if __name__ == "__main__":
+    count = 0
     while True:
-        main()
+        main(count)
+        count += 1
     
