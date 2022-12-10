@@ -25,8 +25,9 @@ from config import easy_env_fra
 def docker_check():
     status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status == 0:
-        print("* Docker is available and working properly.")
+        print("* Docker is available and working properly.\n* Loading management menu now...")
         print_stars()
+        time.sleep(2)
         return 0
     else:
         print("* Docker is not installed and/or is not working properly.")
