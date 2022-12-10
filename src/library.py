@@ -2,8 +2,9 @@ import subprocess
 import os
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
-from toolbox.library import printStars, return_txt
-from toolbox.toolbox import menuError
+from toolbox.library import printStars, return_txt, finish_node, freeSpaceCheck, serverDriveCheck
+from toolbox.toolbox import menuError, menuUbuntuUpdates, menuRebootServer
+from toolbox.allsysinfo import allSysInfo
 from config import validatorToolbox
 
 def docker_check():
@@ -30,7 +31,36 @@ def menu_findora() -> None:
         if x:
             print(x)
 
+def refresh_stats() -> None:
+    print(f'* Coming soon!')
+    printStars()
+
+def check_balance_menu() -> None:
+    print(f'* Coming soon!')
+    printStars()
+
+def operating_system_updates() -> None:
+    print(f'* Coming soon!')
+    printStars()
+
+def server_disk_check() -> None:
+    print(f'* Coming soon!')
+    printStars()
+
+def coming_soon() -> None:
+    print(f'* Coming soon!')
+    printStars()
+
 def run_findora_menu() -> None:
+    menu_options = {
+        1: refresh_stats,
+        2: check_balance_menu,
+        12: menuUbuntuUpdates,
+        13: server_disk_check,
+        14: coming_soon,
+        15: allSysInfo,
+        999: menuRebootServer,
+    }
     while True:
         os.system("clear")
         menu_findora()
@@ -39,3 +69,7 @@ def run_findora_menu() -> None:
         except ValueError:
             menuError()
             menu_findora()
+        if option == 0:
+            return finish_node()
+        os.system("clear")
+        menu_options[option]()
