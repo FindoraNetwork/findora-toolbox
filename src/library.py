@@ -284,6 +284,9 @@ def run_findora_menu() -> None:
         if value == 0:
             finish_node()
         os.system("clear")
-        menu_options[value]()
+        if value == 10:
+            update_findora_container(False)
+        else:
+            menu_options[value]()
         break
     run_findora_menu()
