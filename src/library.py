@@ -16,7 +16,7 @@ def dockerCheck():
         printStars()
         raise SystemExit(0)
 
-def menuFull() -> None:
+def menuFindora() -> None:
     # menuTopperFull()
     for x in return_txt(validatorToolbox.findora_menu):
         x = x.strip()
