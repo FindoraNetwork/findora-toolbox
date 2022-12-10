@@ -45,8 +45,9 @@ def menu_findora() -> None:
 def refresh_wallet_stats() -> None:
     print_stars()
     try:
-        output = subprocess.check_output(["curl", "http://localhost:26657/status"])
+        output = unquote(subprocess.check_output(["curl", "http://localhost:26657/status"]))
         os.system("clear")
+        output = json.loads(output)
         print_stars()
         pprint(output)
     except:
