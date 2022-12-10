@@ -102,7 +102,7 @@ def run_findora_menu() -> None:
         12: coming_soon,
         13: server_disk_check,
         14: coming_soon,
-        15: allSysInfo,
+        15: all_sys_info,
         999: menu_reboot_server,
     }
     while True:
