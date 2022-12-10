@@ -249,15 +249,19 @@ def findora_installer() -> None:
         raise SystemExit(0)
 
 def run_ubuntu_updates() -> None:
-    os.system("clear")
-    print_stars()
-    print(f'* Stopping docker container for safety, you will miss blocks while updates run.')
-    subprocess.call(["docker", "container", "stop", "findorad"])
-    run_ubuntu_updater()
-    print_stars()
-    print(f'* Restarting findorad container')
-    subprocess.call(["docker", "container", "start", "findorad"])
-    refresh_fn_stats()
+    question = ask_yes_no(f'* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ')
+    if question:
+        os.system("clear")
+        print_stars()
+        print(f'* Stopping docker container for safety, you will miss blocks while updates run.')
+        subprocess.call(["docker", "container", "stop", "findorad"])
+        run_ubuntu_updater()
+        print_stars()
+        print(f'* Restarting findorad container')
+        subprocess.call(["docker", "container", "start", "findorad"])
+        refresh_fn_stats()
+    else:
+        return
 
 def run_findora_menu() -> None:
     menu_options = {
