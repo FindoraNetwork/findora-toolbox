@@ -1,7 +1,8 @@
 import os
 import subprocess
+from os import environ
 from subprocess import run
-from toolbox.library import loader_intro, print_stars, docker_check, container_running, finish_node, menu_error
+from toolbox.library import loader_intro, print_stars, docker_check, container_running, finish_node, menu_error, set_main_or_test, load_var_file
 from library import run_findora_menu, findora_installer, update_findora_container, refresh_wallet_stats, run_clean_script
 from colorama import Fore
 from config import easy_env_fra
@@ -10,6 +11,8 @@ from config import easy_env_fra
 def main(count) -> None:
     # Wear purple
     print(Fore.MAGENTA)
+    # Load Vars
+    load_var_file()
     # Intro w/ stars below
     loader_intro()
     print_stars()
@@ -20,6 +23,9 @@ def main(count) -> None:
         # Nope, let's ask to install!
         findora_installer()
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
+    # do we know network?
+    if environ.get("NETWORK") is False:
+        set_main_or_test()
     if container_running(easy_env_fra.container_name):
         # Launch menu, we're good to go!
         print(f"* The container '{easy_env_fra.container_name}' is running.")
