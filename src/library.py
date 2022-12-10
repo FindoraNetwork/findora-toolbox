@@ -58,10 +58,10 @@ def server_disk_check() -> None:
     for part in disk_partitions():
         print(part)
     printStars()
-    total, used, free = shutil.disk_usage(ourDiskMount)
+    total, used, free = shutil.disk_usage(validatorToolbox.our_disk_mount)
     total = str(convertedUnit(total))
     used = str(convertedUnit(used))
-    print("Disk: " + str(ourDiskMount) + "\n" + freeSpaceCheck(validatorToolbox.our_disk_mount) + " Free\n" + used + " Used\n" + total + " Total")
+    print("Disk: " + str(validatorToolbox.our_disk_mount) + "\n" + freeSpaceCheck(validatorToolbox.our_disk_mount) + " Free\n" + used + " Used\n" + total + " Total")
     printStars()
     input("* Disk check complete, press ENTER to return to the main menu. ")
 
