@@ -63,7 +63,7 @@ def refresh_fn_stats() -> None:
         os.system("clear")
         print_stars()
         res = "".join(char for char in output if unicodedata.category(char)[0]!="C")
-        print(f'{res}')
+        print(str(res))
     except:
         print("* Error!")
     print_stars()
