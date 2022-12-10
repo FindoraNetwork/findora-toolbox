@@ -279,7 +279,7 @@ def run_findora_menu() -> None:
         value = int(input("* Enter your option: "))
         try:
             value = int(value)
-        except:
+        except ValueError:
             print(f"* {value} is not a number, try again.")
             run_findora_menu()
         if value == 0:
