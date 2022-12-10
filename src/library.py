@@ -5,7 +5,7 @@ import shutil
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
-from toolbox.library import print_stars, print_stars_reset, return_txt, load_var_file, disk_partitions, converted_unit, free_space_check, all_sys_info
+from toolbox.library import print_stars, print_stars_reset, return_txt, load_var_file, disk_partitions, converted_unit, free_space_check, all_sys_info, set_main_or_test
 from toolbox.toolbox import menu_error, menu_ubuntu_updates, menu_reboot_server, finish_node
 from config import easy_env_fra
 
@@ -13,11 +13,10 @@ def docker_check():
     status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status == 0:
         print("* Docker is available and working properly.")
-        print("* Menu coming soon!")
         print_stars()
         return 0
     else:
-        print("* Docker is not available or is not working properly.")
+        print("* Docker is not installed and/or is not working properly.")
         print("* Install docker on this server and give the user access to continue.")
         print_stars()
         raise SystemExit(0)
@@ -88,13 +87,29 @@ def menu_topper() -> None:
     
 def update_findora_container() -> None:
     printStars()
-    print(f'* Coming soon!')
+    run(f'cd ~/ && wget -O update_mainnet.sh https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_update_mainnet.sh')
     return
 
 def update_fn_wallet() -> None:
     printStars()
     print(f'* Coming Soon!')
     return
+
+def findora_installer() -> None:
+    # Run installer ya'll!
+    print(f'* Welcome to EasyNode.PRO Validator Toolbox for Findora!')
+    print(f"* We've detected that Docker is properly installed for this user, excellent!")
+    print(f"* It doesn't look like you have Findora installed.")
+    print(f"* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain.")
+    answer = ask_yes_no(f'* Do you want to install it now? (Y/N) ')
+    if answer:
+        # mainnet or testnet
+        set_main_or_test()
+        subprocess.run(f"wget https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('NETWORK')}.sh -O install_{environ.get('NETWORK')}.sh && bash -x install_{environ.get('NETWORK')}.sh")
+        print_stars()
+        print(f'* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.')
+        raise SystemExit(0)
+    print_stars()
 
 def run_findora_menu() -> None:
     menu_options = {
