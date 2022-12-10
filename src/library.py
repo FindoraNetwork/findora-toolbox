@@ -132,10 +132,13 @@ def menu_topper() -> None:
     print_stars()
     return
 
-def update_findora_container() -> None:
+def update_findora_container(skip) -> None:
     print_stars()
     print(f"* Running the update and restart may cause missed blocks, beware before proceeding!")
-    answer = ask_yes_no(f"* Are you sure you want to check for an upgrade and restart? (Y/N) ")
+    if skip:
+        answer = True
+    else:
+        answer = ask_yes_no(f"* Are you sure you want to check for an upgrade and restart? (Y/N) ")
     if answer:
         subprocess.call(
             [

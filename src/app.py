@@ -20,9 +20,6 @@ def main() -> None:
         # Nope, let's ask to install!
         findora_installer()
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
-    
-
-    # Check the status and print a message
     if container_running(easy_env_fra.container_name):
         # Launch menu, we're good to go!
         print(f"* The container '{easy_env_fra.container_name}' is running. Press enter to continue.")
@@ -37,7 +34,7 @@ def main() -> None:
         print(f"* We will attempt to get the findorad container online now, press ctrl+c to cancel or enter to continue.")
         print_stars()
         input()
-        update_findora_container()
+        update_findora_container(1)
     print_stars()
 
 if __name__ == "__main__":
