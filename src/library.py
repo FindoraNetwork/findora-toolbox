@@ -68,6 +68,21 @@ def coming_soon() -> None:
     printStars()
     input("* Press ENTER to continue.")
 
+def menu_topper() -> None:
+    Load1, Load5, Load15 = os.getloadavg()
+    # get sign pct
+    # get balances
+    # get other validator data
+    os.system("clear")
+    printStars()
+    print(f'{Style.RESET_ALL}* {Fore.GREEN}validator-toolbox for Findora FRA Validators by Easy Node   v{validatorToolbox.easyVersion}{Style.RESET_ALL}   https://easynode.pro *')
+    printStars()
+    print(f'* Current disk space free: {Fore.CYAN}{freeSpaceCheck(): >6}{Style.RESET_ALL}\n')
+    printStars()
+    print(f"* CPU Load Averages: {round(Load1, 2)} over 1 min, {round(Load5, 2)} over 5 min, {round(Load15, 2)} over 15 min")
+    return
+    
+
 def run_findora_menu() -> None:
     menu_options = {
         1: refresh_stats,
@@ -81,6 +96,7 @@ def run_findora_menu() -> None:
     }
     while True:
         os.system("clear")
+        menu_topper()
         menu_findora()
         try:
             option = int(input("* Enter your option: "))
