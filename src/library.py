@@ -2,6 +2,7 @@ import subprocess
 import os
 import dotenv
 import shutil
+import time
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
@@ -87,7 +88,11 @@ def menu_topper() -> None:
     
 def update_findora_container() -> None:
     print_stars()
-    run(f'cd ~/ && wget -O update_mainnet.sh https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_update_mainnet.sh')
+    print(f'* Running the update and restart may cause missed blocks, beware before proceeding!')
+    answer = ask_yes_no(f'* Are you sure you want to check for an upgrade and restart?')
+    if answer:
+        subprocess.call
+        run(f'cd ~/ && wget -O update_mainnet.sh https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_update_mainnet.sh')
     return
 
 def update_fn_wallet() -> None:
@@ -108,12 +113,14 @@ def findora_installer() -> None:
         subprocess.call(["wget", f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('NETWORK')}.sh", "-O", f"/tmp/install_{environ.get('NETWORK')}.sh"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         os.system("clear")
         print_stars()
+        print(f'* We will show the output of the installation, this will take some time to download and unpack.')
         print(f'* Starting Findora installation now.')
+        print_stars()
+        time.sleep(3)
         print_stars()
         subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"])
         print_stars()
-        print(f'* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.')
-        raise SystemExit(0)
+        input(f'* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue.')
     print_stars()
 
 def run_findora_menu() -> None:
