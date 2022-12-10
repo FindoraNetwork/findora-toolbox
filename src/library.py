@@ -143,7 +143,7 @@ def update_findora_container() -> None:
         print(
             f"* We will show the output of the upgrade & restart now, this may miss a block(s) depending on your timing."
         )
-        subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir')
+        subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
         input(
             f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue."
