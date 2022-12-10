@@ -4,6 +4,7 @@ from subprocess import run
 from toolbox.library import loader_intro, print_stars, ask_yes_no, menu_error
 from library import docker_check, menu_findora, run_findora_menu, findora_installer, update_findora_container
 from colorama import Fore
+from config import easy_env_fra
 # Check the status and print a message
 
 def main() -> None:
@@ -18,17 +19,14 @@ def main() -> None:
     if os.path.exists('/usr/local/bin/fn') is False:
         # Nope, let's ask to install!
         findora_installer()
-    # fn is found, is the container running?
-    # Set the container name
-    container_name = "findorad"
-
-    # Run the 'docker ps' command and filter the output using 'grep'
-    status = subprocess.call(["docker", "ps", "--filter", f"name={container_name}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
+    status = subprocess.call(["docker", "ps", "--filter", f"name={easy_env_fra.container_name}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # Check the status and print a message
     if status == 0:
         # Launch menu, we're good to go!
-        print(f"* The container '{container_name}' is running.")
+        print(f"* The container '{easy_env_fra.container_name}' is running.")
+        input()
         print_stars()
         run_findora_menu()
 
