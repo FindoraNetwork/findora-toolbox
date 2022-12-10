@@ -1,7 +1,7 @@
 import os
 import subprocess
 from subprocess import run
-from toolbox.library import loaderIntro, printStars, askYesNo
+from toolbox.library import loaderIntro, printStars, askYesNo, menuError
 from library import dockerCheck, menuFindora
 
 # Check the status and print a message
@@ -38,6 +38,11 @@ if __name__ == "__main__":
             printStars()
             while True:
                 menuFindora()
+                try:
+                    option = int(input("* Enter your option: "))
+                except ValueError:
+                    menuError()
+                    menuFindora()
 
         else:
             # Container is not running, ruh roh!
