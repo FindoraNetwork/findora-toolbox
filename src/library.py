@@ -75,7 +75,7 @@ def menu_topper() -> None:
     # get other validator data
     os.system("clear")
     printStars()
-    print(f'{Style.RESET_ALL}* {Fore.GREEN}validator-toolbox for Findora FRA Validators by Easy Node   v{validatorToolbox.easyVersion}{Style.RESET_ALL}   https://easynode.pro *')
+    print(f'{Style.RESET_ALL}* {Fore.GREEN}validator-toolbox for Findora FRA Validators by Easy Node   v{validatorToolbox.easy_version}{Style.RESET_ALL}   https://easynode.pro *')
     printStars()
     print(f'* Current disk space free: {Fore.CYAN}{freeSpaceCheck(): >6}{Style.RESET_ALL}\n')
     printStars()
