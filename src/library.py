@@ -4,7 +4,6 @@ import dotenv
 import shutil
 import time
 import json
-import unicodedata
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
@@ -62,8 +61,7 @@ def refresh_fn_stats() -> None:
         output = subprocess.check_output(["fn", "show"])
         os.system("clear")
         print_stars()
-        res = "".join(char for char in output if unicodedata.category(char)[0]!="C")
-        print(str(res))
+        print(output.strip())
     except:
         print("* Error!")
     print_stars()
