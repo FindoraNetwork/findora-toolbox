@@ -4,6 +4,7 @@ import dotenv
 import shutil
 import time
 import json
+import unicodedata
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
@@ -47,7 +48,9 @@ def refresh_wallet_stats() -> None:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
         os.system("clear")
         print_stars()
-        pprint(json.loads(output))
+        code_points = [ord(ch) for ch in output]
+        ascii_chars = [chr(cp) for cp in code_points]
+        pprint(ascii_chars)
     except:
         print("* Is your container running?")
     print_stars()
