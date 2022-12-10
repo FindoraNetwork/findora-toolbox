@@ -61,10 +61,10 @@ def server_disk_check() -> None:
     total, used, free = shutil.disk_usage(ourDiskMount)
     total = str(convertedUnit(total))
     used = str(convertedUnit(used))
-    print("Disk: " + str(ourDiskMount) + "\n" + freeSpaceCheck() + " Free\n" + used + " Used\n" + total + " Total")
+    print("Disk: " + str(ourDiskMount) + "\n" + freeSpaceCheck(ourDiskMount) + " Free\n" + used + " Used\n" + total + " Total")
     printStars()
     input("Disk check complete, press ENTER to return to the main menu. ")
-    
+
 def coming_soon() -> None:
     print(f'* Coming soon!')
     printStars()
