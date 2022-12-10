@@ -1,4 +1,5 @@
 import subprocess
+from colorama import Fore, Back, Style
 from subprocess import PIPE, run
 from toolbox.library import printStars, return_txt
 from config import validatorToolbox
