@@ -45,6 +45,8 @@ def refresh_stats() -> None:
     print_stars()
     try:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
+        os.system("clear")
+        print_stars()
         pprint(json.loads(output))
     except:
         print("* Is your container running?")
