@@ -182,12 +182,6 @@ def update_fn_wallet() -> None:
         print_stars()
         input("* Fn update complete, press ENTER to return to the main menu. ")
         return
-    else:
-        print_stars()
-        print(f"* Returning to the main menu, press any key to continue.")
-        print_stars()
-        input()
-        return
 
 
 def run_clean_script() -> None:
