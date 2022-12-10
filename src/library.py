@@ -93,7 +93,7 @@ def run_findora_menu() -> None:
         2: check_balance_menu,
         10: coming_soon,
         11: coming_soon,
-        12: menuUbuntuUpdates,
+        12: coming_soon,
         13: server_disk_check,
         15: allSysInfo,
         999: menuRebootServer,
