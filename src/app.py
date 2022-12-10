@@ -42,7 +42,8 @@ def main(count) -> None:
                 1: refresh_wallet_stats,
                 2: run_clean_script
             }
-            print(f"* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot" + print_stars())
+            print(f"* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
+            print_stars()
             try:
                 option = int(input("Enter your option: "))
             except ValueError:
