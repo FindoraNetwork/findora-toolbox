@@ -79,6 +79,7 @@ def menu_topper() -> None:
     print(f'* Current disk space free: {Fore.CYAN}{freeSpaceCheck(validatorToolbox.our_disk_mount): >6}{Style.RESET_ALL}\n')
     printStars()
     print(f"* CPU Load Averages: {round(Load1, 2)} over 1 min, {round(Load5, 2)} over 5 min, {round(Load15, 2)} over 15 min")
+    printStars()
     return
     
 
