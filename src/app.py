@@ -25,9 +25,10 @@ def main() -> None:
     # Check the status and print a message
     if status == 0:
         # Launch menu, we're good to go!
-        print(f"* The container '{easy_env_fra.container_name}' is running.")
-        input()
+        print(f"* The container '{easy_env_fra.container_name}' is running. Press enter to continue.")
         print_stars()
+        input()
+        
         run_findora_menu()
 
     else:

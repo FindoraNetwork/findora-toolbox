@@ -52,7 +52,7 @@ def refresh_wallet_stats() -> None:
     except:
         print("* Is your container running?")
     print_stars()
-    print("* Press any key to return to the main menu.")
+    print("* Press enter to return to the main menu.")
     print_stars()
     input()
 
@@ -66,7 +66,7 @@ def refresh_fn_stats() -> None:
     except:
         print("* Error!")
     print_stars()
-    print("* Press any key to return to the main menu.")
+    print("* Press enter to return to the main menu.")
     print_stars()
     input()
 
@@ -154,7 +154,7 @@ def update_findora_container() -> None:
         subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
         print(
-            f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue."
+            f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
         )
         print_stars()
         input()
@@ -238,7 +238,7 @@ def findora_installer() -> None:
         subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
         print(
-            f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue."
+            f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
         )
         print_stars()
         input()
@@ -274,7 +274,7 @@ def run_findora_menu() -> None:
         except ValueError:
             os.system("clear")
             print_stars()
-            print(f"* {value} is not a number, try again. Press any key to continue.")
+            print(f"* {value} is not a number, try again. Press enter to continue.")
             print_stars()
             input()
             run_findora_menu()
