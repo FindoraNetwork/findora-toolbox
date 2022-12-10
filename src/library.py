@@ -4,7 +4,7 @@ import dotenv
 import shutil
 import time
 import json
-import unicodedata
+from urllib.parse import unquote
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
@@ -45,7 +45,7 @@ def menu_findora() -> None:
 def refresh_wallet_stats() -> None:
     print_stars()
     try:
-        output = subprocess.call(["curl", "http://localhost:26657/status"])
+        output = subprocess.check_output(["curl", "http://localhost:26657/status"])
         os.system("clear")
         print_stars()
         pprint(output)
@@ -59,7 +59,7 @@ def refresh_wallet_stats() -> None:
 def refresh_fn_stats() -> None:
     print_stars()
     try:
-        output = subprocess.check_output(["fn", "show"])
+        output = unquote(subprocess.check_output(["fn", "show"]))
         os.system("clear")
         print_stars()
         print(output)
