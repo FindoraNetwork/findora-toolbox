@@ -1,9 +1,11 @@
-* Easy Node's validatortoolbox Menu Options:
+* EasyNode.PRO Findora Validator Toolbox Menu Options:
 print("*")
-print("*   1 - Refresh Toolbox Info      - Use this option to reload to get updated stats above!")
-print("*   2 - Show Balance              - Check Any Wallet Balance")
-print(f"*                                   {Fore.RED}{Back.GREEN}The Danger Zone:{Style.RESET_ALL}")
-print("*  12 -  Update Operating System   - Update hmy binary file")
+print("*   1 -  Refresh Toolbox Info      - Use this option to reload to get updated stats above!")
+print("*   2 -  Show Balance              - Check Any Wallet Balance")
+print("*  10 -  Update fn Application     - Pull update for the wallet application, fn")
+print(f"*                                   {Fore.GREEN}{Back.RED}The Danger Zone:{Style.RESET_ALL}")
+print("*  11 -  Update Findora Container  - Pull & Restart the latest container from Findora")
+print("*  12 -  Update Operating System   - Update Ubuntu Operating System Files")
 print(f"*                                   {Fore.CYAN}{Back.GREEN}Informational Section:{Style.RESET_ALL}")
 print("*  13 -  Show system disk info     - Current drive space status")
 print("*  14 -  TMI about your Validator  - Seriously too much information")
