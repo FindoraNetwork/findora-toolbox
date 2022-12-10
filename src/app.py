@@ -8,11 +8,18 @@ from colorama import Fore
 # Check the status and print a message
 
 if __name__ == "__main__":
+    # Wear purple
     print(Fore.MAGENTA)
+    # Go home
+    subprocess.call("cd ~/", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    # Intro w/ stars below
     loader_intro()
     print_stars()
+    # Can we use docker on this user?
     docker_check()
+    # Does `fn` exist?
     if os.path.exists('/usr/local/bin/fn') is False:
+        # Nope, let's ask to install!
         findora_installer()
     else:
         # fn is found, is the container running?
