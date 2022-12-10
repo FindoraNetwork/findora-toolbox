@@ -182,7 +182,34 @@ def update_fn_wallet() -> None:
         return
     else:
         print_stars()
-        input(f'* Returning to the main menu, press any key to continue.')
+        input(f"* Returning to the main menu, press any key to continue.")
+        return
+
+
+def run_clean_script() -> None:
+    print_stars()
+    print(f"* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting.")
+    answer = ask_yes_no(f"* Do you want to run safety clean now? (Y/N) ")
+    if answer:
+        subprocess.call(
+            [
+                "wget",
+                "-O",
+                f"/tmp/safety_clean_{environ.get('NETWORK')}.sh",
+                f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/safety_clean_{environ.get('NETWORK')}.sh",
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        os.system("clear")
+        print(f"* We will show the output of the reset now.")
+        subprocess.call(["bash", "-x", f"/tmp/safety_clean_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
+        print_stars()
+        input("* Safety clean complete, press ENTER to return to the main menu. ")
+        return
+    else:
+        print_stars()
+        input(f"* Returning to the main menu, press any key to continue.")
         return
 
 
@@ -232,10 +259,10 @@ def run_findora_menu() -> None:
         6: coming_soon,
         7: coming_soon,
         8: coming_soon,
-        9: coming_soon,
-        10: update_fn_wallet,
-        11: update_findora_container,
-        12: menu_ubuntu_updates,
+        9: update_fn_wallet,
+        10: update_findora_container,
+        11: menu_ubuntu_updates,
+        12: run_clean_script,
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
