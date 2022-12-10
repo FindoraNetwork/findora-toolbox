@@ -86,6 +86,16 @@ def menu_topper() -> None:
     print_stars()
     return
     
+def update_findora_container() -> None:
+    printStars()
+    print(f'* Coming soon!')
+    return
+
+def update_fn_wallet() -> None:
+    printStars()
+    print(f'* Coming Soon!')
+    return
+
 def run_findora_menu() -> None:
     menu_options = {
         1: refresh_stats,
@@ -98,8 +108,8 @@ def run_findora_menu() -> None:
         8: coming_soon,
         9: coming_soon,
         10: coming_soon,
-        11: coming_soon,
-        12: coming_soon,
+        11: update_findora_container,
+        12: update_fn_wallet,
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
