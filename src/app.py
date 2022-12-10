@@ -11,7 +11,7 @@ if __name__ == "__main__":
     # Wear purple
     print(Fore.MAGENTA)
     # Go home
-    subprocess.call("cd ~/", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.call("cd ..", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     # Intro w/ stars below
     loader_intro()
     print_stars()
