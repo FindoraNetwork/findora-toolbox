@@ -268,16 +268,16 @@ def run_findora_menu() -> None:
         15: all_sys_info,
         999: menu_reboot_server,
     }
-    while True:
-        os.system("clear")
-        menu_topper()
+    os.system("clear")
+    menu_topper()
+    menu_findora()
+    try:
+        option = int(input("* Enter your option: "))
+    except ValueError:
+        menu_error()
         menu_findora()
-        try:
-            option = int(input("* Enter your option: "))
-        except ValueError:
-            menu_error()
-            menu_findora()
-        if option == 0:
-            return finish_node()
-        os.system("clear")
-        menu_options[option]()
+    if option == 0:
+        return finish_node()
+    os.system("clear")
+    menu_options[option]()
+    run_findora_menu()
