@@ -3,14 +3,14 @@ import subprocess
 from subprocess import run
 from toolbox.library import loaderIntro, printStars, askYesNo
 from toolbox.toolbox import menuError
-from library import dockerCheck, menuFindora
+from library import docker_check, menu_findora, run_findora_menu
 
 # Check the status and print a message
 
 if __name__ == "__main__":
     loaderIntro()
     printStars()
-    dockerCheck()
+    docker_check()
     if os.path.exists('/usr/local/bin/fn') is False:
         # Run installer ya'll!
         print(f'* Welcome to EasyNode.PRO Validator Toolbox for Findora!')
@@ -37,13 +37,7 @@ if __name__ == "__main__":
             # Launch menu, we're good to go!
             print(f"* The container '{container_name}' is running.")
             printStars()
-            while True:
-                menuFindora()
-                try:
-                    option = int(input("* Enter your option: "))
-                except ValueError:
-                    menuError()
-                    menuFindora()
+            run_findora_menu()
 
         else:
             # Container is not running, ruh roh!

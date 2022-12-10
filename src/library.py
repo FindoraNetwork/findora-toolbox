@@ -1,10 +1,12 @@
 import subprocess
+import os
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
 from toolbox.library import printStars, return_txt
+from toolbox.toolbox import menuError
 from config import validatorToolbox
 
-def dockerCheck():
+def docker_check():
     status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status == 0:
         print("* Docker is available and working properly.")
@@ -17,7 +19,7 @@ def dockerCheck():
         printStars()
         raise SystemExit(0)
 
-def menuFindora() -> None:
+def menu_findora() -> None:
     # menuTopperFull()
     for x in return_txt(validatorToolbox.findora_menu):
         x = x.strip()
@@ -27,3 +29,13 @@ def menuFindora() -> None:
             pass
         if x:
             print(x)
+
+def run_findora_menu() -> None:
+    while True:
+        os.system("clear")
+        menu_findora()
+        try:
+            option = int(input("* Enter your option: "))
+        except ValueError:
+            menuError()
+            menu_findora()
