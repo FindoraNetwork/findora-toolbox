@@ -44,8 +44,8 @@ def menu_findora() -> None:
 def refresh_stats() -> None:
     print_stars()
     try:
-        output = subprocess.getoutput(
-            ["curl", "http://localhost:26657/status"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        output = subprocess.check_output(
+            ["curl", "http://localhost:26657/status"], stderr=subprocess.STDOUT, universal_newlines=True
         )
         data = json.loads(output)
         pprint(data)
