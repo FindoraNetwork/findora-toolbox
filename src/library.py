@@ -2,8 +2,8 @@ import subprocess
 import os
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
-from toolbox.library import printStars, return_txt, finish_node, freeSpaceCheck, serverDriveCheck
-from toolbox.toolbox import menuError, menuUbuntuUpdates, menuRebootServer
+from toolbox.library import printStars, return_txt, freeSpaceCheck, serverDriveCheck
+from toolbox.toolbox import menuError, menuUbuntuUpdates, menuRebootServer, finish_node
 from toolbox.allsysinfo import allSysInfo
 from config import validatorToolbox
 
