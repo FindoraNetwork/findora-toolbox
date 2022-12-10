@@ -280,6 +280,8 @@ def run_findora_menu() -> None:
         try:
             value = int(value)
         except ValueError:
+            os.system("clear")
+            print_stars()
             input(f"* {value} is not a number, try again. Press any key to continue.")
             run_findora_menu()
         if value == 0:
