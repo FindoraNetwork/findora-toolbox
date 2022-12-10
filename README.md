@@ -6,7 +6,7 @@ More coming soon. Coding & Testing has begun.
 ## Install Findora
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
 ```text
-cd ~/ && git clone https://github.com/easy-node-pro/validatortoolbox-fra.git && cd validatortoolbox-fra && pip3 install -r requirements.txt && cd ~/ && python3 ~/validatortoolbox-fra/src/app.py
+cd ~/ && git clone https://github.com/easy-node-pro/validatortoolbox_fra.git && cd validatortoolbox_fra && pip3 install -r requirements.txt && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
 ```
 
 ## Findora Menu
