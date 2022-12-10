@@ -7,6 +7,7 @@ import json
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
+from pprint import pprint
 from toolbox.library import (
     print_stars,
     print_stars_reset,
@@ -45,7 +46,7 @@ def refresh_stats() -> None:
     try:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
         data = json.loads(output)
-        print(data)
+        pprint(data)
     except:
         print_stars()
         print("* Is your container running?")
