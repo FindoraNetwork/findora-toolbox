@@ -1,8 +1,11 @@
 import subprocess
 import os
+import dotenv
+import shutil
+from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
-from toolbox.library import printStars, return_txt, serverDriveCheck
+from toolbox.library import printStars, printStarsReset, return_txt, loadVarFile, disk_partitions, convertedUnit, freeSpaceCheck
 from toolbox.toolbox import menuError, menuUbuntuUpdates, menuRebootServer, finish_node
 from toolbox.allsysinfo import allSysInfo
 from config import validatorToolbox
@@ -31,6 +34,8 @@ def menu_findora() -> None:
         if x:
             print(x)
 
+
+
 def refresh_stats() -> None:
     print(f'* Coming soon!')
     printStars()
@@ -47,10 +52,19 @@ def operating_system_updates() -> None:
     input("Press ENTER to continue.")
 
 def server_disk_check() -> None:
-    print(f'* Coming soon!')
+    ourDiskMount = '/data/findora'
+    printStarsReset()
+    print("Here are all of your mount points: ")
+    for part in disk_partitions():
+        print(part)
     printStars()
-    input("Press ENTER to continue.")
-
+    total, used, free = shutil.disk_usage(ourDiskMount)
+    total = str(convertedUnit(total))
+    used = str(convertedUnit(used))
+    print("Disk: " + str(ourDiskMount) + "\n" + freeSpaceCheck() + " Free\n" + used + " Used\n" + total + " Total")
+    printStars()
+    input("Disk check complete, press ENTER to return to the main menu. ")
+    
 def coming_soon() -> None:
     print(f'* Coming soon!')
     printStars()
@@ -61,7 +75,7 @@ def run_findora_menu() -> None:
         1: refresh_stats,
         2: check_balance_menu,
         12: menuUbuntuUpdates,
-        13: serverDriveCheck,
+        13: server_disk_check,
         14: coming_soon,
         15: allSysInfo,
         999: menuRebootServer,
