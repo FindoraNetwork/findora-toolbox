@@ -61,7 +61,8 @@ def refresh_fn_stats() -> None:
         output = subprocess.check_output(["fn", "show"])
         os.system("clear")
         print_stars()
-        print(output.strip())
+        output = output.strip()
+        print(output)
     except:
         print("* Error!")
     print_stars()
