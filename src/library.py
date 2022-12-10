@@ -64,7 +64,7 @@ def refresh_fn_stats() -> None:
         print_stars()
         print(output)
     except:
-        print("* Error!")
+        print("* Error, no response from local API, try your curl stats again. If the stats give the same reply try option #10 to get back online and as a last resort option #12!")
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
@@ -249,11 +249,12 @@ def findora_installer() -> None:
         raise SystemExit(0)
 
 def run_ubuntu_updates() -> None:
+    print_stars()
     question = ask_yes_no(f'* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ')
     if question:
         os.system("clear")
         print_stars()
-        print(f'* Stopping docker container for safety, you will miss blocks while updates run.')
+        print(f'* Stopping docker container for safety')
         subprocess.call(["docker", "container", "stop", "findorad"])
         run_ubuntu_updater()
         print_stars()
