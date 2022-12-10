@@ -271,13 +271,16 @@ def run_findora_menu() -> None:
     os.system("clear")
     menu_topper()
     menu_findora()
-    try:
-        option = int(input("* Enter your option: "))
-    except ValueError:
-        menu_error()
-        menu_findora()
-    if option == 0:
-        return finish_node()
-    os.system("clear")
-    menu_options[option]()
-    run_findora_menu()
+    while True:
+        try:
+            value = int(input("* Enter your option: "))
+            try:
+                value = int(value)
+            except:
+                print(f'* {value} is not a number, try again.')
+                run_findora_menu()
+        if value == 0:
+            return finish_node()
+        os.system("clear")
+        menu_options[value]()
+        run_findora_menu()
