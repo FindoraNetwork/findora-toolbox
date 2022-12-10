@@ -153,9 +153,11 @@ def update_findora_container() -> None:
         )
         subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
-        input(
+        print(
             f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue."
         )
+        print_stars()
+        input()
     return
 
 
@@ -182,7 +184,9 @@ def update_fn_wallet() -> None:
         return
     else:
         print_stars()
-        input(f"* Returning to the main menu, press any key to continue.")
+        print(f"* Returning to the main menu, press any key to continue.")
+        print_stars()
+        input()
         return
 
 
@@ -213,7 +217,9 @@ def run_clean_script() -> None:
         return
     else:
         print_stars()
-        input(f"* Returning to the main menu, press any key to continue.")
+        print(f"* Returning to the main menu, press any key to continue.")
+        print_stars()
+        input()
         return
 
 
@@ -246,9 +252,11 @@ def findora_installer() -> None:
         print_stars()
         subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
-        input(
+        print(
             f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue."
         )
+        print_stars()
+        input()
     else:
         raise SystemExit(0)
 
