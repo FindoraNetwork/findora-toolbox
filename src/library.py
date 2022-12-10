@@ -52,7 +52,7 @@ def operating_system_updates() -> None:
     input("* Press ENTER to continue.")
 
 def server_disk_check() -> None:
-    print_starsReset()
+    print_stars_reset()
     print("* Here are all of your mount points: ")
     for part in disk_partitions():
         print(part)
