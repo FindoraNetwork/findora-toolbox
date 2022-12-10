@@ -105,12 +105,12 @@ def findora_installer() -> None:
     if answer:
         # mainnet or testnet
         set_main_or_test()
-        subprocess.run(["wget", f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('NETWORK')}.sh", "-O", f"/tmp/install_{environ.get('NETWORK')}.sh"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.call(["wget", f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('NETWORK')}.sh", "-O", f"/tmp/install_{environ.get('NETWORK')}.sh"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         os.system("clear")
         print_stars()
         print(f'* Starting Findora installation now.')
         print_stars()
-        subprocess.getoutput(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"])
+        subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"])
         print_stars()
         print(f'* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.')
         raise SystemExit(0)
