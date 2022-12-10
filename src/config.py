@@ -11,6 +11,7 @@ def getUrl() -> None:
 
 class validatorToolbox:
     easy_version = "1.0.0"
+    our_disk_mount = '/data/findora'
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.easynode.env"
