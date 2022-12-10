@@ -276,7 +276,7 @@ def run_findora_menu() -> None:
     menu_topper()
     menu_findora()
     while True:
-        value = int(input("* Enter your option: "))
+        value = input("* Enter your option: ")
         try:
             value = int(value)
         except ValueError:
