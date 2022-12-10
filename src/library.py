@@ -5,7 +5,7 @@ import shutil
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
-from toolbox.library import print_stars, print_starsReset, return_txt, load_var_file, disk_partitions, converted_unit, free_space_check
+from toolbox.library import print_stars, print_stars_reset, return_txt, load_var_file, disk_partitions, converted_unit, free_space_check
 from toolbox.toolbox import menu_error, menu_ubuntu_updates, menu_reboot_server, finish_node
 from toolbox.allsysinfo import allSysInfo
 from config import easy_env_fra
