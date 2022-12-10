@@ -143,7 +143,7 @@ def update_findora_container() -> None:
         print(
             f"* We will show the output of the upgrade & restart now, this may miss a block(s) depending on your timing."
         )
-        subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('NETWORK')}.sh"])
+        subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir')
         print_stars()
         input(
             f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue."
@@ -168,7 +168,7 @@ def update_fn_wallet() -> None:
         )
         os.system("clear")
         print(f"* We will show the output of the upgrade now.")
-        subprocess.call(["bash", "-x", f"/tmp/fn_update_{environ.get('NETWORK')}.sh"])
+        subprocess.call(["bash", "-x", f"/tmp/fn_update_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
     return
 
 
@@ -199,7 +199,7 @@ def findora_installer() -> None:
         print_stars()
         time.sleep(3)
         print_stars()
-        subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"])
+        subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
         input(
             f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press any key to continue."
