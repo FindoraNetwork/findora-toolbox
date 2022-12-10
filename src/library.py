@@ -45,12 +45,10 @@ def menu_findora() -> None:
 def refresh_wallet_stats() -> None:
     print_stars()
     try:
-        output = subprocess.check_output(["curl", "http://localhost:26657/status"])
+        output = subprocess.call(["curl", "http://localhost:26657/status"])
         os.system("clear")
         print_stars()
-        code_points = [ord(ch) for ch in output]
-        ascii_chars = [chr(cp) for cp in code_points]
-        pprint(ascii_chars)
+        pprint(output)
     except:
         print("* Is your container running?")
     print_stars()
