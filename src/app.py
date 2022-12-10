@@ -1,8 +1,8 @@
 import os
 import subprocess
 from subprocess import run
-from toolbox.library import loader_intro, print_stars, ask_yes_no, menu_error
-from library import docker_check, menu_findora, run_findora_menu, findora_installer, update_findora_container
+from toolbox.library import loader_intro, print_stars, docker_check
+from library import run_findora_menu, findora_installer, update_findora_container
 from colorama import Fore
 from config import easy_env_fra
 # Check the status and print a message

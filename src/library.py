@@ -20,7 +20,6 @@ from toolbox.library import (
     all_sys_info,
     set_main_or_test,
     ask_yes_no,
-    docker_check,
     coming_soon,
     menu_ubuntu_updates,
     menu_error,
