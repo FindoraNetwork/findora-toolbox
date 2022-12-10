@@ -21,7 +21,7 @@ from toolbox.library import (
     set_main_or_test,
     ask_yes_no,
     coming_soon,
-    menu_ubuntu_updates,
+    run_ubuntu_updater,
     menu_error,
     menu_reboot_server,
     finish_node
@@ -248,6 +248,17 @@ def findora_installer() -> None:
     else:
         raise SystemExit(0)
 
+def run_ubuntu_updates() -> None:
+    os.system("clear")
+    print_stars()
+    print(f'* Stopping docker container for safety, you will miss blocks while updates run.')
+    subprocess.call(["docker", "container", "stop", "findorad"])
+    run_ubuntu_updater()
+    print_stars()
+    print(f'* Restarting findorad container')
+    subprocess.call(["docker", "container", "start", "findorad"])
+    refresh_fn_stats()
+
 def run_findora_menu() -> None:
     menu_options = {
         1: refresh_wallet_stats,
@@ -260,7 +271,7 @@ def run_findora_menu() -> None:
         8: coming_soon,
         9: update_fn_wallet,
         10: update_findora_container,
-        11: menu_ubuntu_updates,
+        11: run_ubuntu_updates,
         12: run_clean_script,
         13: server_disk_check,
         14: coming_soon,
