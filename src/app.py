@@ -4,10 +4,11 @@ from subprocess import run
 from toolbox.library import loader_intro, print_stars, ask_yes_no
 from toolbox.toolbox import menu_error
 from library import docker_check, menu_findora, run_findora_menu, findora_installer
-
+from colorama import Fore
 # Check the status and print a message
 
 if __name__ == "__main__":
+    print(Fore.MAGENTA)
     loader_intro()
     print_stars()
     docker_check()

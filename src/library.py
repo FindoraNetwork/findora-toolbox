@@ -86,12 +86,12 @@ def menu_topper() -> None:
     return
     
 def update_findora_container() -> None:
-    printStars()
+    print_stars()
     run(f'cd ~/ && wget -O update_mainnet.sh https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_update_mainnet.sh')
     return
 
 def update_fn_wallet() -> None:
-    printStars()
+    print_stars()
     print(f'* Coming Soon!')
     return
 
@@ -107,9 +107,9 @@ def findora_installer() -> None:
         set_main_or_test()
         subprocess.run(["wget", f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('NETWORK')}.sh", "-O", f"/tmp/install_{environ.get('NETWORK')}.sh"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         os.system("clear")
-        printStars()
+        print_stars()
         print(f'* Starting Findora installation now.')
-        printStars()
+        print_stars()
         subprocess.getoutput(["bash", "-x", f"/tmp/install_{environ.get('NETWORK')}.sh"])
         print_stars()
         print(f'* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.')
