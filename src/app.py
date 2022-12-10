@@ -22,4 +22,18 @@ if __name__ == "__main__":
             printStars()
             print(f'* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.')
             raise SystemExit(0)
+    else:
+        # fn is found, is the container running?
+        # Set the container name
+        container_name = "findorad"
+
+        # Run the 'docker ps' command and filter the output using 'grep'
+        status = subprocess.call(["docker", "ps", "--filter", f"name={container_name}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+        # Check the status and print a message
+        if status == 0:
+            print(f"The container '{container_name}' is running.")
+        else:
+            print(f"The container '{container_name}' is not running.")
+
 
