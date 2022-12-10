@@ -35,16 +35,19 @@ def menu_findora() -> None:
             print(x)
 
 def refresh_stats() -> None:
+    printStars()
     print(f'* Coming soon!')
     printStars()
     input("* Press ENTER to continue.")
 
 def check_balance_menu() -> None:
+    printStars()
     print(f'* Coming soon!')
     printStars()
     input("* Press ENTER to continue.")
 
 def operating_system_updates() -> None:
+    printStars()
     print(f'* Coming soon!')
     printStars()
     input("* Press ENTER to continue.")
@@ -63,6 +66,7 @@ def server_disk_check() -> None:
     input("* Disk check complete, press ENTER to return to the main menu. ")
 
 def coming_soon() -> None:
+    printStars()
     print(f'* Coming soon!')
     printStars()
     input("* Press ENTER to continue.")
