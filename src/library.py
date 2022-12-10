@@ -3,6 +3,7 @@ import os
 import dotenv
 import shutil
 import time
+import json
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
@@ -51,7 +52,9 @@ def menu_findora() -> None:
 
 def refresh_stats() -> None:
     print_stars()
-    print(f"* Coming soon!")
+    output = subprocess.check_output(["curl"], ["'http://localhost:26657/status'"])
+    data = json.loads(output)
+    print(data)
     print_stars()
     input("* Press ENTER to continue.")
 
