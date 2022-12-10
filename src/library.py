@@ -41,7 +41,7 @@ def menu_findora() -> None:
             print(x)
 
 
-def refresh_stats() -> None:
+def refresh_wallet_stats() -> None:
     print_stars()
     try:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
@@ -51,7 +51,23 @@ def refresh_stats() -> None:
     except:
         print("* Is your container running?")
     print_stars()
-    input("* Press ENTER to continue.")
+    print("* Press any key to return to the main menu.")
+    print_stars()
+    input()
+
+def refresh_fn_stats() -> None:
+    print_stars()
+    try:
+        output = subprocess.check_output(["fn", "show"])
+        os.system("clear")
+        print_stars()
+        pprint(output)
+    except:
+        print("* Error!")
+    print_stars()
+    print("* Press any key to return to the main menu.")
+    print_stars()
+    input()
 
 
 def check_balance_menu() -> None:
@@ -230,9 +246,9 @@ def findora_installer() -> None:
 
 def run_findora_menu() -> None:
     menu_options = {
-        1: refresh_stats,
-        2: check_balance_menu,
-        3: coming_soon,
+        1: refresh_wallet_stats,
+        2: refresh_fn_stats,
+        3: check_balance_menu,
         4: coming_soon,
         5: coming_soon,
         6: coming_soon,

@@ -1,7 +1,8 @@
 * EasyNode.PRO Findora Validator Toolbox Menu Options:
 print("*")
-print("*   1 -  Refresh Toolbox Info      - Use this option to reload to get updated stats above!")
-print("*   2 -  Show Balance              - Check Any Wallet Balance")
+print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
+print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
+print("*   3 -  Show Balance              - Check Any Wallet Balance")
 print("*   9 -  Update fn Application     - Pull update for the wallet application, fn")
 print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
 print("*  10 -  Update Findora Container  - Pull & Restart the latest container from Findora")
