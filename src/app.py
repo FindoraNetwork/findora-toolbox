@@ -33,7 +33,7 @@ def main() -> None:
 
     else:
         # Container is not running, ruh roh!
-        print(f"* The container '{container_name}' is not running.")
+        print(f"* The container '{easy_env_fra.container_name}' is not running.")
         print(f"* We will attempt to get the findorad container online now, press ctrl+c to cancel or enter to continue.")
         print_stars()
         input()
