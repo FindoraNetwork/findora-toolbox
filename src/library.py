@@ -188,7 +188,9 @@ def update_fn_wallet() -> None:
 
 def run_clean_script() -> None:
     print_stars()
-    print(f"* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting.")
+    print(
+        f"* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
+    )
     answer = ask_yes_no(f"* Do you want to run safety clean now? (Y/N) ")
     if answer:
         subprocess.call(
@@ -203,7 +205,9 @@ def run_clean_script() -> None:
         )
         os.system("clear")
         print(f"* We will show the output of the reset now.")
-        subprocess.call(["bash", "-x", f"/tmp/safety_clean_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
+        subprocess.call(
+            ["bash", "-x", f"/tmp/safety_clean_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
+        )
         print_stars()
         input("* Safety clean complete, press ENTER to return to the main menu. ")
         return
@@ -272,13 +276,12 @@ def run_findora_menu() -> None:
     menu_topper()
     menu_findora()
     while True:
+        value = int(input("* Enter your option: "))
         try:
-            value = int(input("* Enter your option: "))
-            try:
-                value = int(value)
-            except:
-                print(f'* {value} is not a number, try again.')
-                run_findora_menu()
+            value = int(value)
+        except:
+            print(f"* {value} is not a number, try again.")
+            run_findora_menu()
         if value == 0:
             finish_node()
         os.system("clear")
