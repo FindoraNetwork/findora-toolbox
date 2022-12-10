@@ -57,11 +57,10 @@ def refresh_wallet_stats() -> None:
     input()
 
 def refresh_fn_stats() -> None:
+    os.system("clear")
     print_stars()
     try:
         output = unquote(subprocess.check_output(["fn", "show"]))
-        os.system("clear")
-        print_stars()
         print(output)
     except:
         print("* Error, no response from local API, try your curl stats again. If the stats give the same reply try option #10 to get back online and as a last resort option #12!")
