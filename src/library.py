@@ -282,7 +282,9 @@ def run_findora_menu() -> None:
         except ValueError:
             os.system("clear")
             print_stars()
-            input(f"* {value} is not a number, try again. Press any key to continue.")
+            print(f"* {value} is not a number, try again. Press any key to continue.")
+            print_stars()
+            input()
             run_findora_menu()
         if value == 0:
             finish_node()
