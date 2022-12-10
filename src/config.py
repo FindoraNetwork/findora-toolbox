@@ -19,3 +19,4 @@ class validatorToolbox:
     findora_root_testnet = f'/data/findora/testnet'
     toolbox_location = os.path.join(user_home_dir, "validatortoolbox-fra")
     our_external_ip = getUrl()
+    findora_menu = os.path.join(toolbox_location, "src", "messages", "framenu.txt")
