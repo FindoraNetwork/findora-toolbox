@@ -18,23 +18,11 @@ from toolbox.library import (
     all_sys_info,
     set_main_or_test,
     ask_yes_no,
+    docker_check,
+    coming_soon
 )
 from toolbox.toolbox import menu_error, menu_ubuntu_updates, menu_reboot_server, finish_node, menu_ubuntu_updates
 from config import easy_env_fra
-
-
-def docker_check():
-    status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    if status == 0:
-        print("* Docker is available and working properly.\n* Loading management menu now...")
-        print_stars()
-        time.sleep(2)
-        return 0
-    else:
-        print("* Docker is not installed and/or is not working properly.")
-        print("* Install docker on this server and give the user access to continue.")
-        print_stars()
-        raise SystemExit(0)
 
 
 def menu_findora() -> None:
@@ -99,14 +87,6 @@ def server_disk_check() -> None:
     print_stars()
     input("* Disk check complete, press ENTER to return to the main menu. ")
 
-
-def coming_soon() -> None:
-    print_stars()
-    print(f"* Coming soon!")
-    print_stars()
-    input("* Press ENTER to continue.")
-
-
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
     # get sign pct
@@ -130,7 +110,6 @@ def menu_topper() -> None:
     )
     print_stars()
     return
-
 
 def update_findora_container() -> None:
     print_stars()
@@ -160,7 +139,6 @@ def update_findora_container() -> None:
         input()
     return
 
-
 def update_fn_wallet() -> None:
     print_stars()
     print(f"* This option upgrades the fn wallet application.")
@@ -182,7 +160,6 @@ def update_fn_wallet() -> None:
         print_stars()
         input("* Fn update complete, press ENTER to return to the main menu. ")
         return
-
 
 def run_clean_script() -> None:
     print_stars()
@@ -209,7 +186,6 @@ def run_clean_script() -> None:
         print_stars()
         input("* Safety clean complete, press ENTER to return to the main menu. ")
         return
-
 
 def findora_installer() -> None:
     # Run installer ya'll!
@@ -247,7 +223,6 @@ def findora_installer() -> None:
         input()
     else:
         raise SystemExit(0)
-
 
 def run_findora_menu() -> None:
     menu_options = {
