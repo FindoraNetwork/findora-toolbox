@@ -1,13 +1,12 @@
 import os
 import subprocess
 from subprocess import run
-from toolbox.library import loader_intro, print_stars, ask_yes_no
-from toolbox.toolbox import menu_error
-from library import docker_check, menu_findora, run_findora_menu, findora_installer
+from toolbox.library import loader_intro, print_stars, ask_yes_no, menu_error
+from library import docker_check, menu_findora, run_findora_menu, findora_installer, update_findora_container
 from colorama import Fore
 # Check the status and print a message
 
-if __name__ == "__main__":
+def main() -> None:
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
@@ -36,4 +35,13 @@ if __name__ == "__main__":
     else:
         # Container is not running, ruh roh!
         print(f"* The container '{container_name}' is not running.")
+        print(f"* We will attempt to get the findorad container online now, press ctrl+c to cancel or enter to continue.")
+        print_stars()
+        input()
+        update_findora_container()
     print_stars()
+
+if __name__ == "__main__":
+    while True:
+        main()
+    
