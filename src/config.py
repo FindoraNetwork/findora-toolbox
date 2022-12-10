@@ -10,7 +10,7 @@ def getUrl() -> None:
     return result
 
 class validatorToolbox:
-    easy_version = "1.0.0"
+    easy_version = "1.0.1"
     our_disk_mount = '/data/findora'
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
