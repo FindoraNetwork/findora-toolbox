@@ -1,7 +1,8 @@
 import os
 import subprocess
 from subprocess import run
-from toolbox.library import loaderIntro, printStars, askYesNo, menuError
+from toolbox.library import loaderIntro, printStars, askYesNo
+from toolbox.toolbox import menuError
 from library import dockerCheck, menuFindora
 
 # Check the status and print a message
