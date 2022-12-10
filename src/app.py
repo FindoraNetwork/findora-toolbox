@@ -1,7 +1,7 @@
 import os
 import subprocess
 from subprocess import run
-from toolbox.library import loader_intro, print_stars, docker_check
+from toolbox.library import loader_intro, print_stars, docker_check, container_running
 from library import run_findora_menu, findora_installer, update_findora_container
 from colorama import Fore
 from config import easy_env_fra
@@ -20,10 +20,10 @@ def main() -> None:
         # Nope, let's ask to install!
         findora_installer()
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
-    status = subprocess.call(["docker", "ps", "--filter", f"name={easy_env_fra.container_name}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    
 
     # Check the status and print a message
-    if status == 0:
+    if container_running(easy_env_fra.container_name):
         # Launch menu, we're good to go!
         print(f"* The container '{easy_env_fra.container_name}' is running. Press enter to continue.")
         print_stars()
