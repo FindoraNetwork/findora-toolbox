@@ -22,9 +22,8 @@ def main(count) -> None:
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
     if container_running(easy_env_fra.container_name):
         # Launch menu, we're good to go!
-        print(f"* The container '{easy_env_fra.container_name}' is running. Press enter to continue.")
+        print(f"* The container '{easy_env_fra.container_name}' is running.")
         print_stars()
-        input()
         
         run_findora_menu()
 
