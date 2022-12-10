@@ -17,6 +17,7 @@ from toolbox.library import (
     all_sys_info,
     set_main_or_test,
     ask_yes_no,
+    menu_ubuntu_updates,
 )
 from toolbox.toolbox import menu_error, menu_ubuntu_updates, menu_reboot_server, finish_node
 from config import easy_env_fra
@@ -170,7 +171,13 @@ def update_fn_wallet() -> None:
         os.system("clear")
         print(f"* We will show the output of the upgrade now.")
         subprocess.call(["bash", "-x", f"/tmp/fn_update_{environ.get('NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
-    return
+        print_stars()
+        input("* Fn update complete, press ENTER to return to the main menu. ")
+        return
+    else:
+        print_stars()
+        input(f'* Returning to the main menu, press any key to continue.')
+        return
 
 
 def findora_installer() -> None:
@@ -220,9 +227,9 @@ def run_findora_menu() -> None:
         7: coming_soon,
         8: coming_soon,
         9: coming_soon,
-        10: coming_soon,
+        10: update_fn_wallet,
         11: update_findora_container,
-        12: update_fn_wallet,
+        12: menu_ubuntu_updates,
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
