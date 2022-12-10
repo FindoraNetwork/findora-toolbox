@@ -280,7 +280,7 @@ def run_findora_menu() -> None:
         try:
             value = int(value)
         except ValueError:
-            print(f"* {value} is not a number, try again.")
+            input(f"* {value} is not a number, try again. Press any key to continue.")
             run_findora_menu()
         if value == 0:
             finish_node()
