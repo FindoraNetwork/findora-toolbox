@@ -280,7 +280,7 @@ def run_findora_menu() -> None:
                 print(f'* {value} is not a number, try again.')
                 run_findora_menu()
         if value == 0:
-            return finish_node()
+            finish_node()
         os.system("clear")
         menu_options[value]()
         run_findora_menu()
