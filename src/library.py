@@ -209,12 +209,6 @@ def run_clean_script() -> None:
         print_stars()
         input("* Safety clean complete, press ENTER to return to the main menu. ")
         return
-    else:
-        print_stars()
-        print(f"* Returning to the main menu, press any key to continue.")
-        print_stars()
-        input()
-        return
 
 
 def findora_installer() -> None:
