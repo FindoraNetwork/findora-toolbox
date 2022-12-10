@@ -22,6 +22,7 @@ if __name__ == "__main__":
             printStars()
             print(f'* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.')
             raise SystemExit(0)
+        printStars()
     else:
         # fn is found, is the container running?
         # Set the container name
@@ -32,8 +33,9 @@ if __name__ == "__main__":
 
         # Check the status and print a message
         if status == 0:
-            print(f"The container '{container_name}' is running.")
+            print(f"* The container '{container_name}' is running.")
         else:
-            print(f"The container '{container_name}' is not running.")
+            print(f"* The container '{container_name}' is not running.")
+        printStars()
 
 
