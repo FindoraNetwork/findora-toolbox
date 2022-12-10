@@ -44,9 +44,8 @@ def menu_findora() -> None:
 def refresh_stats() -> None:
     print_stars()
     try:
-        output = subprocess.check_output(["curl", "http://localhost:26657/status"], stderr=subprocess.STDOUT, universal_newlines=True)
-        data = output.split("\n")[5:]
-        pprint(json.loads(data))
+        output = subprocess.check_output(["curl", "http://localhost:26657/status"])
+        pprint(json.loads(output))
     except:
         print("* Is your container running?")
     print_stars()
