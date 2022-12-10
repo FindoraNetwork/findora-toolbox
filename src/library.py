@@ -286,4 +286,5 @@ def run_findora_menu() -> None:
             finish_node()
         os.system("clear")
         menu_options[value]()
-        run_findora_menu()
+        break
+    run_findora_menu()
