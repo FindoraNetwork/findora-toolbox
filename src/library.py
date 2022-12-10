@@ -18,9 +18,8 @@ from toolbox.library import (
     all_sys_info,
     set_main_or_test,
     ask_yes_no,
-    menu_ubuntu_updates,
 )
-from toolbox.toolbox import menu_error, menu_ubuntu_updates, menu_reboot_server, finish_node
+from toolbox.toolbox import menu_error, menu_ubuntu_updates, menu_reboot_server, finish_node, menu_ubuntu_updates
 from config import easy_env_fra
 
 
