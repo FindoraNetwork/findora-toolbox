@@ -24,7 +24,7 @@ from toolbox.library import (
     menu_ubuntu_updates,
     menu_error,
     menu_reboot_server,
-    finish_node
+    finish_node,
 )
 from config import easy_env_fra
 
@@ -44,7 +44,11 @@ def menu_findora() -> None:
 def refresh_stats() -> None:
     print_stars()
     try:
-        output = subprocess.check_output(["curl", "http://localhost:26657/status"])
+        output = subprocess.check_output(
+            ["curl", "http://localhost:26657/status"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         data = json.loads(output)
         pprint(data)
     except:
@@ -91,6 +95,7 @@ def server_disk_check() -> None:
     print_stars()
     input("* Disk check complete, press ENTER to return to the main menu. ")
 
+
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
     # get sign pct
@@ -114,6 +119,7 @@ def menu_topper() -> None:
     )
     print_stars()
     return
+
 
 def update_findora_container() -> None:
     print_stars()
@@ -143,6 +149,7 @@ def update_findora_container() -> None:
         input()
     return
 
+
 def update_fn_wallet() -> None:
     print_stars()
     print(f"* This option upgrades the fn wallet application.")
@@ -164,6 +171,7 @@ def update_fn_wallet() -> None:
         print_stars()
         input("* Fn update complete, press ENTER to return to the main menu. ")
         return
+
 
 def run_clean_script() -> None:
     print_stars()
@@ -190,6 +198,7 @@ def run_clean_script() -> None:
         print_stars()
         input("* Safety clean complete, press ENTER to return to the main menu. ")
         return
+
 
 def findora_installer() -> None:
     # Run installer ya'll!
@@ -227,6 +236,7 @@ def findora_installer() -> None:
         input()
     else:
         raise SystemExit(0)
+
 
 def run_findora_menu() -> None:
     menu_options = {
