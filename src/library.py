@@ -107,7 +107,7 @@ def menu_topper() -> None:
     os.system("clear")
     print_stars()
     print(
-        f"{Style.RESET_ALL}* {Fore.Magenta}validator-toolbox for Findora FRA Validators by Easy Node   v{easy_env_fra.easy_version}{Style.RESET_ALL}   https://easynode.pro *"
+        f"{Style.RESET_ALL}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node   v{easy_env_fra.easy_version}{Style.RESET_ALL}   https://easynode.pro *"
     )
     print_stars()
     print(
