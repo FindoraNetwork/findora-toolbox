@@ -34,27 +34,25 @@ def menu_findora() -> None:
         if x:
             print(x)
 
-
-
 def refresh_stats() -> None:
     print(f'* Coming soon!')
     printStars()
-    input("Press ENTER to continue.")
+    input("* Press ENTER to continue.")
 
 def check_balance_menu() -> None:
     print(f'* Coming soon!')
     printStars()
-    input("Press ENTER to continue.")
+    input("* Press ENTER to continue.")
 
 def operating_system_updates() -> None:
     print(f'* Coming soon!')
     printStars()
-    input("Press ENTER to continue.")
+    input("* Press ENTER to continue.")
 
 def server_disk_check() -> None:
     ourDiskMount = '/data/findora'
     printStarsReset()
-    print("Here are all of your mount points: ")
+    print("* Here are all of your mount points: ")
     for part in disk_partitions():
         print(part)
     printStars()
@@ -63,20 +61,21 @@ def server_disk_check() -> None:
     used = str(convertedUnit(used))
     print("Disk: " + str(ourDiskMount) + "\n" + freeSpaceCheck(ourDiskMount) + " Free\n" + used + " Used\n" + total + " Total")
     printStars()
-    input("Disk check complete, press ENTER to return to the main menu. ")
+    input("* Disk check complete, press ENTER to return to the main menu. ")
 
 def coming_soon() -> None:
     print(f'* Coming soon!')
     printStars()
-    input("Press ENTER to continue.")
+    input("* Press ENTER to continue.")
 
 def run_findora_menu() -> None:
     menu_options = {
         1: refresh_stats,
         2: check_balance_menu,
+        10: coming_soon,
+        11: coming_soon,
         12: menuUbuntuUpdates,
         13: server_disk_check,
-        14: coming_soon,
         15: allSysInfo,
         999: menuRebootServer,
     }
