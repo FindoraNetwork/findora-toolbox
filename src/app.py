@@ -11,11 +11,11 @@ from config import easy_env_fra
 def main(count) -> None:
     # Wear purple
     print(Fore.MAGENTA)
-    # Load Vars
-    first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
     # Intro w/ stars below
     loader_intro()
     print_stars()
+    # Load Vars / Set Network
+    first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
     # Can we use docker on this user?
     docker_check()
     # Does `fn` exist?
