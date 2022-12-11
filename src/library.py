@@ -293,6 +293,12 @@ def run_ubuntu_updates() -> None:
     else:
         return
 
+def chown_dir(root_dir, user, group) -> None:
+    for root, dirs, files in os.walk(root_dir):
+    for file in files:
+        os.chown(os.path.join(root, file), user, group)
+    for dir in dirs:
+        os.chown(os.path.join(root, dir), user, group)
 
 def migrate_to_server() -> None:
     if os.path.exists(f"{easy_env_fra.migrate_dir}"):
@@ -305,7 +311,7 @@ def migrate_to_server() -> None:
                 f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!"
             )
             # Ask to start migration, warn about double sign again, again
-            print_stars()
+            print_stars(easy_env_fra.findora_root, easy_env_fra.active_user_name, easy_env_fra.active_user_name)
             answer = ask_yes_no(
                 f"* Are you sure your old server is shut down? Files to migrate have been detected.\n* One last time, are you sure you want to migrate and start-up now? (Y/N) "
             )
@@ -313,16 +319,20 @@ def migrate_to_server() -> None:
                 print_stars()
                 # start installing
                 print('* Copying Files...')
-                subprocess.run(["sudo", "chown", "-R", f"{easy_env_fra.active_user_name}:{easy_env_fra.active_user_name}", easy_env_fra.findora_root])
+                chown_dir()
+                if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'): os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
-                    shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/priv_validator_key.json')
+                    os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
+                    shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
                 else: 
                     if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config'):
                         shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config')
-                        shutil.copytree(f'{easy_env_fra.migrate_dir}/config', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config')
+                        shutil.copytree(f'{easy_env_fra.migrate_dir}/config', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config', dirs_exist_ok=True)
                     else:
                         print(f'* Directory {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config does not exist. How did we get here?')
+                node_mnemonic = subprocess.getoutput(f"cat {easy_env_fra.migrate_dir}/tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'")
+                subprocess.run(f'echo {node_mnemonic} > {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/node.mnemonic')
                 print(f'* File copying completed, restarting services.')
                 input()
                 update_findora_container(True)
