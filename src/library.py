@@ -340,9 +340,6 @@ def migrate_to_server() -> None:
                 print('* Copying Files...')
                 # stop service
                 subprocess.call(["docker", "container", "stop", "findorad"])
-                # ownership
-                # uid = get_uid()
-                # chown_dir(easy_env_fra.findora_root, uid, uid)
                 # move files
                 if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'): os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
@@ -359,6 +356,7 @@ def migrate_to_server() -> None:
                 with open(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w") as file:
                     file.write(node_mnemonic)
                 print(f'* File copying completed, restarting services.')
+                # Restart container
                 migration_update()
                 print_stars()
                 print(f'* Migration completed, check option #2 to verify your validator information has updated correctly!')
