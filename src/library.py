@@ -1,10 +1,11 @@
 import subprocess
 import os
-import dotenv
 import shutil
 import time
 import json
 import shutil
+import pwd
+import getpass
 from simple_term_menu import TerminalMenu
 from urllib.parse import unquote
 from os import environ
@@ -319,7 +320,7 @@ def migrate_to_server() -> None:
                 print_stars()
                 # start installing
                 print('* Copying Files...')
-                chown_dir(easy_env_fra.findora_root, easy_env_fra.active_user_name, easy_env_fra.active_user_name)
+                chown_dir((easy_env_fra.findora_root, environ.get("FRA_NETWORK")), easy_env_fra.active_user_name, easy_env_fra.active_user_name)
                 if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'): os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
