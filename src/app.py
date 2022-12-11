@@ -24,7 +24,7 @@ def main(count) -> None:
         findora_installer()
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
     # do we know network?
-    if not environ.get("NETWORK"):
+    if not environ.get("FRA_NETWORK"):
         set_main_or_test()
     if container_running(easy_env_fra.container_name):
         # Launch menu, we're good to go!
