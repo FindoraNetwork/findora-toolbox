@@ -62,7 +62,6 @@ def menu_findora() -> None:
         if x:
             print(x)
 
-
 def refresh_wallet_stats() -> None:
     print_stars()
     try:
@@ -72,7 +71,7 @@ def refresh_wallet_stats() -> None:
         print_stars()
         pprint(output)
     except:
-        print("* No response from the rpc.?")
+        print("* No response from the rpc.")
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
