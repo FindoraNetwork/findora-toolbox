@@ -315,7 +315,6 @@ def migrate_to_server() -> None:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            print_stars()
             answer = ask_yes_no(
                 f"* Are you sure you old server is shut down? You are ready to migrate.\n* Are you sure you want to migrate and start-up now? (Y/N) "
             )
