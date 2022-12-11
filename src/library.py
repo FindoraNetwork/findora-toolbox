@@ -299,7 +299,7 @@ def migrate_to_server() -> None:
         print(f"* You have a migrate folder, checking for files.")
         if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair") and os.path.exists(
             f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
-        ):
+        ) or os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
             print(
                 f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!"
             )
