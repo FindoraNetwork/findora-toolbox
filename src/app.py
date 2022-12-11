@@ -19,7 +19,7 @@ def main(count) -> None:
     # Can we use docker on this user?
     docker_check()
     # Does `fn` exist?
-    if os.path.exists('/usr/local/bin/fn') is False:
+    if not os.path.exists('/usr/local/bin/fn'):
         # Nope, let's ask to install!
         findora_installer()
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
