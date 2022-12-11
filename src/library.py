@@ -312,6 +312,7 @@ def migrate_to_server() -> None:
             if answer:
                 print_stars()
                 # start installing
+                print('* Copying Files...')
                 shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
                     shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/priv_validator_key.json')
@@ -360,7 +361,6 @@ def run_findora_menu() -> None:
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
-        888: migrate_to_server,
         999: menu_reboot_server,
     }
     subprocess.run("clear")
