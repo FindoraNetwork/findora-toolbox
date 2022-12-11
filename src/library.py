@@ -322,6 +322,9 @@ def run_findora_menu() -> None:
             run_findora_menu()
         # clear before load
         subprocess.run("clear")
+        # double star workaround for now, fix in toolbox adjust stars
+        if value == 0:
+            finish_node()
         print_stars()
         # This is so we can bypass
         if value == 10:
