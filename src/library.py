@@ -142,6 +142,7 @@ def menu_topper() -> None:
     # get balances
     # get other validator data
     subprocess.run("clear")
+    print(Fore.MAGENTA)
     print_stars()
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
