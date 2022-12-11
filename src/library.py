@@ -315,17 +315,15 @@ def migrate_to_server() -> None:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
-            subprocess.run("clear")
             print_stars()
-            print(
-                f"* We will show the output of the migration. Press enter to begin or ctrl+c to cancel migration."
+            answer = ask_yes_no(
+                f"* Are you sure you old server is shut down? You are ready to migrate.\n* Are you sure you want to migrate and start-up now? (Y/N) "
             )
-            print_stars()
-            input()
-            print_stars()
-            subprocess.call(
-                ["bash", "-x", f"/tmp/migrate_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
-            )
+            if answer:
+                print_stars()
+                subprocess.call(
+                    ["bash", "-x", f"/tmp/migrate_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
+                )
 
         else:
             print(
