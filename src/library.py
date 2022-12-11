@@ -88,6 +88,8 @@ def refresh_fn_stats() -> None:
     print_stars()
     try:
         output = subprocess.check_output(["fn", "show"])
+        output = output.decode().replace("b'", "")
+        output = json.loads(output)
         print(output)
     except:
         print(
