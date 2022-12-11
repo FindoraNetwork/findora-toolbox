@@ -301,6 +301,12 @@ def chown_dir(root_dir, user, group) -> None:
         for dir in dirs:
             os.chown(os.path.join(root, dir), user, group)
 
+def get_uid() -> None:
+    user_name = getpass.getuser()
+    user_info = pwd.getpwnam(user_name)
+    uid = user_info.pw_uid
+    return uid
+
 def migrate_to_server() -> None:
     if os.path.exists(f"{easy_env_fra.migrate_dir}"):
         # check for tmp.gen.keypair and priv_validator_key.json in ~/migrate
@@ -320,7 +326,8 @@ def migrate_to_server() -> None:
                 print_stars()
                 # start installing
                 print('* Copying Files...')
-                chown_dir(easy_env_fra.findora_root, easy_env_fra.active_user_name, easy_env_fra.active_user_name)
+                uid = get_uid()
+                chown_dir(easy_env_fra.findora_root, uid, uid)
                 if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'): os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
