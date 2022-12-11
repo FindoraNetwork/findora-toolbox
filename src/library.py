@@ -5,7 +5,7 @@ import shutil
 import time
 import json
 from simple_term_menu import TerminalMenu
-from urllib.parse import unquote_plus
+from urllib.parse import unquote
 from os import environ
 from colorama import Fore, Back, Style
 from subprocess import PIPE, run
@@ -65,7 +65,7 @@ def menu_findora() -> None:
 def refresh_wallet_stats() -> None:
     print_stars()
     try:
-        output = unquote_plus(subprocess.check_output(["curl", "http://localhost:26657/status"]))
+        output = unquote(subprocess.check_output(["curl", "http://localhost:26657/status"]))
         subprocess.run("clear")
         output = json.loads(output)
         print_stars()
@@ -81,7 +81,7 @@ def refresh_fn_stats() -> None:
     subprocess.run("clear")
     print_stars()
     try:
-        output = unquote_plus(subprocess.check_output(["fn", "show"]))
+        output = unquote(subprocess.check_output(["fn", "show"]))
         print(output)
     except:
         print("* Error, no response from local API, try your curl stats again. If the stats give the same reply try option #10 to get back online and as a last resort option #12!")
