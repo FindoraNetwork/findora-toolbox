@@ -66,7 +66,7 @@ def refresh_wallet_stats() -> None:
     try:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
         output = output.decode()[2:-1]
-        data = json.dumps(output)
+        data = json.dumps(output, ensure_ascii=False, indent=4)
         # status_code = int(output[1])
         print_stars()
         pprint(data)
