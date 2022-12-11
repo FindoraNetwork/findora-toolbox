@@ -68,15 +68,17 @@ def menu_findora() -> None:
 
 
 def refresh_wallet_stats() -> None:
+    subprocess.run("clear")
+    print_stars()
+    print(Fore.GREEN)
     try:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
-        subprocess.run("clear")
         output = output.decode().replace("b'", "")
         output = json.loads(output)
-        print_stars()
         pprint(output)
     except:
         print("* No response from the rpc.")
+    print(Fore.MAGENTA)
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
