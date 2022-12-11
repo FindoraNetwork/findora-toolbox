@@ -311,7 +311,7 @@ def migrate_to_server() -> None:
                 f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!"
             )
             # Ask to start migration, warn about double sign again, again
-            print_stars(easy_env_fra.findora_root, easy_env_fra.active_user_name, easy_env_fra.active_user_name)
+            print_stars()
             answer = ask_yes_no(
                 f"* Are you sure your old server is shut down? Files to migrate have been detected.\n* One last time, are you sure you want to migrate and start-up now? (Y/N) "
             )
