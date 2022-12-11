@@ -339,7 +339,7 @@ def run_findora_menu() -> None:
         subprocess.run("clear")
         print_stars()
         # This is so we can bypass
-        if value == 10:
+        if value == 8:
             update_findora_container(False)
         else:
             menu_options[value]()
