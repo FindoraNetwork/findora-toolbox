@@ -16,6 +16,7 @@ class easy_env_fra:
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.easynode.env"
     active_user_name = os.path.split(user_home_dir)[-1]
+    findora_root = f'/data/findora'
     findora_root_mainnet = f'/data/findora/mainnet'
     findora_root_testnet = f'/data/findora/testnet'
     toolbox_location = os.path.join(user_home_dir, "validatortoolbox_fra")

@@ -4,6 +4,7 @@ import dotenv
 import shutil
 import time
 import json
+import shutil
 from simple_term_menu import TerminalMenu
 from urllib.parse import unquote
 from os import environ
@@ -305,24 +306,26 @@ def migrate_to_server() -> None:
             )
             # Ask to start migration, warn about double sign again, again
             print_stars()
-            subprocess.call(
-                [
-                    "wget",
-                    f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_migrate_{environ.get('FRA_NETWORK')}.sh",
-                    "-O",
-                    f"/tmp/migrate_{environ.get('FRA_NETWORK')}.sh",
-                ],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
             answer = ask_yes_no(
-                f"* Are you sure you old server is shut down? You are ready to migrate.\n* Are you sure you want to migrate and start-up now? (Y/N) "
+                f"* Are you sure your old server is shut down? Files to migrate have been detected.\n* One last time, are you sure you want to migrate and start-up now? (Y/N) "
             )
             if answer:
                 print_stars()
-                subprocess.call(
-                    ["bash", "-x", f"/tmp/migrate_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
-                )
+                # start installing
+                shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
+                if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
+                    shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/priv_validator_key.json')
+                else: 
+                    if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config'):
+                        shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config')
+                        shutil.copytree(f'{easy_env_fra.migrate_dir}/config', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config')
+                    else:
+                        print(f'* Directory {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config does not exist. How did we get here?')
+                print(f'* File copying completed, restarting services.')
+                update_findora_container()
+                print_stars()
+                print(f'* Migration completed, check option #2 to verify your validator information has updated correctly!')
+
 
         else:
             print(
