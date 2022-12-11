@@ -4,6 +4,7 @@ import dotenv
 import shutil
 import time
 import json
+import requests
 from simple_term_menu import TerminalMenu
 from urllib.parse import unquote
 from os import environ
@@ -63,14 +64,12 @@ def menu_findora() -> None:
             print(x)
 
 def refresh_wallet_stats() -> None:
-    try:
-        output = unquote(subprocess.check_output(["curl", "http://localhost:26657/status"]))
-        subprocess.run("clear")
-        output = json.loads(output)
-        print_stars()
-        pprint(output)
-    except:
-        print("* No response from the rpc.")
+    response = requests.get("curl http://localhost:26657/status")
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+    else:
+        print("Request failed with status code {}".format(response.status_code))
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
