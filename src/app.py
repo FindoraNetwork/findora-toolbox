@@ -12,7 +12,7 @@ def main(count) -> None:
     # Wear purple
     print(Fore.MAGENTA)
     # Load Vars
-    load_var_file()
+    load_var_file(easy_env_fra.dotenv_file)
     # Intro w/ stars below
     loader_intro()
     print_stars()
