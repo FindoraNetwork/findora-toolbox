@@ -1,7 +1,10 @@
 # EasyNode.PRO Validator Toolbox for Findora
 
 ## Findora Validator Toolbox
-More coming soon. Coding & Testing has begun.
+Here's our validator toolbox for the Findora network.
+
+## Requirements
+Currently you must run Ubuntu 22.04LTS which comes with a proper version of python to support the tools necessary.
 
 ## Install Findora
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
