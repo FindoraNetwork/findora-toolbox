@@ -329,7 +329,7 @@ def migrate_to_server() -> None:
 
         else:
             print(
-                f"* We're sorry, your folder is there but you are missing a file, try again after fixing the contents."
+                f"* We're sorry, your folder is there but you are missing file(s), please try again after fixing the contents.\n* Add the files from your old server into:\n* {easy_env_fra.migrate_dir}/tmp.gen.keypair\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json\n*"
             )
     else:
         # path doesn't exist, explain migration process.
