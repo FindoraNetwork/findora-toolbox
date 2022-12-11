@@ -279,7 +279,23 @@ def run_ubuntu_updates() -> None:
         return
 
 def migrate_to_server() -> None:
-    print(f'* Coming soon!')
+    if os.path.exists(f'{easy_env_fra.migrate_dir}'):
+        # check for tmp.gen.keypair and priv_validator_key.json in ~/migrate
+        print(f"* You have a migrate folder, checking for files.")
+        if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair") and os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"): 
+            print(f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!")
+            # Ask to start migration, warn about double sign again, again
+            print_stars()
+            print(f"* This option is still in development, come back later!\n* You can run our script to migrate manually at this point.\n* If you run it manually verify your old server is shut down first to avoid double signing!\n* Run the following code to start migration:\n* wget https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_migrate_mainnet.sh -O easy_migrate.sh && bash -s easy_migrate.sh")
+        else:
+            print(f"* We're sorry, your folder is there but you are missing a file, try again after fixing the contents.")
+    else:
+        # path doesn't exist, explain migration process.
+        print(f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder\n3. Add your config folder containing your priv_validator_key.json file into migrate\n4. If this server is synced up, you can shut off your old server and run migration again at that point to move servers without double signing.\n*\n* The goal is to avoid double signing and a 5% fee!!!\n*")
+    print_stars()
+    print("* Press enter to return to the main menu.")
+    print_stars()
+    input()
     return
 
 def run_findora_menu() -> None:

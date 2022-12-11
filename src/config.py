@@ -22,3 +22,4 @@ class easy_env_fra:
     our_external_ip = getUrl()
     findora_menu = os.path.join(toolbox_location, "src", "messages", "framenu.txt")
     container_name = "findorad"
+    migrate_dir = os.path.join(user_home_dir, "migrate")
