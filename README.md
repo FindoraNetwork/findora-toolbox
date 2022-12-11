@@ -4,7 +4,7 @@
 Here's our validator toolbox for the Findora network.
 
 ## Requirements
-Currently you must run Ubuntu 22.04LTS which comes with a proper version of python to support the tools necessary.
+TBD, works well on all tested nodes atm, Ubuntu 20.04LTS & 22.04LTS
 
 ## Install Findora
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
