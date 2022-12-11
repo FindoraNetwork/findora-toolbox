@@ -87,7 +87,7 @@ def refresh_fn_stats() -> None:
     subprocess.run("clear")
     print_stars()
     try:
-        output = unquote(subprocess.check_output(["fn", "show"]))
+        output = subprocess.check_output(["fn", "show"])
         print(output)
     except:
         print(
