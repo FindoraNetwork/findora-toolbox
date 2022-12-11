@@ -65,11 +65,11 @@ def menu_findora() -> None:
 def refresh_wallet_stats() -> None:
     try:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
-        # output = output.decode().split("\n")
-        # data = json.dumps(output)
+        output = output.decode()[2:-1]
+        data = json.dumps(output)
         # status_code = int(output[1])
         print_stars()
-        pprint(output)
+        pprint(data)
     except:
         print("* No response from the rpc.")
     print_stars()
