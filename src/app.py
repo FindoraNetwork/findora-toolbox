@@ -54,7 +54,7 @@ def main(count) -> None:
             except ValueError:
                 menu_error()
                 main(1)
-            os.system("clear")
+            subprocess.run("clear")
             menu_options[option]()
             main(1)
     print_stars()

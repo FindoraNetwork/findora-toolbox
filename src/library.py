@@ -31,7 +31,7 @@ from config import easy_env_fra
 
 def set_main_or_test() -> None:
     if not environ.get("FRA_NETWORK"):
-        os.system("clear")
+        subprocess.run("clear")
         print_stars()
         print("* Setup config not found, Does this run on mainnet or testnet?                              *")
         print_stars()
@@ -48,7 +48,7 @@ def set_main_or_test() -> None:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "mainnet")
         if results == 1:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
-        os.system("clear")
+        subprocess.run("clear")
     return
 
 def menu_findora() -> None:
@@ -66,7 +66,7 @@ def refresh_wallet_stats() -> None:
     print_stars()
     try:
         output = unquote(subprocess.check_output(["curl", "http://localhost:26657/status"]))
-        os.system("clear")
+        subprocess.run("clear")
         output = json.loads(output)
         print_stars()
         pprint(output)
@@ -78,7 +78,7 @@ def refresh_wallet_stats() -> None:
     input()
 
 def refresh_fn_stats() -> None:
-    os.system("clear")
+    subprocess.run("clear")
     print_stars()
     try:
         output = unquote(subprocess.check_output(["fn", "show"]))
@@ -133,7 +133,7 @@ def menu_topper() -> None:
     # get sign pct
     # get balances
     # get other validator data
-    os.system("clear")
+    subprocess.run("clear")
     print_stars()
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
@@ -170,7 +170,7 @@ def update_findora_container(skip) -> None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        os.system("clear")
+        subprocess.run("clear")
         print(
             f"* We will show the output of the upgrade & restart now, this may miss a block(s) depending on your timing."
         )
@@ -198,7 +198,7 @@ def update_fn_wallet() -> None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        os.system("clear")
+        subprocess.run("clear")
         print(f"* We will show the output of the upgrade now.")
         subprocess.call(["bash", "-x", f"/tmp/fn_update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
@@ -222,7 +222,7 @@ def run_clean_script() -> None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        os.system("clear")
+        subprocess.run("clear")
         print(f"* We will show the output of the reset now.")
         subprocess.call(
             ["bash", "-x", f"/tmp/safety_clean_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
@@ -250,7 +250,7 @@ def findora_installer() -> None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        os.system("clear")
+        subprocess.run("clear")
         print_stars()
         print(
             f"* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
@@ -272,7 +272,7 @@ def run_ubuntu_updates() -> None:
     print_stars()
     question = ask_yes_no(f'* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ')
     if question:
-        os.system("clear")
+        subprocess.run("clear")
         print_stars()
         print(f'* Stopping docker container for safety')
         subprocess.call(["docker", "container", "stop", "findorad"])
@@ -303,7 +303,7 @@ def run_findora_menu() -> None:
         15: all_sys_info,
         999: menu_reboot_server,
     }
-    os.system("clear")
+    subprocess.run("clear")
     menu_topper()
     menu_findora()
     while True:
@@ -311,7 +311,7 @@ def run_findora_menu() -> None:
         try:
             value = int(value)
         except ValueError:
-            os.system("clear")
+            subprocess.run("clear")
             print_stars()
             print(f"* {value} is not a number, try again. Press enter to continue.")
             print_stars()
@@ -319,7 +319,7 @@ def run_findora_menu() -> None:
             run_findora_menu()
         if value == 0:
             finish_node()
-        os.system("clear")
+        subprocess.run("clear")
         if value == 10:
             update_findora_container(False)
         else:
