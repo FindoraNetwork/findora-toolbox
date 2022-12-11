@@ -329,8 +329,8 @@ def migrate_to_server() -> None:
                 # stop service
                 subprocess.call(["docker", "container", "stop", "findorad"])
                 # ownership
-                uid = get_uid()
-                chown_dir(easy_env_fra.findora_root, uid, uid)
+                # uid = get_uid()
+                # chown_dir(easy_env_fra.findora_root, uid, uid)
                 # move files
                 if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'): os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
