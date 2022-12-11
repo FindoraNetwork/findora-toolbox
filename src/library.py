@@ -344,7 +344,9 @@ def migrate_to_server() -> None:
                     else:
                         print(f'* Directory {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config does not exist. How did we get here?')
                 node_mnemonic = subprocess.getoutput(f"cat {easy_env_fra.migrate_dir}/tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'")
-                subprocess.run(f"echo '{node_mnemonic}' > {easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
+                os.remove(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
+                with open(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic") as file:
+                    file.write(node_mnemonic)
                 print(f'* File copying completed, restarting services.')
                 input()
                 update_findora_container(True)
