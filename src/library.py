@@ -69,7 +69,7 @@ def refresh_wallet_stats() -> None:
         # data = json.loads(output[0])
         # status_code = int(output[1])
         print_stars()
-        print(output)
+        pprint(output)
     except:
         print("* No response from the rpc.")
     print_stars()
