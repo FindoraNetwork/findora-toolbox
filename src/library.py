@@ -414,5 +414,4 @@ def run_findora_menu() -> None:
             update_findora_container(False)
         else:
             menu_options[value]()
-        break
-    run_findora_menu()
+        run_findora_menu()
