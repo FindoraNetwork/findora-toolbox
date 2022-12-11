@@ -349,7 +349,6 @@ def migrate_to_server() -> None:
                 with open(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w") as file:
                     file.write(node_mnemonic)
                 print(f'* File copying completed, restarting services.')
-                input()
                 update_findora_container(True)
                 print_stars()
                 print(f'* Migration completed, check option #2 to verify your validator information has updated correctly!')
