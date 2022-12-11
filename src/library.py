@@ -190,6 +190,23 @@ def update_findora_container(skip) -> None:
         input()
     return
 
+def migration_update() -> None:
+    subprocess.call(
+        [
+            "wget",
+            "-O",
+            f"/tmp/update_{environ.get('FRA_NETWORK')}.sh",
+            f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_update_{environ.get('FRA_NETWORK')}.sh",
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
+    print_stars()
+    print(
+        f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
+    )
+    print_stars()
 
 def update_fn_wallet() -> None:
     print(f"* This option upgrades the fn wallet application.")
@@ -349,10 +366,10 @@ def migrate_to_server() -> None:
                 with open(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w") as file:
                     file.write(node_mnemonic)
                 print(f'* File copying completed, restarting services.')
-                update_findora_container(True)
+                migration_update()
                 print_stars()
-                print(f'* Migration completed, check option #2 to verify your validator information has updated correctly!')
-
+                print(f'* Migration completed, check option #2 to verify your validator information has updated correctly!\n* Press enter to continue.')
+                print_stars()
 
         else:
             print(
