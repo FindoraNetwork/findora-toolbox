@@ -33,7 +33,7 @@ cd ~/validatortoolbox_fra/ && git pull && pip3 install -r requirements.txt
 ## Termius/Moba Snippet
 Want to check and setup upgrades every time you launch? Run the following block:
 ```text
-cd ~/validatortoolbox_fra/ && git pull && pip3 install -r requirements.txt && cd ~/ && python3 ~/validatortoolbox/src/app.py
+cd ~/validatortoolbox_fra/ && git pull && pip3 install -r requirements.txt && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
 ```
 
 ## Findora Menu
