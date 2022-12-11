@@ -66,13 +66,10 @@ def refresh_wallet_stats() -> None:
     try:
         output = subprocess.check_output(["curl", "http://localhost:26657/status"])
         output = output.decode().split("\n")
-        data = json.loads(output[0])
-        status_code = int(output[1])
+        # data = json.loads(output[0])
+        # status_code = int(output[1])
         print_stars()
-        if status_code == 200:
-            print(data)
-        else:
-            print(f"* Request failed.")
+        print(output)
     except:
         print("* No response from the rpc.")
     print_stars()
