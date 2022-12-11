@@ -4,6 +4,7 @@ import dotenv
 import shutil
 import time
 import json
+from simple_term_menu import TerminalMenu
 from urllib.parse import unquote
 from os import environ
 from colorama import Fore, Back, Style
@@ -18,16 +19,37 @@ from toolbox.library import (
     converted_unit,
     free_space_check,
     all_sys_info,
-    set_main_or_test,
     ask_yes_no,
     coming_soon,
     run_ubuntu_updater,
     menu_error,
     menu_reboot_server,
-    finish_node
+    finish_node,
+    set_var
 )
 from config import easy_env_fra
 
+def set_main_or_test() -> None:
+    if not environ.get("NETWORK"):
+        os.system("clear")
+        print_stars()
+        print("* Setup config not found, which blockchain does this node run on?                           *")
+        print_stars()
+        print("* [0] - Mainnet                                                                             *")
+        print("* [1] - Testnet                                                                             *")
+        print_stars()
+        menu_options = [
+            "[0] Mainnet",
+            "[1] Testnet",
+        ]
+        terminal_menu = TerminalMenu(menu_options, title="Mainnet or Testnet")
+        results = terminal_menu.show()
+        if results == 0:
+            set_var(easy_env_fra.dotenv_file, "NETWORK", "mainnet")
+        if results == 1:
+            set_var(easy_env_fra.dotenv_file, "NETWORK", "testnet")
+        os.system("clear")
+    return
 
 def menu_findora() -> None:
     # menuTopperFull()
@@ -50,7 +72,7 @@ def refresh_wallet_stats() -> None:
         print_stars()
         pprint(output)
     except:
-        print("* Is your container running?")
+        print("* No response from the rpc.?")
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
