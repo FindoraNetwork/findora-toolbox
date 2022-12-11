@@ -63,7 +63,6 @@ def menu_findora() -> None:
             print(x)
 
 def refresh_wallet_stats() -> None:
-    print_stars()
     try:
         output = unquote(subprocess.check_output(["curl", "http://localhost:26657/status"]))
         subprocess.run("clear")
@@ -92,14 +91,12 @@ def refresh_fn_stats() -> None:
 
 
 def check_balance_menu() -> None:
-    print_stars()
     print(f"* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
 
 
 def operating_system_updates() -> None:
-    print_stars()
     print(f"* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
@@ -153,7 +150,6 @@ def menu_topper() -> None:
     return
 
 def update_findora_container(skip) -> None:
-    print_stars()
     print(f"* Running the update and restart may cause missed blocks, beware before proceeding!")
     if skip:
         answer = True
@@ -184,7 +180,6 @@ def update_findora_container(skip) -> None:
     return
 
 def update_fn_wallet() -> None:
-    print_stars()
     print(f"* This option upgrades the fn wallet application.")
     answer = ask_yes_no(f"* Do you want to upgrade fn now? (Y/N) ")
     if answer:
@@ -206,7 +201,6 @@ def update_fn_wallet() -> None:
         return
 
 def run_clean_script() -> None:
-    print_stars()
     print(
         f"* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
     )
@@ -269,7 +263,6 @@ def findora_installer() -> None:
         raise SystemExit(0)
 
 def run_ubuntu_updates() -> None:
-    print_stars()
     question = ask_yes_no(f'* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ')
     if question:
         subprocess.run("clear")
@@ -284,8 +277,13 @@ def run_ubuntu_updates() -> None:
     else:
         return
 
+def migrate_to_server() -> None:
+    print(f'* Coming soon!')
+    return
+
 def run_findora_menu() -> None:
     menu_options = {
+        0: finish_node,
         1: refresh_wallet_stats,
         2: refresh_fn_stats,
         3: check_balance_menu,
@@ -301,13 +299,17 @@ def run_findora_menu() -> None:
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
+        888: migrate_to_server,
         999: menu_reboot_server,
     }
     subprocess.run("clear")
     menu_topper()
     menu_findora()
+    # Keep this loop going so when an item ends the menu reloads
     while True:
+        # Pick an option, any option
         value = input("* Enter your option: ")
+        # Try/Catch - If it's not a number, goodbye, try again
         try:
             value = int(value)
         except ValueError:
@@ -317,9 +319,10 @@ def run_findora_menu() -> None:
             print_stars()
             input()
             run_findora_menu()
-        if value == 0:
-            finish_node()
+        # clear before load
         subprocess.run("clear")
+        print_stars()
+        # This is so we can bypass
         if value == 10:
             update_findora_container(False)
         else:
