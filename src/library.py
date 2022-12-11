@@ -33,7 +33,7 @@ def set_main_or_test() -> None:
     if not environ.get("NETWORK"):
         os.system("clear")
         print_stars()
-        print("* Setup config not found, which blockchain does this node run on?                           *")
+        print("* Setup config not found, Does this run on mainnet or testnet?                              *")
         print_stars()
         print("* [0] - Mainnet                                                                             *")
         print("* [1] - Testnet                                                                             *")
