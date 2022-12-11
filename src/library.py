@@ -312,9 +312,9 @@ def migrate_to_server() -> None:
             if answer:
                 print_stars()
                 # start installing
-                shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
+                shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
-                    shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/priv_validator_key.json')
+                    shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/priv_validator_key.json')
                 else: 
                     if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config'):
                         shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config')
