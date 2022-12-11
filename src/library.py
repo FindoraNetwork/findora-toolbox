@@ -346,15 +346,13 @@ def migrate_to_server() -> None:
                 # move files
                 if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'): os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
                 shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
+                os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
                 if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
-                    os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
                     shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
-                else: 
-                    if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config'):
-                        shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config')
-                        shutil.copytree(f'{easy_env_fra.migrate_dir}/config', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config', dirs_exist_ok=True)
-                    else:
-                        print(f'* Directory {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config does not exist. How did we get here?')
+                elif os.path.exists(f'{easy_env_fra.migrate_dir}/config/priv_validator_key.json'):
+                    shutil.copy(f'{easy_env_fra.migrate_dir}/config/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
+                else:
+                    print("* Welp, somehow we didn't find a priv_validator_key.json to migrate.\n* You'll have to get your key into the config folder and run a safety clean.")
                 node_mnemonic = subprocess.getoutput(f"cat {easy_env_fra.migrate_dir}/tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'")
                 os.remove(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
                 subprocess.call(["touch", f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic"])
