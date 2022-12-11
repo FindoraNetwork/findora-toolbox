@@ -25,9 +25,10 @@ from toolbox.library import (
     menu_error,
     menu_reboot_server,
     finish_node,
-    set_var
+    set_var,
 )
 from config import easy_env_fra
+
 
 def set_main_or_test() -> None:
     if not environ.get("FRA_NETWORK"):
@@ -51,6 +52,7 @@ def set_main_or_test() -> None:
         subprocess.run("clear")
     return
 
+
 def menu_findora() -> None:
     # menuTopperFull()
     for x in return_txt(easy_env_fra.findora_menu):
@@ -61,6 +63,7 @@ def menu_findora() -> None:
             pass
         if x:
             print(x)
+
 
 def refresh_wallet_stats() -> None:
     try:
@@ -77,6 +80,7 @@ def refresh_wallet_stats() -> None:
     print_stars()
     input()
 
+
 def refresh_fn_stats() -> None:
     subprocess.run("clear")
     print_stars()
@@ -84,7 +88,9 @@ def refresh_fn_stats() -> None:
         output = unquote(subprocess.check_output(["fn", "show"]))
         print(output)
     except:
-        print("* Error, no response from local API, try your curl stats again. If the stats give the same reply try option #10 to get back online and as a last resort option #12!")
+        print(
+            "* Error, no response from local API, try your curl stats again. If the stats give the same reply try option #10 to get back online and as a last resort option #12!"
+        )
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
@@ -126,6 +132,7 @@ def server_disk_check() -> None:
     print_stars()
     input("* Disk check complete, press ENTER to return to the main menu. ")
 
+
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
     # get sign pct
@@ -149,6 +156,7 @@ def menu_topper() -> None:
     )
     print_stars()
     return
+
 
 def update_findora_container(skip) -> None:
     print(f"* Running the update and restart may cause missed blocks, beware before proceeding!")
@@ -180,6 +188,7 @@ def update_findora_container(skip) -> None:
         input()
     return
 
+
 def update_fn_wallet() -> None:
     print(f"* This option upgrades the fn wallet application.")
     answer = ask_yes_no(f"* Do you want to upgrade fn now? (Y/N) ")
@@ -196,10 +205,13 @@ def update_fn_wallet() -> None:
         )
         subprocess.run("clear")
         print(f"* We will show the output of the upgrade now.")
-        subprocess.call(["bash", "-x", f"/tmp/fn_update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
+        subprocess.call(
+            ["bash", "-x", f"/tmp/fn_update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
+        )
         print_stars()
         input("* Fn update complete, press ENTER to return to the main menu. ")
         return
+
 
 def run_clean_script() -> None:
     print(
@@ -225,6 +237,7 @@ def run_clean_script() -> None:
         print_stars()
         input("* Safety clean complete, press ENTER to return to the main menu. ")
         return
+
 
 def findora_installer() -> None:
     # Run installer ya'll!
@@ -263,40 +276,72 @@ def findora_installer() -> None:
     else:
         raise SystemExit(0)
 
+
 def run_ubuntu_updates() -> None:
-    question = ask_yes_no(f'* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ')
+    question = ask_yes_no(f"* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
     if question:
         subprocess.run("clear")
         print_stars()
-        print(f'* Stopping docker container for safety')
+        print(f"* Stopping docker container for safety")
         subprocess.call(["docker", "container", "stop", "findorad"])
         run_ubuntu_updater()
         print_stars()
-        print(f'* Restarting findorad container')
+        print(f"* Restarting findorad container")
         subprocess.call(["docker", "container", "start", "findorad"])
         refresh_fn_stats()
     else:
         return
 
+
 def migrate_to_server() -> None:
-    if os.path.exists(f'{easy_env_fra.migrate_dir}'):
+    if os.path.exists(f"{easy_env_fra.migrate_dir}"):
         # check for tmp.gen.keypair and priv_validator_key.json in ~/migrate
         print(f"* You have a migrate folder, checking for files.")
-        if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair") and os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"): 
-            print(f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!")
+        if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair") and os.path.exists(
+            f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
+        ):
+            print(
+                f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!"
+            )
             # Ask to start migration, warn about double sign again, again
             print_stars()
-            print(f"* This option is still in development, come back later!\n* You can run our script to migrate manually at this point.\n* If you run it manually verify your old server is shut down first to avoid double signing!\n* Run the following code to start migration:\n* wget https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_migrate_mainnet.sh -O easy_migrate.sh && bash -s easy_migrate.sh")
+            subprocess.call(
+                [
+                    "wget",
+                    f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_migrate_{environ.get('FRA_NETWORK')}.sh",
+                    "-O",
+                    f"/tmp/migrate_{environ.get('FRA_NETWORK')}.sh",
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            subprocess.run("clear")
+            print_stars()
+            print(
+                f"* We will show the output of the migration. Press enter to begin or ctrl+c to cancel migration."
+            )
+            print_stars()
+            input()
+            print_stars()
+            subprocess.call(
+                ["bash", "-x", f"/tmp/migrate_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
+            )
+
         else:
-            print(f"* We're sorry, your folder is there but you are missing a file, try again after fixing the contents.")
+            print(
+                f"* We're sorry, your folder is there but you are missing a file, try again after fixing the contents."
+            )
     else:
         # path doesn't exist, explain migration process.
-        print(f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder\n* 3. Add your config folder containing your priv_validator_key.json file into migrate\n* 4. If this server is synced up, you can shut off your old server and run migration again at that point to move servers without double signing.\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!")
+        print(
+            f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder\n* 3. Add your config folder containing your priv_validator_key.json file into migrate\n* 4. If this server is synced up, you can shut off your old server and run migration again at that point to move servers without double signing.\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
+        )
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
     input()
     return
+
 
 def run_findora_menu() -> None:
     menu_options = {
