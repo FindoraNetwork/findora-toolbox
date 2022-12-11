@@ -291,7 +291,7 @@ def migrate_to_server() -> None:
             print(f"* We're sorry, your folder is there but you are missing a file, try again after fixing the contents.")
     else:
         # path doesn't exist, explain migration process.
-        print(f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder\n* 3. Add your config folder containing your priv_validator_key.json file into migrate\n* 4. If this server is synced up, you can shut off your old server and run migration again at that point to move servers without double signing.\n*\n* The goal is to avoid double signing and a 5% fee!!!\n*")
+        print(f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder\n* 3. Add your config folder containing your priv_validator_key.json file into migrate\n* 4. If this server is synced up, you can shut off your old server and run migration again at that point to move servers without double signing.\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!")
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
