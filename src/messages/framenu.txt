@@ -5,7 +5,7 @@ print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats
 print("*   3 -  Show Balance              - Check Any Wallet Balance")
 print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
 print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
-print("*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora")
+findora_container_update(update)
 print("*   9 -  Run Safety Clean          - Stop your container, reset and download database fresh")
 print("*  10 -  Update Operating System   - Update Ubuntu Operating System Files")
 print(f"*                                   {Fore.MAGENTA}{Back.GREEN}Informational Section:{Style.RESET_ALL}{Fore.MAGENTA}")

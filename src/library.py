@@ -57,7 +57,7 @@ def set_main_or_test() -> None:
     return
 
 def menu_findora() -> None:
-    menu_topper()
+    update = menu_topper()
     for x in return_txt(easy_env_fra.findora_menu):
         x = x.strip()
         try:
@@ -137,6 +137,14 @@ def get_container_version(url) -> None:
     response = requests.get(url)
     return response.text
 
+def findora_container_update(update) -> None:
+    if update:
+        print(f"{Fore.CYAN}*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora{Fore.MAGENTA}")
+        return
+    else:
+        print("*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora")
+        return
+
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
     # get sign pct
@@ -158,13 +166,17 @@ def menu_topper() -> None:
         f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.our_disk_mount): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container Version: {our_version}")
-    if online_version != our_version: print(f"* Container Update Available: {online_version}")
+    if online_version != our_version: 
+        print(f"* Container Update Available: {online_version}")
+        update = True
+    else:
+        update = False
     print_stars()
     print(
         f"* CPU Load Averages: {round(Load1, 2)} over 1 min, {round(Load5, 2)} over 5 min, {round(Load15, 2)} over 15 min"
     )
     print_stars()
-    return
+    return update
 
 def update_findora_container(skip) -> None:
     print(f"* Running the update and restart may cause missed blocks, beware before proceeding!")
