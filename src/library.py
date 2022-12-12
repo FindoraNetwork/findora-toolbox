@@ -7,6 +7,7 @@ import shutil
 import pwd
 import getpass
 import hashlib
+import requests
 from simple_term_menu import TerminalMenu
 from urllib.parse import unquote
 from os import environ
@@ -30,7 +31,6 @@ from toolbox.library import (
     finish_node,
     set_var,
     compare_two_files,
-    container_version,
 )
 from config import easy_env_fra
 
@@ -133,11 +133,18 @@ def server_disk_check() -> None:
     print_stars()
     input("* Disk check complete, press ENTER to return to the main menu. ")
 
+def get_container_version(url) -> None:
+    response = requests.get(url)
+    version = response.json()
+    return version
+
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
     # get sign pct
     # get balances
     # get other validator data
+    our_version = get_container_version('http://localhost:8668/version')
+    online_version = get_container_version('https://prod-mainnet.prod.findora.org:8668/version')
     subprocess.run("clear")
     print(Fore.MAGENTA)
     print_stars()
@@ -151,7 +158,8 @@ def menu_topper() -> None:
     print(
         f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.our_disk_mount): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Current Container Version: {container_version(easy_env_fra.container_name)}")
+    print(f"* Current Container Version: {our_version}")
+    if online_version != our_version: print(f"* Container Update Available: {online_version}")
     print_stars()
     print(
         f"* CPU Load Averages: {round(Load1, 2)} over 1 min, {round(Load5, 2)} over 5 min, {round(Load15, 2)} over 15 min"
