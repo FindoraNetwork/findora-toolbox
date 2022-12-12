@@ -31,7 +31,6 @@ from toolbox.library import (
 )
 from config import easy_env_fra
 
-
 def set_main_or_test() -> None:
     if not environ.get("FRA_NETWORK"):
         subprocess.run("clear")
@@ -54,9 +53,8 @@ def set_main_or_test() -> None:
         subprocess.run("clear")
     return
 
-
 def menu_findora() -> None:
-    # menuTopperFull()
+    menu_topper()
     for x in return_txt(easy_env_fra.findora_menu):
         x = x.strip()
         try:
@@ -65,7 +63,6 @@ def menu_findora() -> None:
             pass
         if x:
             print(x)
-
 
 def refresh_wallet_stats() -> None:
     subprocess.run("clear")
@@ -84,7 +81,6 @@ def refresh_wallet_stats() -> None:
     print_stars()
     input()
 
-
 def refresh_fn_stats() -> None:
     subprocess.run("clear")
     print_stars()
@@ -101,18 +97,15 @@ def refresh_fn_stats() -> None:
     print_stars()
     input()
 
-
 def check_balance_menu() -> None:
     print(f"* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
 
-
 def operating_system_updates() -> None:
     print(f"* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
-
 
 def server_disk_check() -> None:
     print_stars_reset()
@@ -136,7 +129,6 @@ def server_disk_check() -> None:
     )
     print_stars()
     input("* Disk check complete, press ENTER to return to the main menu. ")
-
 
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
@@ -162,7 +154,6 @@ def menu_topper() -> None:
     )
     print_stars()
     return
-
 
 def update_findora_container(skip) -> None:
     print(f"* Running the update and restart may cause missed blocks, beware before proceeding!")
@@ -230,7 +221,6 @@ def update_fn_wallet() -> None:
         input("* Fn update complete, press ENTER to return to the main menu. ")
         return
 
-
 def run_clean_script() -> None:
     print(
         f"* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
@@ -255,7 +245,6 @@ def run_clean_script() -> None:
         print_stars()
         input("* Safety clean complete, press ENTER to return to the main menu. ")
         return
-
 
 def findora_installer() -> None:
     # Run installer ya'll!
@@ -293,7 +282,6 @@ def findora_installer() -> None:
         input()
     else:
         raise SystemExit(0)
-
 
 def run_ubuntu_updates() -> None:
     question = ask_yes_no(f"* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
@@ -380,6 +368,8 @@ def migrate_to_server() -> None:
     input()
     return
 
+def run_container_update(status=False) -> None:
+    update_findora_container(status)
 
 def run_findora_menu() -> None:
     menu_options = {
@@ -391,7 +381,7 @@ def run_findora_menu() -> None:
         5: coming_soon,
         6: coming_soon,
         7: update_fn_wallet,
-        8: update_findora_container,
+        8: run_container_update,
         9: run_clean_script,
         10: run_ubuntu_updates,
         11: migrate_to_server,
@@ -400,11 +390,10 @@ def run_findora_menu() -> None:
         15: all_sys_info,
         999: menu_reboot_server,
     }
-    subprocess.run("clear")
-    menu_topper()
-    menu_findora()
     # Keep this loop going so when an item ends the menu reloads
     while True:
+        load_var_file(easy_env_fra.dotenv_file)
+        menu_findora()
         # Pick an option, any option
         value = input("* Enter your option: ")
         # Try/Catch - If it's not a number, goodbye, try again
@@ -420,9 +409,4 @@ def run_findora_menu() -> None:
         # clear before load
         subprocess.run("clear")
         print_stars()
-        # This is so we can bypass
-        if value == 8:
-            update_findora_container(False)
-        else:
-            menu_options[value]()
-        run_findora_menu()
+        menu_options[value]()
