@@ -143,7 +143,7 @@ def menu_topper() -> None:
     # get balances
     # get other validator data
     our_version = get_container_version('http://localhost:8668/version')
-    online_version = get_container_version('https://prod-mainnet.prod.findora.org:8668/version')
+    online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
     subprocess.run("clear")
     print(Fore.MAGENTA)
     print_stars()
