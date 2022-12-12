@@ -377,12 +377,15 @@ def migration_menu_option() -> None:
     file_paths = {}
     if os.path.exists(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair'):
         file_paths["tmp.gen.keypair"] = f'{easy_env_fra.migrate_dir}/tmp.gen.keypair'
+    else:
+        # No tmp.gen.keypair, we're out.
+        return
     if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'):
         file_paths["priv_validator_key.json"] = f'{easy_env_fra.migrate_dir}/priv_validator_key.json'
     elif os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"):
         file_paths["priv_validator_key.json"] = f'{easy_env_fra.migrate_dir}/config/priv_validator_key.json'
     else:
-        # No matches, return
+        # No matches on priv_validator_key.json, we're out.
         return
     if compare_two_files(file_paths["tmp.gen.keypair"], f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'):
         # If these are the same, already migrated, don't display
