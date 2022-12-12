@@ -30,6 +30,7 @@ from toolbox.library import (
     finish_node,
     set_var,
     compare_two_files,
+    container_version,
 )
 from config import easy_env_fra
 
@@ -148,8 +149,9 @@ def menu_topper() -> None:
         f"* Server Hostname & IP:             {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA} - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(
-        f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.our_disk_mount): >6}{Style.RESET_ALL}{Fore.MAGENTA}\n"
+        f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.our_disk_mount): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
+    print(f"* Current Container Version: {container_version(easy_env_fra.container_name)}")
     print_stars()
     print(
         f"* CPU Load Averages: {round(Load1, 2)} over 1 min, {round(Load5, 2)} over 5 min, {round(Load15, 2)} over 15 min"

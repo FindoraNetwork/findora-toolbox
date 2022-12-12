@@ -27,10 +27,7 @@ def main(count) -> None:
     if not environ.get("FRA_NETWORK"):
         set_main_or_test()
     if container_running(easy_env_fra.container_name):
-        # Launch menu, we're good to go!
-        print(f"* The container '{easy_env_fra.container_name}' is running.")
         print_stars()
-        
         run_findora_menu()
 
     else:
