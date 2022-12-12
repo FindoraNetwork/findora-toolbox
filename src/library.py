@@ -373,7 +373,7 @@ def run_container_update(status=False) -> None:
 
 def migration_menu_option() -> None:
     if os.path.exists(f'{easy_env_fra.migrate_dir}'):
-        print(f'* 888 - {Fore.CYAN}Migrate To This Server  {Fore.MAGENTA}- Migrate from another server to this server.')
+        print(f'* 888 -  {Fore.CYAN}Migrate To This Server   {Fore.MAGENTA}- Migrate from another server to this server.')
 
 def run_findora_menu() -> None:
     menu_options = {
