@@ -135,7 +135,7 @@ def server_disk_check() -> None:
 
 def get_container_version(url) -> None:
     response = requests.get(url)
-    return response
+    return response.text
 
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
