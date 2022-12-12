@@ -371,6 +371,10 @@ def migrate_to_server() -> None:
 def run_container_update(status=False) -> None:
     update_findora_container(status)
 
+def migration_menu_option() -> None:
+    if os.path.exists(f'{easy_env_fra.migrate_dir}'):
+        print(f'* 888 - {Fore.CYAN}Migrate To This Server  {Fore.MAGENTA}- Migrate from another server to this server.')
+
 def run_findora_menu() -> None:
     menu_options = {
         0: finish_node,
@@ -384,10 +388,12 @@ def run_findora_menu() -> None:
         8: run_container_update,
         9: run_clean_script,
         10: run_ubuntu_updates,
-        11: migrate_to_server,
+        11: coming_soon,
+        12: coming_soon,
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
+        888: migrate_to_server,
         999: menu_reboot_server,
     }
     # Keep this loop going so when an item ends the menu reloads
