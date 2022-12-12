@@ -6,6 +6,7 @@ import json
 import shutil
 import pwd
 import getpass
+import hashlib
 from simple_term_menu import TerminalMenu
 from urllib.parse import unquote
 from os import environ
@@ -28,6 +29,7 @@ from toolbox.library import (
     menu_reboot_server,
     finish_node,
     set_var,
+    compare_two_files,
 )
 from config import easy_env_fra
 
@@ -372,8 +374,20 @@ def run_container_update(status=False) -> None:
     update_findora_container(status)
 
 def migration_menu_option() -> None:
-    if os.path.exists(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair') and os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json') or os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
-        print(f'* 888 -  {Fore.CYAN}Migrate To This Server    {Fore.MAGENTA}- Migrate from another server to this server.')
+    file_paths = {}
+    if os.path.exists(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair'):
+        file_paths["tmp.gen.keypair"] = f'{easy_env_fra.migrate_dir}/tmp.gen.keypair'
+    if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json')
+        file_paths["priv_validator_key.json"] = f'{easy_env_fra.migrate_dir}/priv_validator_key.json'
+    elif os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"):
+        file_paths["priv_validator_key.json"] = f'{easy_env_fra.migrate_dir}/config/priv_validator_key.json'
+    if compare_two_files(file_paths["tmp.gen.keypair"], f'{easy_env_fra.findora_root}/{environ.get("NETWORK")}/{environ.get("NETWORK")}_node.key'):
+        # If these are the same, already migrated, don't display
+        return
+    if compare_two_files(file_paths["priv_validator_key.json"], f'{easy_env_fra.findora_root}/{environ.get("NETWORK")}/tendermint/config/priv_validator_key.json'):
+        # If these are the same, already migrated, don't display
+        return
+    print(f'* 888 -  {Fore.CYAN}Migrate To This Server    {Fore.MAGENTA}- Migrate from another server to this server.')
 
 def run_findora_menu() -> None:
     menu_options = {
