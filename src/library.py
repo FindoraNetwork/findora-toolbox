@@ -183,9 +183,10 @@ def rescue_menu() -> None:
     menu_options = {
         0: finish_node,
         1: refresh_wallet_stats,
-        2: run_clean_script
+        2: run_container_update,
+        3: run_clean_script
     }
-    print(f"* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
+    print(f"* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run update version and restart script.\n* 3 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
     print_stars()
     try:
         option = int(input("Enter your option: "))
@@ -422,6 +423,7 @@ def migrate_to_server() -> None:
 
 def run_container_update(status=False) -> None:
     update_findora_container(status)
+    return
 
 def migration_menu_option() -> None:
     file_paths = {}
