@@ -31,6 +31,7 @@ from toolbox.library import (
     finish_node,
     set_var,
     compare_two_files,
+    container_running,
 )
 from config import easy_env_fra
 
@@ -178,6 +179,23 @@ def menu_topper() -> None:
     print_stars()
     return update
 
+def rescue_menu() -> None:
+    menu_options = {
+        0: finish_node,
+        1: refresh_wallet_stats,
+        2: run_clean_script
+    }
+    print(f"* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
+    print_stars()
+    try:
+        option = int(input("Enter your option: "))
+    except ValueError:
+        menu_error()
+        rescue_menu()
+    subprocess.run("clear")
+    menu_options[option]()
+    rescue_menu()
+
 def update_findora_container(skip) -> None:
     print(f"* Running the update and restart may cause missed blocks, beware before proceeding!")
     if skip:
@@ -200,12 +218,10 @@ def update_findora_container(skip) -> None:
             f"* We will show the output of the upgrade & restart now, this may miss a block(s) depending on your timing."
         )
         subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
-        print_stars()
-        print(
-            f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
-        )
-        print_stars()
-        input()
+        if container_running(easy_env_fra.container_name):
+            run_findora_menu()
+        else:
+            rescue_menu()
     return
 
 def migration_update() -> None:
@@ -265,10 +281,11 @@ def run_clean_script() -> None:
         subprocess.call(
             ["bash", "-x", f"/tmp/safety_clean_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
         )
-        print_stars()
-        input("* Safety clean complete, press ENTER to return to the main menu. ")
-        return
-
+        if container_running(easy_env_fra.container_name):
+            run_findora_menu()
+        else:
+            rescue_menu()
+        
 def findora_installer() -> None:
     # Run installer ya'll!
     print(
