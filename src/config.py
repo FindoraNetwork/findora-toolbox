@@ -25,3 +25,4 @@ class easy_env_fra:
     container_name = "findorad"
     migrate_dir = os.path.join(user_home_dir, "migrate")
     fra_env = 'prod'
+    findora_backup = f'{user_home_dir}/findora_backup'
