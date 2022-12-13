@@ -151,8 +151,21 @@ def menu_topper() -> None:
     # get sign pct
     # get balances
     # get other validator data
-    our_version = get_container_version('http://localhost:8668/version')
-    online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
+    try:
+        our_version = get_container_version('http://localhost:8668/version')
+    except TimeoutError:
+        our_version = 'No Response'
+        print_stars()
+        print(f'* No response from http://localhost:8668/version - is your port open?\n* We can continue though, press enter to load the menu.')
+        print_stars()
+    try:
+        online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
+    except TimeoutError:
+        online_version = 'No Response'
+        print_stars()
+        print(f'* No response from findora node, network may be offline or there are internet troubles\n* We can continue though, press enter to load the menu.')
+        print_stars()
+        input()
     subprocess.run("clear")
     print(Fore.MAGENTA)
     print_stars()
