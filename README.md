@@ -4,7 +4,9 @@
 Here's our validator toolbox for the Findora network.  
 
 ## Requirements
-TBD, works well on all tested nodes atm, Ubuntu 20.04LTS & 22.04LTS
+Findora suggests the following server requirements:
+Minimum: 8GB RAM, 2 Core CPU (2.90GHz per core), 100GB Hard Disk
+Recommended: 16GB RAM, 4 Core CPU (2.90Ghz per core), 300GB Hard Disk
 
 ## Fresh server installation
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
