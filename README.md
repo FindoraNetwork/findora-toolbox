@@ -1,7 +1,7 @@
 # EasyNode.PRO Validator Toolbox for Findora
 
 ## Findora Validator Toolbox
-Here's our validator toolbox for the Findora network.  
+Here's the [EasyNode.PRO](https://easynode.pro) validator toolbox for the Findora network.  
 
 ## Requirements
 Findora suggests the following server requirements:
