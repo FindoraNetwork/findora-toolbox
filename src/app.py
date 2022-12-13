@@ -3,7 +3,7 @@ import subprocess
 from os import environ
 from subprocess import run
 from toolbox.library import loader_intro, print_stars, docker_check, container_running, finish_node, menu_error, load_var_file, first_env_check, ask_yes_no
-from library import run_findora_menu, findora_installer, update_findora_container, refresh_wallet_stats, run_clean_script, set_main_or_test, rescue_menu
+from library import run_findora_menu, findora_installer, update_findora_container, refresh_wallet_stats, run_clean_script, set_main_or_test, rescue_menu, backup_folder_check
 from colorama import Fore
 from config import easy_env_fra
 # Check the status and print a message
@@ -27,6 +27,7 @@ def main(count) -> None:
     if not environ.get("FRA_NETWORK"):
         set_main_or_test()
     if container_running(easy_env_fra.container_name):
+        backup_folder_check()
         run_findora_menu()
     # Container is not running, ruh roh!
     print(f"* The container '{easy_env_fra.container_name}' is not running.")
