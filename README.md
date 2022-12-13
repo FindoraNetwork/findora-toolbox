@@ -1,7 +1,9 @@
 # EasyNode.PRO Validator Toolbox for Findora
 
 ## Findora Validator Toolbox
-Here's our validator toolbox for the Findora network.
+Here's our validator toolbox for the Findora network.  
+
+This is a new product, there's a lot of enhancements yet to come but if you have any ideas put them into our [issues tracker](https://github.com/easy-node-pro/validatortoolbox_fra/issues)!
 
 ## Requirements
 TBD, works well on all tested nodes atm, Ubuntu 20.04LTS & 22.04LTS
