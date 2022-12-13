@@ -46,18 +46,6 @@ def main(count) -> None:
                 print_stars()
                 raise SystemExit(0)
         
-
-if container_running(easy_env_fra.container_name):
-    print_stars()
-    print(f'* Your container is restarted and back online. Press enter to return to the main menu.')
-    input()
-    run_findora_menu()
-else:
-    print_stars()
-    print(f'* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot.')
-    input()
-    rescue_menu()
-
 if __name__ == "__main__":
     count = 0
     while True:
