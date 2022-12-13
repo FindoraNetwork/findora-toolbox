@@ -156,7 +156,7 @@ def menu_topper() -> None:
     except TimeoutError:
         our_version = 'No Response'
         print_stars()
-        print(f'* No response from http://localhost:8668/version - is your port open?\n* We can continue though, press enter to load the menu.')
+        print(f'* Container is running but there is no response from http://localhost:8668/version - Are your ports open?\n* We can continue though, press enter to load the menu.')
         print_stars()
     try:
         online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
