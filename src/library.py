@@ -472,9 +472,9 @@ def backup_folder_check() -> None:
             shutil.copy(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key', f'{easy_env_fra.findora_backup}/tmp.gen.keypair')
         if os.path.exists(f'{easy_env_fra.findora_backup}/config') and os.path.exists(f'{easy_env_fra.findora_backup}/config/priv_validator_key.json'):
             # found config folder & priv_validator_key.json
-            if compare_two_files(f'{easy_env_fra.findora_backup}/config/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json'): 
+            if compare_two_files(f'{easy_env_fra.findora_backup}/config/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json') is False: 
                 # If they are the same we're done, if they are false ask to update
-                question = ask_yes_no(f'* Your priv_validator_key.json file in {easy_env_fra.findora_backup} does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.\n* Do you want to copy your config folder into {easy_env_fra.findora_backup}/config ? (Y/N) ')
+                question = ask_yes_no(f'* Your file {easy_env_fra.findora_backup}/config/priv_validator_key.json does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.\n* Do you want to copy your config folder into {easy_env_fra.findora_backup}/config ? (Y/N) ')
                 if question:
                     # Copy folder back
                     shutil.rmtree(f'{easy_env_fra.findora_backup}/config')
