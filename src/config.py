@@ -10,7 +10,7 @@ def getUrl() -> None:
     return result
 
 class easy_env_fra:
-    easy_version = "1.1.3"
+    easy_version = "1.1.4"
     our_disk_mount = '/data/findora'
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
