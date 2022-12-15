@@ -426,6 +426,10 @@ def migration_instructions():
         + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
         + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
     )
+    print_stars()
+    print("* Press enter to return to the main menu.")
+    print_stars()
+    input()
 
 
 def migrate_to_server() -> None:
@@ -496,6 +500,10 @@ def migrate_to_server() -> None:
                 print(
                     "* Migration completed, check option #2 to verify your validator information has updated correctly!"
                 )
+                print_stars()
+                print("* Press enter to return to the main menu.")
+                print_stars()
+                input()
 
         else:
             print(
@@ -503,12 +511,12 @@ def migrate_to_server() -> None:
                 + f"\n* Add the files from your old server into:\n* {easy_env_fra.migrate_dir}/tmp.gen.keypair"
                 + f"\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json\n*"
             )
+            print_stars()
+            print("* Press enter to return to the main menu.")
+            print_stars()
+            input()
     else:
         migration_instructions()
-    print_stars()
-    print("* Press enter to return to the main menu.")
-    print_stars()
-    input()
     return
 
 
