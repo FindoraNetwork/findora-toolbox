@@ -65,14 +65,36 @@ def set_main_or_test() -> None:
 
 def menu_findora() -> None:
     update = menu_topper()
-    for x in return_txt(easy_env_fra.findora_menu):
-        x = x.strip()
-        try:
-            x = eval(x)
-        except SyntaxError:
-            pass
-        if x:
-            print(x)
+    print("* EasyNode.PRO Findora Validator Toolbox Menu Options:")
+    print("*")
+    print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
+    print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
+    print("*   3 -  Show Balance              - Check Any Wallet Balance")
+    print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
+    print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
+    findora_container_update(update)
+    print("*   9 -  Run Safety Clean          - Stop your container, reset and download database fresh")
+    print("*  10 -  Update Operating System   - Update Ubuntu Operating System Files")
+    print(
+        f"*                                   {Fore.MAGENTA}{Back.GREEN}Informational Section:{Style.RESET_ALL}{Fore.MAGENTA}"
+    )
+    print("*  13 -  Show system disk info     - Current drive space status")
+    print("*  14 -  TMI about your Validator  - Seriously too much information")
+    print("*  15 -  TMI about your Server     - Seriously a lot of info about this server")
+    print("*  16 -  Instructions on Migrating - Run this to read info on migrating to this server.")
+    print_stars()
+    migration_menu_option()
+    print(
+        "* 999 -  Reboot Server             - "
+        + Fore.YELLOW
+        + Back.RED
+        + "WARNING: You will miss blocks during a reboot!"
+        + Style.RESET_ALL
+        + Fore.MAGENTA
+    )
+    print("*   0 -  Exit Application          - Goodbye!")
+    print_stars()
+    return
 
 
 def get_curl_stats() -> None:

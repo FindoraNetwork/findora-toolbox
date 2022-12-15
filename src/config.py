@@ -6,7 +6,6 @@ def getUrl() -> None:
     except Exception as x:
         print(type(x),x)
         result = '0.0.0.0'
-        pass
     return result
 
 class easy_env_fra:

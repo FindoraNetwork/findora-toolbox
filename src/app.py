@@ -34,7 +34,7 @@ def main() -> None:
         if answer:
             update_findora_container(1)
             print('* Uh, you said no so, we are exiting to allow manual troubleshooting, goodbye!')
-            finish_node()          
+            finish_node()
         else:
             answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot? (Y/N) ")
             if answer2:
@@ -43,7 +43,7 @@ def main() -> None:
                 print("* Dropping out of the application so you can troubleshoot the container, check the docker logs with: docker logs -f findorad")
                 print_stars()
                 finish_node()
-        
+
 if __name__ == "__main__":
     while True:
         main()
