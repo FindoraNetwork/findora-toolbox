@@ -11,6 +11,8 @@ Recommended: 16GB RAM, 4 Core CPU (2.90Ghz per core), 300GB Hard Disk
 ## Full documentation
 If you're not sure what requirements are needed for the server, how to setup the firewall or how to install docker, our [full guide](https://guides.easynode.pro/findora/toolbox) will help you through setting up a server with Findora Toolbox.
 
+We've also got a full breakdown of the components and how they work on the [Toolbox Docs Site](https://guides.easynode.pro/findora/tb_docs).
+
 ## Quick start guide for power users
 ### Fresh server installation
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
