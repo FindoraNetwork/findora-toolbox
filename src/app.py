@@ -33,17 +33,17 @@ def main(count) -> None:
     print(f"* The container '{easy_env_fra.container_name}' is not running.")
     count = 0
     while True:
-        answer = ask_yes_no(f"* Would you like to attempt to run the update version script to try to get your container back online? (Y/N)")
+        answer = ask_yes_no("* Would you like to attempt to run the update version script to try to get your container back online? (Y/N)")
         if answer:
             update_findora_container(1)
-            print(f'* Uh, you said no so, we are exiting to allow manual troubleshooting, goodbye!')
+            print('* Uh, you said no so, we are exiting to allow manual troubleshooting, goodbye!')
             raise SystemExit(0)              
         else:
-            answer2 = ask_yes_no(f"* Would you like to load the rescue menu to try and troubleshoot? (Y/N) ")
+            answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot? (Y/N) ")
             if answer2:
                 rescue_menu()
             else:
-                print(f"* Dropping out of the application so you can troubleshoot the container, check the docker logs with: docker logs -f findorad")
+                print("* Dropping out of the application so you can troubleshoot the container, check the docker logs with: docker logs -f findorad")
                 print_stars()
                 raise SystemExit(0)
         
