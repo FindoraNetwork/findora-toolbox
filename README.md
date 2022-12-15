@@ -3,24 +3,28 @@
 ## Findora Validator Toolbox
 Here's the [EasyNode.PRO](https://easynode.pro) validator toolbox for the Findora network.  
 
-## Requirements
+### Requirements
 Findora suggests the following server requirements:
 Minimum: 8GB RAM, 2 Core CPU (2.90GHz per core), 100GB Hard Disk
 Recommended: 16GB RAM, 4 Core CPU (2.90Ghz per core), 300GB Hard Disk
 
-## Fresh server installation
+## Full documentation
+If you're not sure what requirements are needed for the server, how to setup the firewall or how to install docker, our [full guide](https://guides.easynode.pro/findora/fast_easynode) will help you through setting up a server with Findora Toolbox.
+
+## Quick start guide for power users
+### Fresh server installation
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
 ```text
 cd ~/ && git clone https://github.com/easy-node-pro/validatortoolbox_fra.git && cd validatortoolbox_fra && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
 ```
 
-## Add to an existing Findora server
+### Add to an existing Findora server
 You certainly can check out the package and run it just like anyone else, you'll want to update apt list first though and install python3-pip at a minimum. This will make sure everything is ready:
 ```text
 cd ~/ && sudo apt install python3-pip -y && git clone https://github.com/easy-node-pro/validatortoolbox_fra.git && cd validatortoolbox_fra && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
 ```
 
-## Migrate to a new server
+### Migrate to a new server
 You can use the toolbox to easily migrate to a new server. We suggest starting with a fresh server and letting it sync up on the blockchain.  
 
 Once you're at that point, perform the following:
@@ -30,7 +34,7 @@ Once you're at that point, perform the following:
 - On the old server, shut off the old server now to **avoid double signing**.
 - On the new server, run validator toolbox and you'll now see option #888 to migrate server. Run this option and you will be converted over to the keys in migrate and brought back online.
 
-## Run the Validator Toolbox Menu after Installation
+### Run the Validator Toolbox Menu after Installation
 After installing you can use the following code for a termius/moba snippet and we also suggest using this full command to update and run each time you want to launch the toolbox:
 ```text
 cd ~/validatortoolbox_fra/ && git pull && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
