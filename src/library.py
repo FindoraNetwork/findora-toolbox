@@ -8,7 +8,7 @@ import getpass
 import requests
 from simple_term_menu import TerminalMenu
 from os import environ
-from colorama import Fore, Style
+from colorama import Fore, Back, Style
 from pprint import pprint
 from toolbox.library import (
     print_stars,
