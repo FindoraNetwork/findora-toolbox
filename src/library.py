@@ -1,18 +1,14 @@
 import subprocess
 import os
-import shutil
 import time
 import json
 import shutil
 import pwd
 import getpass
-import hashlib
 import requests
 from simple_term_menu import TerminalMenu
-from urllib.parse import unquote
 from os import environ
-from colorama import Fore, Back, Style
-from subprocess import PIPE, run
+from colorama import Fore, Style
 from pprint import pprint
 from toolbox.library import (
     print_stars,
