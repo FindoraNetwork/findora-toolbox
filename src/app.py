@@ -1,14 +1,12 @@
 import os
-import subprocess
 from os import environ
-from subprocess import run
-from toolbox.library import loader_intro, print_stars, docker_check, container_running, finish_node, menu_error, load_var_file, first_env_check, ask_yes_no
-from library import run_findora_menu, findora_installer, update_findora_container, refresh_wallet_stats, run_clean_script, set_main_or_test, rescue_menu, backup_folder_check
+from toolbox.library import loader_intro, print_stars, docker_check, container_running, finish_node, first_env_check, ask_yes_no
+from library import run_findora_menu, findora_installer, update_findora_container, set_main_or_test, rescue_menu, backup_folder_check
 from colorama import Fore
 from config import easy_env_fra
 # Check the status and print a message
 
-def main(count) -> None:
+def main() -> None:
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
@@ -31,13 +29,12 @@ def main(count) -> None:
         run_findora_menu()
     # Container is not running, ruh roh!
     print(f"* The container '{easy_env_fra.container_name}' is not running.")
-    count = 0
     while True:
         answer = ask_yes_no("* Would you like to attempt to run the update version script to try to get your container back online? (Y/N)")
         if answer:
             update_findora_container(1)
             print('* Uh, you said no so, we are exiting to allow manual troubleshooting, goodbye!')
-            raise SystemExit(0)              
+            finish_node()          
         else:
             answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot? (Y/N) ")
             if answer2:
@@ -45,11 +42,10 @@ def main(count) -> None:
             else:
                 print("* Dropping out of the application so you can troubleshoot the container, check the docker logs with: docker logs -f findorad")
                 print_stars()
-                raise SystemExit(0)
+                finish_node()
         
 if __name__ == "__main__":
-    count = 0
     while True:
-        main(count)
-        count += 1
+        main()
+
     
