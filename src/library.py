@@ -67,7 +67,7 @@ def menu_findora() -> None:
             print(x)
 
 
-def refresh_wallet_stats() -> None:
+def get_curl_stats() -> None:
     subprocess.run("clear")
     print_stars()
     print(Fore.GREEN)
@@ -76,13 +76,14 @@ def refresh_wallet_stats() -> None:
         output = output.decode().replace("b'", "")
         output = json.loads(output)
         pprint(output)
-    except:
+    except subprocess.CalledProcessError as err:
         print("* No response from the rpc.")
     print(Fore.MAGENTA)
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
     input()
+    return
 
 
 def refresh_fn_stats() -> None:
@@ -94,7 +95,8 @@ def refresh_fn_stats() -> None:
         print(output)
     except:
         print(
-            "* Error, no response from local API, try your curl stats again. If the stats give the same reply try option #10 to get back online and as a last resort option #12!"
+            "* Error, no response from local API, try your curl stats again. If the stats give the "
+            + "same reply try option #10 to get back online and as a last resort option #12!"
         )
     print_stars()
     print("* Press enter to return to the main menu.")
@@ -103,13 +105,13 @@ def refresh_fn_stats() -> None:
 
 
 def check_balance_menu() -> None:
-    print(f"* Coming soon!")
+    print("* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
 
 
 def operating_system_updates() -> None:
-    print(f"* Coming soon!")
+    print("* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
 
@@ -186,7 +188,8 @@ def menu_topper() -> None:
     print(Fore.MAGENTA)
     print_stars()
     print(
-        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
+        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node"
+        + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
     )
     print_stars()
     print(
@@ -210,7 +213,7 @@ def menu_topper() -> None:
 
 
 def rescue_menu() -> None:
-    menu_options = {0: finish_node, 1: refresh_wallet_stats, 2: run_container_update, 3: run_clean_script}
+    menu_options = {0: finish_node, 1: get_curl_stats, 2: run_container_update, 3: run_clean_script}
     print(
         "* We still don't detect a running container. Here are your options currently:"
         + "\n* 1 - Keep checking stats, wait longer and retry."
@@ -283,7 +286,7 @@ def migration_update() -> None:
 
 def update_fn_wallet() -> None:
     print("* This option upgrades the fn wallet application.")
-    answer = ask_yes_no(f"* Do you want to upgrade fn now? (Y/N) ")
+    answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
     if answer:
         subprocess.call(
             [
@@ -310,7 +313,7 @@ def run_clean_script() -> None:
         "* Running the update and restart may cause missed blocks, beware before proceeding!"
         + "\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
     )
-    answer = ask_yes_no(f"* Do you want to run safety clean now? (Y/N) ")
+    answer = ask_yes_no("* Do you want to run safety clean now? (Y/N) ")
     if answer:
         subprocess.call(
             [
@@ -374,7 +377,8 @@ def findora_installer() -> None:
         subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
         print(
-            "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
+            "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your "
+            + "validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
         )
         print_stars()
         input()
@@ -423,7 +427,8 @@ def migrate_to_server() -> None:
             or os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json")
         ):
             print(
-                f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!"
+                f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!"
+                + "\n* All required files in place, ready for upgrade!"
             )
             # Ask to start migration, warn about double sign again, again
             print_stars()
@@ -463,7 +468,8 @@ def migrate_to_server() -> None:
                     )
                 else:
                     print(
-                        "* Welp, somehow we didn't find a priv_validator_key.json to migrate.\n* You'll have to get your key into the config folder and run a safety clean."
+                        "* Welp, somehow we didn't find a priv_validator_key.json to migrate."
+                        + "\n* You'll have to get your key into the config folder and run a safety clean."
                     )
                 node_mnemonic = subprocess.getoutput(
                     f"cat {easy_env_fra.migrate_dir}/tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'"
@@ -491,8 +497,8 @@ def migrate_to_server() -> None:
         print(
             f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:"
             + f"\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder"
-            + "\n* 3. Add your config folder containing your priv_validator_key.json file into migrate"
-            + "\n* 4. If this server is synced up, you can shut off the old server and run migration again at that point to move servers without double signing."
+            + "\n* 3. Add your config folder containing your priv_validator_key.json file into ~/migrate"
+            + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
             + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
         )
     print_stars()
@@ -618,7 +624,7 @@ def backup_folder_check() -> None:
 def run_findora_menu() -> None:
     menu_options = {
         0: finish_node,
-        1: refresh_wallet_stats,
+        1: get_curl_stats,
         2: refresh_fn_stats,
         3: check_balance_menu,
         4: coming_soon,
@@ -633,6 +639,7 @@ def run_findora_menu() -> None:
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
+        16: migrate_to_server,
         888: migrate_to_server,
         999: menu_reboot_server,
     }
