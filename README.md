@@ -1,3 +1,8 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/215c4479f0304b40a535f7e84ce75f55)](https://www.codacy.com/gh/easy-node-pro/validatortoolbox_fra/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=easy-node-pro/validatortoolbox_fra&amp;utm_campaign=Badge_Grade)
+[![Codacy Security Scan](https://github.com/easy-node-pro/validatortoolbox_fra/actions/workflows/codacy.yml/badge.svg?branch=main)](https://github.com/easy-node-pro/validatortoolbox_fra/actions/workflows/codacy.yml)
+[![Discord Badge](https://img.shields.io/badge/chat-discord-purple?logo=discord)](https://discord.gg/Rcz5T6D9CV)
+[![Stake Now Badge](https://img.shields.io/badge/stake-harmony-brightgreen)](https://bit.ly/easynode)
+
 # EasyNode.PRO Validator Toolbox for Findora
 
 ## Findora Validator Toolbox
