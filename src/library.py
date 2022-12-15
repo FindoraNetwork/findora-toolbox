@@ -417,6 +417,17 @@ def get_uid() -> None:
     return uid
 
 
+def migration_instructions():
+    # path doesn't exist, explain migration process.
+    print(
+        f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:"
+        + f"\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder"
+        + "\n* 3. Add your config folder containing your priv_validator_key.json file into ~/migrate"
+        + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
+        + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
+    )
+
+
 def migrate_to_server() -> None:
     if os.path.exists(f"{easy_env_fra.migrate_dir}"):
         # check for tmp.gen.keypair and priv_validator_key.json in ~/migrate
@@ -493,14 +504,7 @@ def migrate_to_server() -> None:
                 + f"\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json\n*"
             )
     else:
-        # path doesn't exist, explain migration process.
-        print(
-            f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:"
-            + f"\n* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder"
-            + "\n* 3. Add your config folder containing your priv_validator_key.json file into ~/migrate"
-            + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
-            + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
-        )
+        migration_instructions()
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
@@ -570,10 +574,10 @@ def backup_folder_check() -> None:
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f'* Your tmp.gen.keypair file in {easy_env_fra.findora_backup} does not match '
+                    f"* Your tmp.gen.keypair file in {easy_env_fra.findora_backup} does not match "
                     + f'your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
                     + f'\n* Do you want to copy the key from {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}'
-                    + f'_node.key to {easy_env_fra.findora_backup}/tmp.gen.keypair as a backup? (Y/N) '
+                    + f"_node.key to {easy_env_fra.findora_backup}/tmp.gen.keypair as a backup? (Y/N) "
                 )
                 if question:
                     # Copy key back
@@ -601,9 +605,9 @@ def backup_folder_check() -> None:
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f'* Your file {easy_env_fra.findora_backup}/config/priv_validator_key.json does not match '
+                    f"* Your file {easy_env_fra.findora_backup}/config/priv_validator_key.json does not match "
                     + f'your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
-                    + f'\n* Do you want to copy your config folder into {easy_env_fra.findora_backup}/config ? (Y/N) '
+                    + f"\n* Do you want to copy your config folder into {easy_env_fra.findora_backup}/config ? (Y/N) "
                 )
                 if question:
                     # Copy folder back
@@ -639,7 +643,7 @@ def run_findora_menu() -> None:
         13: server_disk_check,
         14: coming_soon,
         15: all_sys_info,
-        16: migrate_to_server,
+        16: migration_instructions,
         888: migrate_to_server,
         999: menu_reboot_server,
     }
