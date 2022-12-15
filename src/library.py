@@ -32,6 +32,13 @@ from toolbox.library import (
 from config import easy_env_fra
 
 
+def pause_for_cause():
+    print_stars()
+    print("* Press enter to return to the main menu.")
+    print_stars()
+    input()
+
+
 def set_main_or_test() -> None:
     if not environ.get("FRA_NETWORK"):
         subprocess.run("clear")
@@ -79,10 +86,7 @@ def get_curl_stats() -> None:
     except subprocess.CalledProcessError as err:
         print("* No response from the rpc.")
     print(Fore.MAGENTA)
-    print_stars()
-    print("* Press enter to return to the main menu.")
-    print_stars()
-    input()
+    pause_for_cause()
     return
 
 
@@ -98,19 +102,10 @@ def refresh_fn_stats() -> None:
             "* Error, no response from local API, try your curl stats again. If the stats give the "
             + "same reply try option #10 to get back online and as a last resort option #12!"
         )
-    print_stars()
-    print("* Press enter to return to the main menu.")
-    print_stars()
-    input()
+    pause_for_cause()
 
 
 def check_balance_menu() -> None:
-    print("* Coming soon!")
-    print_stars()
-    input("* Press ENTER to continue.")
-
-
-def operating_system_updates() -> None:
     print("* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
@@ -426,10 +421,7 @@ def migration_instructions():
         + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
         + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
     )
-    print_stars()
-    print("* Press enter to return to the main menu.")
-    print_stars()
-    input()
+    pause_for_cause()
 
 
 def migrate_to_server() -> None:
@@ -500,10 +492,7 @@ def migrate_to_server() -> None:
                 print(
                     "* Migration completed, check option #2 to verify your validator information has updated correctly!"
                 )
-                print_stars()
-                print("* Press enter to return to the main menu.")
-                print_stars()
-                input()
+                pause_for_cause()
 
         else:
             print(
@@ -511,10 +500,7 @@ def migrate_to_server() -> None:
                 + f"\n* Add the files from your old server into:\n* {easy_env_fra.migrate_dir}/tmp.gen.keypair"
                 + f"\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json\n*"
             )
-            print_stars()
-            print("* Press enter to return to the main menu.")
-            print_stars()
-            input()
+            pause_for_cause()
     else:
         migration_instructions()
     return
