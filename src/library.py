@@ -152,14 +152,14 @@ def menu_topper() -> None:
     except TimeoutError:
         our_version = 'No Response'
         print_stars()
-        print(f'* Container is running but there is no response from http://localhost:8668/version - Are your ports open?\n* We can continue though, press enter to load the menu.')
+        print('* Container is running but there is no response from http://localhost:8668/version - Are your ports open?\n* We can continue though, press enter to load the menu.')
         print_stars()
     try:
         online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
     except TimeoutError:
         online_version = 'No Response'
         print_stars()
-        print(f'* No response from findora node, network may be offline or there are internet troubles\n* We can continue though, press enter to load the menu.')
+        print('* No response from findora node, network may be offline or there are internet troubles\n* We can continue though, press enter to load the menu.')
         print_stars()
         input()
     subprocess.run("clear")
@@ -195,7 +195,7 @@ def rescue_menu() -> None:
         2: run_container_update,
         3: run_clean_script
     }
-    print(f"* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run update version and restart script.\n* 3 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
+    print("* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run update version and restart script.\n* 3 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
     print_stars()
     try:
         option = int(input("Enter your option: "))
@@ -207,11 +207,11 @@ def rescue_menu() -> None:
     rescue_menu()
 
 def update_findora_container(skip) -> None:
-    print(f"* Running the update and restart may cause missed blocks, beware before proceeding!")
+    print("* Running the update and restart may cause missed blocks, beware before proceeding!")
     if skip:
         answer = True
     else:
-        answer = ask_yes_no(f"* Are you sure you want to check for an upgrade and restart? (Y/N) ")
+        answer = ask_yes_no("* Are you sure you want to check for an upgrade and restart? (Y/N) ")
     if answer:
         subprocess.call(
             [
@@ -225,17 +225,17 @@ def update_findora_container(skip) -> None:
         )
         subprocess.run("clear")
         print(
-            f"* We will show the output of the upgrade & restart now, this may miss a block(s) depending on your timing."
+            "* We will show the output of the upgrade & restart now, this may miss a block(s) depending on your timing."
         )
         subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         if container_running(easy_env_fra.container_name):
             print_stars()
-            print(f'* Your container is restarted and back online. Press enter to return to the main menu.')
+            print('* Your container is restarted and back online. Press enter to return to the main menu.')
             input()
             run_findora_menu()
         else:
             print_stars()
-            print(f'* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot.')
+            print('* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot.')
             input()
             rescue_menu()
     return
@@ -254,7 +254,7 @@ def migration_update() -> None:
     subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
 
 def update_fn_wallet() -> None:
-    print(f"* This option upgrades the fn wallet application.")
+    print("* This option upgrades the fn wallet application.")
     answer = ask_yes_no(f"* Do you want to upgrade fn now? (Y/N) ")
     if answer:
         subprocess.call(
@@ -278,7 +278,7 @@ def update_fn_wallet() -> None:
 
 def run_clean_script() -> None:
     print(
-        f"* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
+        "* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
     )
     answer = ask_yes_no(f"* Do you want to run safety clean now? (Y/N) ")
     if answer:
@@ -293,25 +293,25 @@ def run_clean_script() -> None:
             stderr=subprocess.DEVNULL,
         )
         subprocess.run("clear")
-        print(f"* We will show the output of the reset now.")
+        print("* We will show the output of the reset now.")
         subprocess.call(
             ["bash", "-x", f"/tmp/safety_clean_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
         )
         if container_running(easy_env_fra.container_name):
             print_stars()
-            print(f'* Your container is restarted and back online. Press enter to return to the main menu.')
+            print('* Your container is restarted and back online. Press enter to return to the main menu.')
             input()
             run_findora_menu()
         else:
             print_stars()
-            print(f'* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot.')
+            print('* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot.')
             input()
             rescue_menu()
         
 def findora_installer() -> None:
     # Run installer ya'll!
     print(
-        f"* Welcome to EasyNode.PRO Validator Toolbox for Findora!\n* We've detected that Docker is properly installed for this user, excellent!\n* It doesn't look like you have Findora installed.\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
+        "* Welcome to EasyNode.PRO Validator Toolbox for Findora!\n* We've detected that Docker is properly installed for this user, excellent!\n* It doesn't look like you have Findora installed.\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
     )
     answer = ask_yes_no(f"* Do you want to install it now? (Y/N) ")
     if answer:
@@ -330,7 +330,7 @@ def findora_installer() -> None:
         subprocess.run("clear")
         print_stars()
         print(
-            f"* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
+            "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
         )
         print_stars()
         time.sleep(3)
@@ -338,7 +338,7 @@ def findora_installer() -> None:
         subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
         print(
-            f"* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
+            "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
         )
         print_stars()
         input()
@@ -346,15 +346,15 @@ def findora_installer() -> None:
         raise SystemExit(0)
 
 def run_ubuntu_updates() -> None:
-    question = ask_yes_no(f"* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
+    question = ask_yes_no("* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
     if question:
         subprocess.run("clear")
         print_stars()
-        print(f"* Stopping docker container for safety")
+        print("* Stopping docker container for safety")
         subprocess.call(["docker", "container", "stop", "findorad"])
         run_ubuntu_updater()
         print_stars()
-        print(f"* Restarting findorad container")
+        print("* Restarting findorad container")
         subprocess.call(["docker", "container", "start", "findorad"])
         refresh_fn_stats()
     else:
@@ -376,7 +376,7 @@ def get_uid() -> None:
 def migrate_to_server() -> None:
     if os.path.exists(f"{easy_env_fra.migrate_dir}"):
         # check for tmp.gen.keypair and priv_validator_key.json in ~/migrate
-        print(f"* You have a migrate folder, checking for files.")
+        print("* You have a migrate folder, checking for files.")
         if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair") and os.path.exists(
             f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
         ) or os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
@@ -386,7 +386,7 @@ def migrate_to_server() -> None:
             # Ask to start migration, warn about double sign again, again
             print_stars()
             answer = ask_yes_no(
-                f"* Are you sure your old server is shut down? Files to migrate have been detected.\n* One last time, are you sure you want to migrate and start-up now? (Y/N) "
+                "* Are you sure your old server is shut down? Files to migrate have been detected.\n* One last time, are you sure you want to migrate and start-up now? (Y/N) "
             )
             if answer:
                 print_stars()
@@ -409,11 +409,11 @@ def migrate_to_server() -> None:
                 subprocess.call(["touch", f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic"])
                 with open(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w") as file:
                     file.write(node_mnemonic)
-                print(f'* File copying completed, restarting services.')
+                print('* File copying completed, restarting services.')
                 # Restart container
                 migration_update()
                 print_stars()
-                print(f'* Migration completed, check option #2 to verify your validator information has updated correctly!')
+                print('* Migration completed, check option #2 to verify your validator information has updated correctly!')
 
         else:
             print(
