@@ -33,6 +33,7 @@ from config import easy_env_fra
 
 
 def pause_for_cause():
+    print(Fore.MAGENTA)
     print_stars()
     print("* Press enter to return to the main menu.")
     print_stars()
