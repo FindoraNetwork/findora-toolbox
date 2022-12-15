@@ -165,7 +165,7 @@ def menu_topper() -> None:
         our_version = "No Response"
         print_stars()
         print(
-            "* Container is running but there is no response from http://localhost:8668/version - Are your ports open?" 
+            "* Container is running but there is no response from http://localhost:8668/version - Are your ports open?"
             + "* We can continue though, press enter to load the menu."
         )
         print_stars()
@@ -212,8 +212,11 @@ def menu_topper() -> None:
 def rescue_menu() -> None:
     menu_options = {0: finish_node, 1: refresh_wallet_stats, 2: run_container_update, 3: run_clean_script}
     print(
-        "* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry." 
-        + "* 2 - Run update version and restart script.\n* 3 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot"
+        "* We still don't detect a running container. Here are your options currently:"
+        + "* 1 - Keep checking stats, wait longer and retry."
+        + "* 2 - Run update version and restart script."
+        + "* 3 - Run safety clean and reset data."
+        + "* 0 - Exit and manually troubleshoot"
     )
     print_stars()
     try:
@@ -343,7 +346,8 @@ def findora_installer() -> None:
     # Run installer ya'll!
     print(
         "* Welcome to EasyNode.PRO Validator Toolbox for Findora!\n* We've detected that Docker is properly installed for this user, excellent!"
-        + "* It doesn't look like you have Findora installed.\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
+        + "* It doesn't look like you have Findora installed."
+        + "* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
     )
     answer = ask_yes_no(f"* Do you want to install it now? (Y/N) ")
     if answer:
@@ -479,7 +483,8 @@ def migrate_to_server() -> None:
         else:
             print(
                 "* We're sorry, your folder is there but you are missing file(s), please try again after fixing the contents."
-                + f"* Add the files from your old server into:\n* {easy_env_fra.migrate_dir}/tmp.gen.keypair\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json\n*"
+                + f"* Add the files from your old server into:\n* {easy_env_fra.migrate_dir}/tmp.gen.keypair"
+                + f"* {easy_env_fra.migrate_dir}/config/priv_validator_key.json\n*"
             )
     else:
         # path doesn't exist, explain migration process.
@@ -487,8 +492,8 @@ def migrate_to_server() -> None:
             f"* We didn't locate a folder at {easy_env_fra.migrate_dir}\n*\n* Exit the toolbox, then:"
             + f"* 1. Make a folder named {easy_env_fra.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder"
             + "* 3. Add your config folder containing your priv_validator_key.json file into migrate"
-            + "* 4. If this server is synced up, you can shut off your old server and run migration again at that point to move servers without double signing.\n*"
-            + "* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
+            + "* 4. If this server is synced up, you can shut off the old server and run migration again at that point to move servers without double signing."
+            + "*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
         )
     print_stars()
     print("* Press enter to return to the main menu.")
@@ -559,8 +564,10 @@ def backup_folder_check() -> None:
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f'* Your tmp.gen.keypair file in {easy_env_fra.findora_backup} does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
-                    + f'* Do you want to copy the key from {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key to {easy_env_fra.findora_backup}/tmp.gen.keypair as a backup? (Y/N) '
+                    f'* Your tmp.gen.keypair file in {easy_env_fra.findora_backup} does not match '
+                    + f'your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
+                    + f'* Do you want to copy the key from {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}'
+                    + f'_node.key to {easy_env_fra.findora_backup}/tmp.gen.keypair as a backup? (Y/N) '
                 )
                 if question:
                     # Copy key back
@@ -588,7 +595,8 @@ def backup_folder_check() -> None:
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f'* Your file {easy_env_fra.findora_backup}/config/priv_validator_key.json does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
+                    f'* Your file {easy_env_fra.findora_backup}/config/priv_validator_key.json does not match '
+                    + f'your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
                     + f'* Do you want to copy your config folder into {easy_env_fra.findora_backup}/config ? (Y/N) '
                 )
                 if question:
