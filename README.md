@@ -9,7 +9,7 @@ Minimum: 8GB RAM, 2 Core CPU (2.90GHz per core), 100GB Hard Disk
 Recommended: 16GB RAM, 4 Core CPU (2.90Ghz per core), 300GB Hard Disk
 
 ## Full documentation
-If you're not sure what requirements are needed for the server, how to setup the firewall or how to install docker, our [full guide](https://guides.easynode.pro/findora/fast_easynode) will help you through setting up a server with Findora Toolbox.
+If you're not sure what requirements are needed for the server, how to setup the firewall or how to install docker, our [full guide](https://guides.easynode.pro/findora/toolbox) will help you through setting up a server with Findora Toolbox.
 
 ## Quick start guide for power users
 ### Fresh server installation
