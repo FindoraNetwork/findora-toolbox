@@ -12,7 +12,7 @@ print(f"*                                   {Fore.MAGENTA}{Back.GREEN}Informatio
 print("*  13 -  Show system disk info     - Current drive space status")
 print("*  14 -  TMI about your Validator  - Seriously too much information")
 print("*  15 -  TMI about your Server     - Seriously a lot of info about this server")
-print("*  16 -  Instructions on Migrating - Run this to read info on migrating to this server.)
+print("*  16 -  Instructions on Migrating - Run this to read info on migrating to this server.")
 print_stars()
 migration_menu_option()
 print("* 999 -  Reboot Server             - " + Fore.YELLOW + Back.RED + "WARNING: You will miss blocks during a reboot!" + Style.RESET_ALL + Fore.MAGENTA )
