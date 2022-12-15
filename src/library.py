@@ -31,6 +31,7 @@ from toolbox.library import (
 )
 from config import easy_env_fra
 
+
 def set_main_or_test() -> None:
     if not environ.get("FRA_NETWORK"):
         subprocess.run("clear")
@@ -53,6 +54,7 @@ def set_main_or_test() -> None:
         subprocess.run("clear")
     return
 
+
 def menu_findora() -> None:
     update = menu_topper()
     for x in return_txt(easy_env_fra.findora_menu):
@@ -63,6 +65,7 @@ def menu_findora() -> None:
             pass
         if x:
             print(x)
+
 
 def refresh_wallet_stats() -> None:
     subprocess.run("clear")
@@ -81,6 +84,7 @@ def refresh_wallet_stats() -> None:
     print_stars()
     input()
 
+
 def refresh_fn_stats() -> None:
     subprocess.run("clear")
     print_stars()
@@ -97,15 +101,18 @@ def refresh_fn_stats() -> None:
     print_stars()
     input()
 
+
 def check_balance_menu() -> None:
     print(f"* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
 
+
 def operating_system_updates() -> None:
     print(f"* Coming soon!")
     print_stars()
     input("* Press ENTER to continue.")
+
 
 def server_disk_check() -> None:
     print_stars_reset()
@@ -130,17 +137,22 @@ def server_disk_check() -> None:
     print_stars()
     input("* Disk check complete, press ENTER to return to the main menu. ")
 
+
 def get_container_version(url) -> None:
     response = requests.get(url)
     return response.text
 
+
 def findora_container_update(update) -> None:
     if update:
-        print(f"{Fore.CYAN}*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora{Fore.MAGENTA}")
+        print(
+            f"{Fore.CYAN}*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora{Fore.MAGENTA}"
+        )
         return
     else:
         print("*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora")
         return
+
 
 def menu_topper() -> None:
     Load1, Load5, Load15 = os.getloadavg()
@@ -148,18 +160,24 @@ def menu_topper() -> None:
     # get balances
     # get other validator data
     try:
-        our_version = get_container_version('http://localhost:8668/version')
+        our_version = get_container_version("http://localhost:8668/version")
     except TimeoutError:
-        our_version = 'No Response'
+        our_version = "No Response"
         print_stars()
-        print('* Container is running but there is no response from http://localhost:8668/version - Are your ports open?\n* We can continue though, press enter to load the menu.')
+        print(
+            "* Container is running but there is no response from http://localhost:8668/version - Are your ports open?\n* We can continue though, press enter to load the menu."
+        )
         print_stars()
     try:
-        online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
+        online_version = get_container_version(
+            f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version'
+        )
     except TimeoutError:
-        online_version = 'No Response'
+        online_version = "No Response"
         print_stars()
-        print('* No response from findora node, network may be offline or there are internet troubles\n* We can continue though, press enter to load the menu.')
+        print(
+            "* No response from findora node, network may be offline or there are internet troubles\n* We can continue though, press enter to load the menu."
+        )
         print_stars()
         input()
     subprocess.run("clear")
@@ -176,7 +194,7 @@ def menu_topper() -> None:
         f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.our_disk_mount): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container Version: {our_version}")
-    if online_version != our_version: 
+    if online_version != our_version:
         print(f"* Container Update Available: {online_version}")
         update = True
     else:
@@ -188,14 +206,12 @@ def menu_topper() -> None:
     print_stars()
     return update
 
+
 def rescue_menu() -> None:
-    menu_options = {
-        0: finish_node,
-        1: refresh_wallet_stats,
-        2: run_container_update,
-        3: run_clean_script
-    }
-    print("* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run update version and restart script.\n* 3 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot")
+    menu_options = {0: finish_node, 1: refresh_wallet_stats, 2: run_container_update, 3: run_clean_script}
+    print(
+        "* We still don't detect a running container. Here are your options currently:\n* 1 - Keep checking stats, wait longer and retry.\n* 2 - Run update version and restart script.\n* 3 - Run safety clean and reset data.\n* 0 - Exit and manually troubleshoot"
+    )
     print_stars()
     try:
         option = int(input("Enter your option: "))
@@ -205,6 +221,7 @@ def rescue_menu() -> None:
     subprocess.run("clear")
     menu_options[option]()
     rescue_menu()
+
 
 def update_findora_container(skip) -> None:
     print("* Running the update and restart may cause missed blocks, beware before proceeding!")
@@ -230,15 +247,18 @@ def update_findora_container(skip) -> None:
         subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         if container_running(easy_env_fra.container_name):
             print_stars()
-            print('* Your container is restarted and back online. Press enter to return to the main menu.')
+            print("* Your container is restarted and back online. Press enter to return to the main menu.")
             input()
             run_findora_menu()
         else:
             print_stars()
-            print('* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot.')
+            print(
+                "* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot."
+            )
             input()
             rescue_menu()
     return
+
 
 def migration_update() -> None:
     subprocess.call(
@@ -252,6 +272,7 @@ def migration_update() -> None:
         stderr=subprocess.DEVNULL,
     )
     subprocess.call(["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
+
 
 def update_fn_wallet() -> None:
     print("* This option upgrades the fn wallet application.")
@@ -276,6 +297,7 @@ def update_fn_wallet() -> None:
         input("* Fn update complete, press ENTER to return to the main menu. ")
         return
 
+
 def run_clean_script() -> None:
     print(
         "* Running the update and restart may cause missed blocks, beware before proceeding!\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
@@ -299,15 +321,18 @@ def run_clean_script() -> None:
         )
         if container_running(easy_env_fra.container_name):
             print_stars()
-            print('* Your container is restarted and back online. Press enter to return to the main menu.')
+            print("* Your container is restarted and back online. Press enter to return to the main menu.")
             input()
             run_findora_menu()
         else:
             print_stars()
-            print('* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot.')
+            print(
+                "* Your container was restarted but there was a problem bringing it back online.\n*\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot."
+            )
             input()
             rescue_menu()
-        
+
+
 def findora_installer() -> None:
     # Run installer ya'll!
     print(
@@ -345,6 +370,7 @@ def findora_installer() -> None:
     else:
         raise SystemExit(0)
 
+
 def run_ubuntu_updates() -> None:
     question = ask_yes_no("* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
     if question:
@@ -360,6 +386,7 @@ def run_ubuntu_updates() -> None:
     else:
         return
 
+
 def chown_dir(root_dir, user, group) -> None:
     for root, dirs, files in os.walk(root_dir):
         for file in files:
@@ -367,19 +394,23 @@ def chown_dir(root_dir, user, group) -> None:
         for dir in dirs:
             os.chown(os.path.join(root, dir), user, group)
 
+
 def get_uid() -> None:
     user_name = getpass.getuser()
     user_info = pwd.getpwnam(user_name)
     uid = user_info.pw_uid
     return uid
 
+
 def migrate_to_server() -> None:
     if os.path.exists(f"{easy_env_fra.migrate_dir}"):
         # check for tmp.gen.keypair and priv_validator_key.json in ~/migrate
         print("* You have a migrate folder, checking for files.")
-        if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair") and os.path.exists(
-            f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
-        ) or os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
+        if (
+            os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair")
+            and os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json")
+            or os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json")
+        ):
             print(
                 f"* {easy_env_fra.migrate_dir}/tmp.gen.keypair found!\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json found!\n* All required files in place, ready for upgrade!"
             )
@@ -391,29 +422,51 @@ def migrate_to_server() -> None:
             if answer:
                 print_stars()
                 # start installing
-                print('* Copying Files...')
+                print("* Copying Files...")
                 # stop service
                 subprocess.call(["docker", "container", "stop", "findorad"])
                 # move files
-                if os.path.exists(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'): os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
-                shutil.copy(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key')
-                os.remove(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
-                if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'): 
-                    shutil.copy(f'{easy_env_fra.migrate_dir}/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
-                elif os.path.exists(f'{easy_env_fra.migrate_dir}/config/priv_validator_key.json'):
-                    shutil.copy(f'{easy_env_fra.migrate_dir}/config/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json')
+                if os.path.exists(
+                    f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
+                ):
+                    os.remove(
+                        f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
+                    )
+                shutil.copy(
+                    f"{easy_env_fra.migrate_dir}/tmp.gen.keypair",
+                    f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                )
+                os.remove(
+                    f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json'
+                )
+                if os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
+                    shutil.copy(
+                        f"{easy_env_fra.migrate_dir}/priv_validator_key.json",
+                        f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+                    )
+                elif os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"):
+                    shutil.copy(
+                        f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json",
+                        f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+                    )
                 else:
-                    print("* Welp, somehow we didn't find a priv_validator_key.json to migrate.\n* You'll have to get your key into the config folder and run a safety clean.")
-                node_mnemonic = subprocess.getoutput(f"cat {easy_env_fra.migrate_dir}/tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'")
+                    print(
+                        "* Welp, somehow we didn't find a priv_validator_key.json to migrate.\n* You'll have to get your key into the config folder and run a safety clean."
+                    )
+                node_mnemonic = subprocess.getoutput(
+                    f"cat {easy_env_fra.migrate_dir}/tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'"
+                )
                 os.remove(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
                 subprocess.call(["touch", f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic"])
                 with open(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w") as file:
                     file.write(node_mnemonic)
-                print('* File copying completed, restarting services.')
+                print("* File copying completed, restarting services.")
                 # Restart container
                 migration_update()
                 print_stars()
-                print('* Migration completed, check option #2 to verify your validator information has updated correctly!')
+                print(
+                    "* Migration completed, check option #2 to verify your validator information has updated correctly!"
+                )
 
         else:
             print(
@@ -430,31 +483,40 @@ def migrate_to_server() -> None:
     input()
     return
 
+
 def run_container_update(status=False) -> None:
     update_findora_container(status)
     return
 
+
 def migration_menu_option() -> None:
     file_paths = {}
-    if os.path.exists(f'{easy_env_fra.migrate_dir}/tmp.gen.keypair'):
-        file_paths["tmp.gen.keypair"] = f'{easy_env_fra.migrate_dir}/tmp.gen.keypair'
+    if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair"):
+        file_paths["tmp.gen.keypair"] = f"{easy_env_fra.migrate_dir}/tmp.gen.keypair"
     else:
         # No tmp.gen.keypair, we're out.
         return
-    if os.path.exists(f'{easy_env_fra.migrate_dir}/priv_validator_key.json'):
-        file_paths["priv_validator_key.json"] = f'{easy_env_fra.migrate_dir}/priv_validator_key.json'
+    if os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
+        file_paths["priv_validator_key.json"] = f"{easy_env_fra.migrate_dir}/priv_validator_key.json"
     elif os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"):
-        file_paths["priv_validator_key.json"] = f'{easy_env_fra.migrate_dir}/config/priv_validator_key.json'
+        file_paths["priv_validator_key.json"] = f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
     else:
         # No matches on priv_validator_key.json, we're out.
         return
-    if compare_two_files(file_paths["tmp.gen.keypair"], f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'):
+    if compare_two_files(
+        file_paths["tmp.gen.keypair"],
+        f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+    ):
         # If these are the same, already migrated, don't display
         return
-    if compare_two_files(file_paths["priv_validator_key.json"], f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json'):
+    if compare_two_files(
+        file_paths["priv_validator_key.json"],
+        f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+    ):
         # If these are the same, already migrated, don't display
         return
-    print(f'* 888 -  {Fore.CYAN}Migrate To This Server    {Fore.MAGENTA}- Migrate from another server to this server.')
+    print(f"* 888 -  {Fore.CYAN}Migrate To This Server    {Fore.MAGENTA}- Migrate from another server to this server.")
+
 
 def backup_folder_check() -> None:
     # check for backup folder
@@ -462,36 +524,72 @@ def backup_folder_check() -> None:
         # No dir = mkdir and backup all files
         os.mkdir(easy_env_fra.findora_backup)
         # add all files
-        shutil.copy(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key', f'{easy_env_fra.findora_backup}/tmp.gen.keypair')
-        shutil.copytree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config', f'{easy_env_fra.findora_backup}/config')
+        shutil.copy(
+            f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+            f"{easy_env_fra.findora_backup}/tmp.gen.keypair",
+        )
+        shutil.copytree(
+            f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
+            f"{easy_env_fra.findora_backup}/config",
+        )
         return
     else:
         # check for tmp.gen.keypair, backup if missing
-        if os.path.exists(f'{easy_env_fra.findora_backup}/tmp.gen.keypair'):
+        if os.path.exists(f"{easy_env_fra.findora_backup}/tmp.gen.keypair"):
             # found tmp.gen.keypair in backups, compare to live
-            if compare_two_files(f'{easy_env_fra.findora_backup}/tmp.gen.keypair', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key') is False:
+            if (
+                compare_two_files(
+                    f"{easy_env_fra.findora_backup}/tmp.gen.keypair",
+                    f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                )
+                is False
+            ):
                 # If they are the same we're done, if they are false ask to update
-                question = ask_yes_no(f'* Your tmp.gen.keypair file in {easy_env_fra.findora_backup} does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.\n* Do you want to copy the key from {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key to {easy_env_fra.findora_backup}/tmp.gen.keypair as a backup? (Y/N) ')
+                question = ask_yes_no(
+                    f'* Your tmp.gen.keypair file in {easy_env_fra.findora_backup} does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.\n* Do you want to copy the key from {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key to {easy_env_fra.findora_backup}/tmp.gen.keypair as a backup? (Y/N) '
+                )
                 if question:
                     # Copy key back
-                    os.remove(f'{easy_env_fra.findora_backup}/tmp.gen.keypair')
-                    shutil.copy(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key', f'{easy_env_fra.findora_backup}/tmp.gen.keypair')
+                    os.remove(f"{easy_env_fra.findora_backup}/tmp.gen.keypair")
+                    shutil.copy(
+                        f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                        f"{easy_env_fra.findora_backup}/tmp.gen.keypair",
+                    )
         else:
             # Key file didn't exist, back it up
-            shutil.copy(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key', f'{easy_env_fra.findora_backup}/tmp.gen.keypair')
-        if os.path.exists(f'{easy_env_fra.findora_backup}/config') and os.path.exists(f'{easy_env_fra.findora_backup}/config/priv_validator_key.json'):
+            shutil.copy(
+                f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                f"{easy_env_fra.findora_backup}/tmp.gen.keypair",
+            )
+        if os.path.exists(f"{easy_env_fra.findora_backup}/config") and os.path.exists(
+            f"{easy_env_fra.findora_backup}/config/priv_validator_key.json"
+        ):
             # found config folder & priv_validator_key.json
-            if compare_two_files(f'{easy_env_fra.findora_backup}/config/priv_validator_key.json', f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json') is False: 
+            if (
+                compare_two_files(
+                    f"{easy_env_fra.findora_backup}/config/priv_validator_key.json",
+                    f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+                )
+                is False
+            ):
                 # If they are the same we're done, if they are false ask to update
-                question = ask_yes_no(f'* Your file {easy_env_fra.findora_backup}/config/priv_validator_key.json does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.\n* Do you want to copy your config folder into {easy_env_fra.findora_backup}/config ? (Y/N) ')
+                question = ask_yes_no(
+                    f'* Your file {easy_env_fra.findora_backup}/config/priv_validator_key.json does not match your {easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.\n* Do you want to copy your config folder into {easy_env_fra.findora_backup}/config ? (Y/N) '
+                )
                 if question:
                     # Copy folder back
-                    shutil.rmtree(f'{easy_env_fra.findora_backup}/config')
-                    shutil.copytree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config', f'{easy_env_fra.findora_backup}/config')
+                    shutil.rmtree(f"{easy_env_fra.findora_backup}/config")
+                    shutil.copytree(
+                        f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
+                        f"{easy_env_fra.findora_backup}/config",
+                    )
         else:
             # Key file didn't exist, back it up
-            shutil.rmtree(f'{easy_env_fra.findora_backup}/config')
-            shutil.copytree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config', f'{easy_env_fra.findora_backup}/config')
+            shutil.rmtree(f"{easy_env_fra.findora_backup}/config")
+            shutil.copytree(
+                f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
+                f"{easy_env_fra.findora_backup}/config",
+            )
 
 
 def run_findora_menu() -> None:
