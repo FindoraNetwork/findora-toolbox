@@ -73,7 +73,6 @@ def loader_intro():
                             |/__\|/__\|/__\|/__\|/__\|/__\|/__\|   
     """
     print(p)
-    print_stars()
     return
 
 
