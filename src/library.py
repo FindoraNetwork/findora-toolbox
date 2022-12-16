@@ -52,6 +52,7 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 # loader intro splash screen
 def loader_intro():
+    subprocess.run("clear")
     p = f"""
     {string_stars()}
                     ____ ____ ____ ____ _________ ____ ____ ____ ____           
