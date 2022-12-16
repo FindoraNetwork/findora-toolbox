@@ -9,6 +9,7 @@ import getpass
 import requests
 import docker
 import dotenv
+import hashlib
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
 from datetime import datetime
@@ -74,6 +75,14 @@ def loader_intro():
     
     """
     print(p)
+
+
+def first_env_check(env_file, home_dir) -> None:
+    if os.path.exists(env_file):
+        load_var_file(env_file)
+    else:
+        os.system(f"touch {home_dir}/.easynode.env")
+        load_var_file(env_file)
 
 
 def set_var(env_file, key_name, update_name):
