@@ -75,6 +75,7 @@ def loader_intro():
     
     """
     print(p)
+    time.sleep(2)
 
 
 def first_env_check(env_file, home_dir) -> None:
