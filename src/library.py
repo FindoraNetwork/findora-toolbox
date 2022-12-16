@@ -1050,7 +1050,12 @@ def run_findora_menu() -> None:
         # Pick an option, any option
         value = input("* Enter your option: ")
         # Try/Catch - If it's not a number, goodbye, try again
-        value = int(value)
+        try:
+            value = int(value)
+        except (ValueError, KeyError, TypeError) as e:
+            subprocess.run("clear")
+            print_stars()
+            print(f"* {value} is not a number, try again. Press enter to continue.\n* Error: {e}")
         # clear before load
         subprocess.run("clear")
         print_stars()
