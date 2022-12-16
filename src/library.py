@@ -504,7 +504,7 @@ def refresh_fn_stats() -> None:
 
 
 def check_balance_menu() -> None:
-    print("* Coming soon!")
+    coming_soon()
 
 
 def server_disk_check() -> None:
