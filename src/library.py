@@ -1,4 +1,5 @@
 import subprocess
+import platform
 import os
 import time
 import json
@@ -6,29 +7,95 @@ import shutil
 import pwd
 import getpass
 import requests
+import docker
+import dotenv
 from simple_term_menu import TerminalMenu
+from collections import namedtuple
+from datetime import datetime
 from os import environ
+from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 from pprint import pprint
-from toolbox.library import (
-    print_stars,
-    print_stars_reset,
-    load_var_file,
-    disk_partitions,
-    converted_unit,
-    free_space_check,
-    all_sys_info,
-    ask_yes_no,
-    coming_soon,
-    run_ubuntu_updater,
-    menu_error,
-    menu_reboot_server,
-    finish_node,
-    set_var,
-    compare_two_files,
-    container_running,
-)
 from config import easy_env_fra
+
+
+class print_stuff:
+    def __init__(self, reset: int = 0):
+        self.reset = reset
+        self.print_stars = "*" * 93
+        self.reset_stars = self.print_stars + Style.RESET_ALL
+
+    def printStars(self) -> None:
+        p = self.print_stars
+        if self.reset:
+            p = self.reset_stars
+        print(p)
+
+    def stringStars(self) -> str:
+        p = self.print_stars
+        if self.reset:
+            p = self.reset_stars
+        return p
+
+    @classmethod
+    def printWhitespace(self) -> None:
+        print("\n" * 8)
+
+
+print_whitespace = print_stuff.printWhitespace
+print_stars = print_stuff().printStars
+string_stars = print_stuff().stringStars
+print_stars_reset = print_stuff(reset=1).printStars
+string_stars_reset = print_stuff(reset=1).stringStars
+
+
+def set_var(env_file, key_name, update_name):
+    if environ.get(key_name):
+        dotenv.unset_key(env_file, key_name)
+    dotenv.set_key(env_file, key_name, update_name)
+    load_var_file(env_file)
+    return
+
+
+def compare_two_files(input1, input2) -> None:
+    #open the files
+    file1 = open(input1, 'rb')
+    file2 = open(input2, 'rb')
+
+    #generate their hashes
+    hash1 = hashlib.md5(file1.read()).hexdigest()
+    hash2 = hashlib.md5(file2.read()).hexdigest()
+
+    #compare the hashes
+    if hash1 == hash2:
+        return True
+    else:
+        return False
+
+
+def ask_yes_no(question: str) -> bool:
+    yes_no_answer = ""
+    while not yes_no_answer.startswith(("Y", "N")):
+        yes_no_answer = input(f"{question}: ").upper()
+    if yes_no_answer.startswith("Y"):
+        return True
+    return False
+
+
+def load_var_file(var_file):
+    if os.path.exists(var_file):
+        load_dotenv(var_file, override=True)
+    else:
+        subprocess.run(["touch", var_file])
+
+
+def finish_node():
+    print(
+        "* Thanks for using Easy Node - EZ Mode!\n* We serve up free tools.\n*\n"
+        + "* Please consider supporting us one time or monthly at https://github.com/sponsors/easy-node-pro today!\n*\n* Goodbye!"
+    )
+    print_stars()
+    raise SystemExit(0)
 
 
 def pause_for_cause():
@@ -37,6 +104,283 @@ def pause_for_cause():
     print("* Press enter to return to the main menu.")
     print_stars()
     input()
+
+
+def run_ubuntu_updater() -> None:
+    os_upgrades()
+    print()
+
+
+def process_command(command: str) -> None:
+    process = subprocess.Popen(command, shell=True)
+    output, error = process.communicate()
+
+
+def os_upgrades() -> None:
+    upgrades = (
+        "sudo apt update",
+        "sudo apt upgrade -y",
+        "sudo apt dist-upgrade -y",
+        "sudo apt autoremove -y",
+    )
+    print_stars()
+    for x in upgrades:
+        process_command(x)
+    print_stars()
+
+
+def menu_error() -> None:
+    subprocess.run("clear")
+    print_stars()
+    print(
+        "* "
+        + Fore.RED
+        + "WARNING"
+        + Style.RESET_ALL
+        + ": Only numbers are possible, please try your selection on the main menu once again.\n* Press enter to return to the menu."
+    )
+    print_stars()
+    return
+
+
+def menu_reboot_server() -> str:
+    question = ask_yes_no(
+        Fore.RED
+        + "WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.\n\n"
+        + "Reconnect after a few moments & Run the Validator Toolbox Menu again with: python3 ~/validator-toolboxstart.py\n"
+        + Fore.WHITE
+        + "Are you sure you would like to proceed with rebooting your server?\n\nType 'Yes' or 'No' to continue"
+    )
+    if question:
+        os.system("sudo reboot")
+    else:
+        print("Invalid option.")
+
+
+def free_space_check(mount) -> str:
+    ourDiskMount = get_mount_point(mount)
+    _, _, free = shutil.disk_usage(ourDiskMount)
+    freeConverted = str(converted_unit(free))
+    return freeConverted
+
+
+def server_drive_check(dot_env, directory) -> None:
+    if environ.get("MOUNT_POINT") is not None:
+        ourDiskMount = environ.get("MOUNT_POINT")
+    else:
+        dotenv.set_key(dot_env, "MOUNT_POINT", directory)
+        load_var_file(dot_env)
+        ourDiskMount = environ.get("MOUNT_POINT")
+    print_stars()
+    print("Here are all of your mount points: ")
+    for part in disk_partitions():
+        print(part)
+    print_stars()
+    total, used, free = shutil.disk_usage(ourDiskMount)
+    total = str(converted_unit(total))
+    used = str(converted_unit(used))
+    print(
+        "Disk: "
+        + str(ourDiskMount)
+        + "\n"
+        + free_space_check(directory)
+        + " Free\n"
+        + used
+        + " Used\n"
+        + total
+        + " Total"
+    )
+    print_stars()
+    input("Disk check complete, press ENTER to return to the main menu. ")
+
+
+def disk_partitions(all=False):
+    disk_ntuple = namedtuple("partition", "device mountpoint fstype")
+    # Return all mounted partitions as a nameduple.
+    # If all == False return physical partitions only.
+    phydevs = []
+    with open("/proc/filesystems", "r") as f:
+        for line in f:
+            if not line.startswith("nodev"):
+                phydevs.append(line.strip())
+
+    retlist = []
+    with open("/etc/mtab", "r") as f:
+        for line in f:
+            if not all and line.startswith("none"):
+                continue
+            fields = line.split()
+            device = fields[0]
+            mountpoint = fields[1]
+            fstype = fields[2]
+            if not all and fstype not in phydevs:
+                continue
+            if device == "none":
+                device = ""
+            ntuple = disk_ntuple(device, mountpoint, fstype)
+            retlist.append(ntuple)
+    return retlist
+
+
+def get_mount_point(pathname):
+    pathname = os.path.normcase(os.path.realpath(pathname))
+    parent_device = path_device = os.stat(pathname).st_dev
+    while parent_device == path_device:
+        mount_point = pathname
+        pathname = os.path.dirname(pathname)
+        if pathname == mount_point:
+            break
+        parent_device = os.stat(pathname).st_dev
+    return mount_point
+
+
+def converted_unit(n):
+    symbols = ("K", "M", "G", "T", "P", "E", "Z", "Y")
+    prefix = {}
+    for i, s in enumerate(symbols):
+        prefix[s] = 1 << (i + 1) * 10
+    for s in reversed(symbols):
+        if n >= prefix[s]:
+            value = float(n) / prefix[s]
+            return "%.1f%s" % (value, s)
+    return "%sB" % n
+
+
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+
+def docker_check():
+    status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if status == 0:
+        print("* Docker is available and working properly.\n* Loading management menu now...")
+        print_stars()
+        return 0
+    else:
+        print("* Docker is not installed and/or is not working properly.")
+        print("* Install docker on this server and give the user access to continue.")
+        print_stars()
+        finish_node()
+
+
+def all_sys_info():
+    print("=" * 40, "System Information", "=" * 40)
+    uname = platform.uname()
+    print(f"System: {uname.system}")
+    print(f"Node Name: {uname.node}")
+    print(f"Release: {uname.release}")
+    print(f"Version: {uname.version}")
+    print(f"Machine: {uname.machine}")
+    print(f"Processor: {uname.processor}")
+
+    # Boot Time
+    print("=" * 40, "Boot Time", "=" * 40)
+    boot_time_timestamp = psutil.boot_time()
+    bt = datetime.fromtimestamp(boot_time_timestamp)
+    print(f"Boot Time: {bt.year}/{bt.month}/{bt.day} {bt.hour}:{bt.minute}:{bt.second}")
+
+    # let's print CPU information
+    print("=" * 40, "CPU Info", "=" * 40)
+    # number of cores
+    print("Physical cores:", psutil.cpu_count(logical=False))
+    print("Total cores:", psutil.cpu_count(logical=True))
+    # CPU frequencies
+    cpufreq = psutil.cpu_freq()
+    print(f"Max Frequency: {cpufreq.max:.2f}Mhz")
+    print(f"Min Frequency: {cpufreq.min:.2f}Mhz")
+    print(f"Current Frequency: {cpufreq.current:.2f}Mhz")
+    # CPU usage
+    print("CPU Usage Per Core:")
+
+    # TODO: Does a Core start from 0? or 1? enumerate starts from 0.. check if we need i+1 to align !
+    for i, percentage in enumerate(psutil.cpu_percent(percpu=True, interval=1)):
+        print(f"Core {i}: {percentage}%")
+    print(f"Total CPU Usage: {psutil.cpu_percent()}%")
+
+    # Memory Information
+    print("=" * 40, "Memory Information", "=" * 40)
+    # get the memory details
+    svmem = psutil.virtual_memory()
+    print(f"Total: {get_size(svmem.total)}")
+    print(f"Available: {get_size(svmem.available)}")
+    print(f"Used: {get_size(svmem.used)}")
+    print(f"Percentage: {svmem.percent}%")
+    print("=" * 20, "SWAP", "=" * 20)
+    # get the swap memory details (if exists)
+    swap = psutil.swap_memory()
+    print(f"Total: {get_size(swap.total)}")
+    print(f"Free: {get_size(swap.free)}")
+    print(f"Used: {get_size(swap.used)}")
+    print(f"Percentage: {swap.percent}%")
+
+    # Disk Information
+    print("=" * 40, "Disk Information", "=" * 40)
+    print("Partitions and Usage:")
+    # get all disk partitions
+    partitions = psutil.disk_partitions()
+    for partition in partitions:
+        print(f"=== Device: {partition.device} ===")
+        print(f"  Mountpoint: {partition.mountpoint}")
+        print(f"  File system type: {partition.fstype}")
+        try:
+            partition_usage = psutil.disk_usage(partition.mountpoint)
+        except PermissionError:
+            # this can be catched due to the disk that
+            # isn't ready
+            continue
+        print(f"  Total Size: {get_size(partition_usage.total)}")
+        print(f"  Used: {get_size(partition_usage.used)}")
+        print(f"  Free: {get_size(partition_usage.free)}")
+        print(f"  Percentage: {partition_usage.percent}%")
+    # get IO statistics since boot
+    disk_io = psutil.disk_io_counters()
+    print(f"Total read: {get_size(disk_io.read_bytes)}")
+    print(f"Total write: {get_size(disk_io.write_bytes)}")
+
+    # Network information
+    print("=" * 40, "Network Information", "=" * 40)
+    # get all network interfaces (virtual and physical)
+    if_addrs = psutil.net_if_addrs()
+    for interface_name, interface_addresses in if_addrs.items():
+        for address in interface_addresses:
+            print(f"=== Interface: {interface_name} ===")
+            if str(address.family) == "AddressFamily.AF_INET":
+                print(f"  IP Address: {address.address}")
+                print(f"  Netmask: {address.netmask}")
+                print(f"  Broadcast IP: {address.broadcast}")
+            elif str(address.family) == "AddressFamily.AF_PACKET":
+                print(f"  MAC Address: {address.address}")
+                print(f"  Netmask: {address.netmask}")
+                print(f"  Broadcast MAC: {address.broadcast}")
+    # get IO statistics since boot
+    net_io = psutil.net_io_counters()
+    print(f"Total Bytes Sent: {get_size(net_io.bytes_sent)}")
+    print(f"Total Bytes Received: {get_size(net_io.bytes_recv)}")
+    input("Press ENTER to return to the main menu.")
+    return
+
+
+def coming_soon():
+    print("* This option isn't available on your system, yet!")
+    print_stars()
+    input("* Press enter to return to the main menu.")
+
+
+def container_running(container_name) -> None:
+    # create client object to connect
+    client = docker.from_env()
+    # Get a list of all containers
+    containers = client.containers.list()
+    # Search for the container by name
+    container = next(filter(lambda c: c.name == container_name, containers), None)
+    if container is not None and container.status == "running":
+        return True
+    else:
+        return False
 
 
 def set_main_or_test() -> None:

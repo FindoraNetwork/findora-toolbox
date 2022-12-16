@@ -2,7 +2,6 @@ import os
 from os import environ
 from toolbox.library import (
     loader_intro,
-    print_stars,
     docker_check,
     container_running,
     finish_node,
@@ -16,6 +15,7 @@ from library import (
     set_main_or_test,
     rescue_menu,
     backup_folder_check,
+    print_stars,
 )
 from colorama import Fore
 from config import easy_env_fra
