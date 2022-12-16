@@ -423,10 +423,10 @@ def run_ubuntu_updates() -> None:
 
 def chown_dir(root_dir, user, group) -> None:
     for root, dirs, files in os.walk(root_dir):
-        for file in files:
-            os.chown(os.path.join(root, file), user, group)
-        for dir in dirs:
-            os.chown(os.path.join(root, dir), user, group)
+        for f in files:
+            os.chown(os.path.join(root, f), user, group)
+        for d in dirs:
+            os.chown(os.path.join(root, d), user, group)
 
 
 def get_uid() -> None:
