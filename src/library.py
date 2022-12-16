@@ -108,8 +108,6 @@ def get_curl_stats() -> None:
     except subprocess.CalledProcessError as err:
         print(f"* No response from the rpc. Error: {err}")
     print(Fore.MAGENTA)
-    pause_for_cause()
-    return
 
 
 def refresh_fn_stats() -> None:
@@ -125,13 +123,10 @@ def refresh_fn_stats() -> None:
             + "same reply try option #10 to get back online and as a last resort option #12!\n"
             + f"* Error: {err}"
         )
-    pause_for_cause()
 
 
 def check_balance_menu() -> None:
     print("* Coming soon!")
-    print_stars()
-    input("* Press ENTER to continue.")
 
 
 def server_disk_check() -> None:
@@ -154,8 +149,6 @@ def server_disk_check() -> None:
         + total
         + " Total"
     )
-    print_stars()
-    input("* Disk check complete, press ENTER to return to the main menu. ")
 
 
 def get_container_version(url) -> None:
@@ -397,10 +390,9 @@ def findora_installer() -> None:
         print_stars()
         print(
             "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your "
-            + "validator on-chain or migrate from another server onto this server.\n* Press enter to continue."
+            + "validator on-chain or migrate from another server onto this server."
         )
-        print_stars()
-        input()
+        pause_for_cause()
     else:
         raise SystemExit(0)
 
@@ -445,7 +437,6 @@ def migration_instructions():
         + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
         + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
     )
-    pause_for_cause()
 
 
 def migrate_to_server() -> None:
@@ -524,7 +515,6 @@ def migrate_to_server() -> None:
                 print(
                     "* Migration completed, check option #2 to verify your validator information has updated correctly!"
                 )
-                pause_for_cause()
 
         else:
             print(
@@ -532,7 +522,7 @@ def migrate_to_server() -> None:
                 + f"\n* Add the files from your old server into:\n* {easy_env_fra.migrate_dir}/tmp.gen.keypair"
                 + f"\n* {easy_env_fra.migrate_dir}/config/priv_validator_key.json\n*"
             )
-            pause_for_cause()
+
     else:
         migration_instructions()
     return
@@ -680,14 +670,14 @@ def run_findora_menu() -> None:
         # Pick an option, any option
         value = input("* Enter your option: ")
         # Try/Catch - If it's not a number, goodbye, try again
+        value = int(value)
+        # clear before load
+        subprocess.run("clear")
+        print_stars()
         try:
-            value = int(value)
+            menu_options[value]()
         except (ValueError, KeyError, TypeError) as e:
             subprocess.run("clear")
             print_stars()
             print(f"* {value} is not a number, try again. Press enter to continue.\n* Error: {e}")
-            pause_for_cause()
-        # clear before load
-        subprocess.run("clear")
-        print_stars()
-        menu_options[value]()
+        pause_for_cause()
