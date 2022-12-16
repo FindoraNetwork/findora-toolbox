@@ -1055,7 +1055,7 @@ def run_findora_menu() -> None:
         except (ValueError, KeyError, TypeError) as e:
             subprocess.run("clear")
             print_stars()
-            print(f"* {value} is not a number, try again. Press enter to continue.\n* Error: {e}")
+            print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
         # clear before load
         subprocess.run("clear")
         print_stars()
@@ -1064,5 +1064,5 @@ def run_findora_menu() -> None:
         except (ValueError, KeyError, TypeError) as e:
             subprocess.run("clear")
             print_stars()
-            print(f"* {value} is not a number, try again. Press enter to continue.\n* Error: {e}")
+            print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
         pause_for_cause()
