@@ -10,6 +10,7 @@ import requests
 import docker
 import dotenv
 import hashlib
+import psutil
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
 from datetime import datetime
