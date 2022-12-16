@@ -228,9 +228,9 @@ def rescue_menu() -> None:
     menu_options = {0: finish_node, 1: get_curl_stats, 2: run_container_update, 3: run_clean_script}
     print(
         "* We still don't detect a running container. Here are your options currently:"
-        + "\n* 1 - Keep checking stats, wait longer and retry."
-        + "\n* 2 - Run update version and restart script."
-        + "\n* 3 - Run safety clean and reset data."
+        + "\n* 1 - CURL stats - Keep checking stats"
+        + "\n* 2 - update_version script - Run the update version script as a first option for recovery."
+        + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and reconfigure server."
         + "\n* 0 - Exit and manually troubleshoot"
     )
     print_stars()
@@ -269,15 +269,17 @@ def update_findora_container(skip) -> None:
         if container_running(easy_env_fra.container_name):
             print_stars()
             print("* Your container is restarted and back online. Press enter to return to the main menu.")
-            input()
+            pause_for_cause()
             run_findora_menu()
         else:
             print_stars()
             print(
-                "* Your container was restarted but there was a problem bringing it back online.\n*"
-                + "\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot."
+                "* Your container was restarted but there was a problem bringing it back online."
+                + "\n* We will load our rescue menu with the safety_clean script as an option."
+                + "\n* You can exit out and check your docker logs with `docker logs findorad` to see if there's a file or permissions issue."
+                + "\n* Running safety_clean can help resolve most issues since update didn't bring you back online."
             )
-            input()
+            pause_for_cause
             rescue_menu()
     return
 
