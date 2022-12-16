@@ -682,13 +682,11 @@ def run_findora_menu() -> None:
         # Try/Catch - If it's not a number, goodbye, try again
         try:
             value = int(value)
-        except ValueError:
+        except (ValueError, KeyError, TypeError) as e:
             subprocess.run("clear")
             print_stars()
-            print(f"* {value} is not a number, try again. Press enter to continue.")
-            print_stars()
-            input()
-            run_findora_menu()
+            print(f"* {value} is not a number, try again. Press enter to continue.\n* Error: {e}")
+            pause_for_cause()
         # clear before load
         subprocess.run("clear")
         print_stars()
