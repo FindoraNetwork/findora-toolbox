@@ -13,7 +13,6 @@ from pprint import pprint
 from toolbox.library import (
     print_stars,
     print_stars_reset,
-    return_txt,
     load_var_file,
     disk_partitions,
     converted_unit,
@@ -107,7 +106,7 @@ def get_curl_stats() -> None:
         output = json.loads(output)
         pprint(output)
     except subprocess.CalledProcessError as err:
-        print("* No response from the rpc.")
+        print(f"* No response from the rpc. Error: {err}")
     print(Fore.MAGENTA)
     pause_for_cause()
     return
@@ -120,10 +119,11 @@ def refresh_fn_stats() -> None:
         output = subprocess.check_output(["fn", "show"])
         output = output.decode().replace("b'", "")
         print(output)
-    except:
+    except subprocess.CalledProcessError as err:
         print(
             "* Error, no response from local API, try your curl stats again. If the stats give the "
-            + "same reply try option #10 to get back online and as a last resort option #12!"
+            + "same reply try option #10 to get back online and as a last resort option #12!\n"
+            + f"* Error: {err}"
         )
     pause_for_cause()
 
@@ -211,7 +211,8 @@ def menu_topper() -> None:
     )
     print_stars()
     print(
-        f"* Server Hostname & IP:             {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA} - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Server Hostname & IP:             {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
+        + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(
         f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
@@ -317,7 +318,7 @@ def update_fn_wallet() -> None:
             stderr=subprocess.DEVNULL,
         )
         subprocess.run("clear")
-        print(f"* We will show the output of the upgrade now.")
+        print("* We will show the output of the upgrade now.")
         subprocess.call(
             ["bash", "-x", f"/tmp/fn_update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
         )
@@ -370,7 +371,7 @@ def findora_installer() -> None:
         + "\n* It doesn't look like you have Findora installed."
         + "\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
     )
-    answer = ask_yes_no(f"* Do you want to install it now? (Y/N) ")
+    answer = ask_yes_no("* Do you want to install it now? (Y/N) ")
     if answer:
         # mainnet or testnet
         set_main_or_test()
