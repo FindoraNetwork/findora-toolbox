@@ -510,6 +510,9 @@ def migrate_to_server() -> None:
                 with open(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w") as file:
                     file.write(node_mnemonic)
                 print("* File copying completed, restarting services.")
+                # Wipe backup folder and re-create
+                shutil.rmtree(f"{easy_env_fra.findora_backup}")
+                backup_folder_check()
                 # Restart container
                 migration_update()
                 print_stars()
