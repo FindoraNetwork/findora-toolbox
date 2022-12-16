@@ -293,7 +293,7 @@ def get_size(bytes, suffix="B"):
 def docker_check():
     status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status == 0:
-        print("* Docker is available and working properly.\n* Loading management menu now...")
+        print("* Docker is available and working properly.")
         print_stars()
         time.sleep(2)
         return 0
@@ -739,8 +739,8 @@ def run_clean_script() -> None:
 def findora_installer() -> None:
     # Run installer ya'll!
     print(
-        "* Welcome to EasyNode.PRO Validator Toolbox for Findora!\n* We've detected that Docker is properly installed for this user, excellent!"
-        + "\n* It doesn't look like you have Findora installed."
+        "* We've detected that Docker is properly installed for this user, excellent!"
+        + "\n* But...it doesn't look like you have Findora installed."
         + "\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
     )
     answer = ask_yes_no("* Do you want to install it now? (Y/N) ")
