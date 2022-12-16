@@ -519,6 +519,7 @@ def migrate_to_server() -> None:
                 backup_folder_check()
                 # Restart container
                 migration_update()
+                shutil.rmtree(easy_env_fra.migrate_dir)
                 print_stars()
                 print(
                     "* Migration completed, check option #2 to verify your validator information has updated correctly!"
