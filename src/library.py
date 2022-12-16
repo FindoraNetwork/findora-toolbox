@@ -53,8 +53,8 @@ string_stars_reset = print_stuff(reset=1).stringStars
 # loader intro splash screen
 def loader_intro():
     subprocess.run("clear")
+    print_stars()
     p = f"""
-    {string_stars()}
                     ____ ____ ____ ____ _________ ____ ____ ____ ____           
                     ||E |||a |||s |||y |||       |||N |||o |||d |||e ||          
                     ||__|||__|||__|||__|||_______|||__|||__|||__|||__||          
@@ -71,12 +71,10 @@ def loader_intro():
                             ||T |||o |||o |||l |||b |||o |||x ||                         
                             ||__|||__|||__|||__|||__|||__|||__||                         
                             |/__\|/__\|/__\|/__\|/__\|/__\|/__\|   
-                                            
-    {string_stars()}
-    
     """
     print(p)
-    time.sleep(2)
+    print_stars()
+    return
 
 
 def first_env_check(env_file, home_dir) -> None:
@@ -297,6 +295,7 @@ def docker_check():
     if status == 0:
         print("* Docker is available and working properly.\n* Loading management menu now...")
         print_stars()
+        time.sleep(2)
         return 0
     else:
         print("* Docker is not installed and/or is not working properly.")
