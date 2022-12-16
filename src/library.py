@@ -397,8 +397,6 @@ def all_sys_info():
     net_io = psutil.net_io_counters()
     print(f"Total Bytes Sent: {get_size(net_io.bytes_sent)}")
     print(f"Total Bytes Received: {get_size(net_io.bytes_recv)}")
-    input("Press ENTER to return to the main menu.")
-    return
 
 
 def coming_soon():
