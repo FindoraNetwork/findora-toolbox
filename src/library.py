@@ -140,14 +140,14 @@ def server_disk_check() -> None:
     for part in disk_partitions():
         print(part)
     print_stars()
-    total, used, free = shutil.disk_usage(easy_env_fra.our_disk_mount)
+    total, used, free = shutil.disk_usage(easy_env_fra.findora_root)
     total = str(converted_unit(total))
     used = str(converted_unit(used))
     print(
         "Disk: "
-        + str(easy_env_fra.our_disk_mount)
+        + str(easy_env_fra.findora_root)
         + "\n"
-        + free_space_check(easy_env_fra.our_disk_mount)
+        + free_space_check(easy_env_fra.findora_root)
         + " Free\n"
         + used
         + " Used\n"
@@ -214,7 +214,7 @@ def menu_topper() -> None:
         f"* Server Hostname & IP:             {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA} - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(
-        f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.our_disk_mount): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container Version: {our_version}")
     if online_version != our_version:
