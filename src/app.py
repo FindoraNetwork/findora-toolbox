@@ -1,13 +1,5 @@
 import os
 from os import environ
-from toolbox.library import (
-    loader_intro,
-    docker_check,
-    container_running,
-    finish_node,
-    first_env_check,
-    ask_yes_no,
-)
 from library import (
     run_findora_menu,
     findora_installer,
@@ -16,6 +8,12 @@ from library import (
     rescue_menu,
     backup_folder_check,
     print_stars,
+    loader_intro,
+    docker_check,
+    container_running,
+    finish_node,
+    first_env_check,
+    ask_yes_no,
 )
 from colorama import Fore
 from config import easy_env_fra
