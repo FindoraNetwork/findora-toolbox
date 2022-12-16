@@ -11,7 +11,7 @@ def getUrl() -> None:
 
 
 class easy_env_fra:
-    easy_version = "1.1.4"
+    easy_version = "1.1.5"
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.easynode.env"
