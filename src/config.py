@@ -12,7 +12,6 @@ def getUrl() -> None:
 
 class easy_env_fra:
     easy_version = "1.1.4"
-    our_disk_mount = "/data/findora"
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.easynode.env"
@@ -26,4 +25,4 @@ class easy_env_fra:
     container_name = "findorad"
     migrate_dir = os.path.join(user_home_dir, "migrate")
     fra_env = "prod"
-    findora_backup = f"{user_home_dir}/findora_backup"
+    findora_backup = os.path.join(user_home_dir, "findora_backup")
