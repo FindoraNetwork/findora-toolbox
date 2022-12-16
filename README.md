@@ -22,7 +22,7 @@ We've also got a full breakdown of the components and how they work on the [Tool
 ### Fresh server installation
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
 ```text
-cd ~/ && git clone https://github.com/easy-node-pro/validatortoolbox_fra.git && cd validatortoolbox_fra && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
+cd ~/ && sudo apt install python3-pip -y && git clone https://github.com/easy-node-pro/validatortoolbox_fra.git && cd validatortoolbox_fra && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
 ```
 
 ### Add to an existing Findora server
