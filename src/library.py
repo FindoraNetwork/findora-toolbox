@@ -503,7 +503,7 @@ def migrate_to_server() -> None:
                         + "\n* You'll have to get your key into the config folder and run a safety clean."
                     )
                 node_mnemonic = subprocess.getoutput(
-                    f"cat {easy_env_fra.migrate_dir}/tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'"
+                    f"cat {easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}tmp.gen.keypair | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'"
                 )
                 os.remove(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
                 subprocess.call(["touch", f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic"])
