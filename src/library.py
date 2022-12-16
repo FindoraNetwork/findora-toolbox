@@ -315,9 +315,6 @@ def update_fn_wallet() -> None:
         subprocess.call(
             ["bash", "-x", f"/tmp/fn_update_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
         )
-        print_stars()
-        input("* Fn update complete, press ENTER to return to the main menu. ")
-        return
 
 
 def run_clean_script() -> None:
