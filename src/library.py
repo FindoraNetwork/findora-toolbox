@@ -404,7 +404,6 @@ def all_sys_info():
 def coming_soon():
     print("* This option isn't available on your system, yet!")
     print_stars()
-    input("* Press enter to return to the main menu.")
 
 
 def container_running(container_name) -> None:
