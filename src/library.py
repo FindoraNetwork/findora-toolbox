@@ -50,7 +50,7 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 
 # loader intro splash screen
-def loaderIntro():
+def loader_intro():
     p = f"""
     {string_stars()}
                     ____ ____ ____ ____ _________ ____ ____ ____ ____           
