@@ -512,8 +512,7 @@ def migrate_to_server() -> None:
                 print("* File copying completed, restarting services.")
                 # Wipe backup folder and re-create
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                backup_dir = f"{easy_env_fra.user_home_dir}/Findora_Backup_{format(timestamp)}"
-                os.makedirs(backup_dir)
+                backup_dir = f"{easy_env_fra.user_home_dir}/findora_backup_{format(timestamp)}"
                 shutil.copytree(easy_env_fra.findora_backup, backup_dir)
                 shutil.rmtree(f"{easy_env_fra.findora_backup}")
                 backup_folder_check()
