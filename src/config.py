@@ -1,27 +1,29 @@
 import os, socket, urllib.request
 
+
 def getUrl() -> None:
     try:
-        result = urllib.request.urlopen('https://ident.me').read().decode('utf8')
+        result = urllib.request.urlopen("https://ident.me").read().decode("utf8")
     except Exception as x:
-        print(type(x),x)
-        result = '0.0.0.0'
+        print(type(x), x)
+        result = "0.0.0.0"
     return result
 
+
 class easy_env_fra:
-    easy_version = '1.1.4'
-    our_disk_mount = '/data/findora'
+    easy_version = "1.1.4"
+    our_disk_mount = "/data/findora"
     server_host_name = socket.gethostname()
-    user_home_dir = os.path.expanduser('~')
-    dotenv_file = f'{user_home_dir}/.easynode.env'
+    user_home_dir = os.path.expanduser("~")
+    dotenv_file = f"{user_home_dir}/.easynode.env"
     active_user_name = os.path.split(user_home_dir)[-1]
-    findora_root = '/data/findora'
-    findora_root_mainnet = f'{findora_root}/mainnet'
-    findora_root_testnet = f'{findora_root}/testnet'
-    toolbox_location = os.path.join(user_home_dir, 'validatortoolbox_fra')
+    findora_root = "/data/findora"
+    findora_root_mainnet = f"{findora_root}/mainnet"
+    findora_root_testnet = f"{findora_root}/testnet"
+    toolbox_location = os.path.join(user_home_dir, "validatortoolbox_fra")
     our_external_ip = getUrl()
-    findora_menu = os.path.join(toolbox_location, 'src', 'messages', 'framenu.txt')
-    container_name = 'findorad'
-    migrate_dir = os.path.join(user_home_dir, 'migrate')
-    fra_env = 'prod'
-    findora_backup = f'{user_home_dir}/findora_backup'
+    findora_menu = os.path.join(toolbox_location, "src", "messages", "framenu.txt")
+    container_name = "findorad"
+    migrate_dir = os.path.join(user_home_dir, "migrate")
+    fra_env = "prod"
+    findora_backup = f"{user_home_dir}/findora_backup"
