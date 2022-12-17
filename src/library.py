@@ -182,10 +182,10 @@ def menu_error() -> None:
 def menu_reboot_server() -> str:
     question = ask_yes_no(
         Fore.RED
-        + "WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.\n\n"
-        + "Reconnect after a few moments & Run the Validator Toolbox Menu again with: python3 ~/validator-toolboxstart.py\n"
+        + "* WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.\n\n"
+        + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: python3 ~/validator-toolboxstart.py\n"
         + Fore.WHITE
-        + "Are you sure you would like to proceed with rebooting your server?\n\nType 'Yes' or 'No' to continue"
+        + "* We will stop your container safely before restarting\n* Are you sure you would like to proceed with rebooting your server? (Y/N) "
     )
     if question:
         print("* Stopping docker container for safety\n* Run toolbox after you reboot to get back online or start your container manually with `docker container start findorad` when you re-login!")
