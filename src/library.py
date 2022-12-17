@@ -462,7 +462,7 @@ def menu_findora() -> None:
     print("*  15 -  TMI about your Server     - Seriously a lot of info about this server")
     print("*  16 -  Instructions on Migrating - Run this to read info on migrating to this server.")
     print_stars()
-    migration_menu_option()
+    if migration_check(): print_migrate()
     print(
         "* 999 -  Reboot Server             - "
         + Fore.YELLOW
@@ -912,32 +912,35 @@ def run_container_update(status=False) -> None:
     return
 
 
-def migration_menu_option() -> None:
+def migration_check() -> None:
     file_paths = {}
     if os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair"):
         file_paths["tmp.gen.keypair"] = f"{easy_env_fra.migrate_dir}/tmp.gen.keypair"
     else:
         # No tmp.gen.keypair, we're out.
-        return
+        return False
     if os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
         file_paths["priv_validator_key.json"] = f"{easy_env_fra.migrate_dir}/priv_validator_key.json"
     elif os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"):
         file_paths["priv_validator_key.json"] = f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
     else:
         # No matches on priv_validator_key.json, we're out.
-        return
+        return False
     if compare_two_files(
         file_paths["tmp.gen.keypair"],
         f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
     ):
         # If these are the same, already migrated, don't display
-        return
+        return False
     if compare_two_files(
         file_paths["priv_validator_key.json"],
         f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
     ):
         # If these are the same, already migrated, don't display
-        return
+        return False
+    return True
+
+def print_migrate():
     print(f"* 888 -  {Fore.CYAN}Migrate To This Server    {Fore.MAGENTA}- Migrate from another server to this server.")
 
 
