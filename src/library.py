@@ -941,7 +941,7 @@ def migration_check() -> None:
     return True
 
 def print_migrate():
-    print(f"* 888 -  {Fore.CYAN}Migrate To This Server    {Fore.MAGENTA}- Migrate from another server to this server.")
+    print(f"{Fore.CYAN}* 888 -  Migrate To This Server    - Migrate from another server to this server.{Fore.MAGENTA}")
 
 
 def backup_folder_check() -> None:
