@@ -188,6 +188,8 @@ def menu_reboot_server() -> str:
         + "Are you sure you would like to proceed with rebooting your server?\n\nType 'Yes' or 'No' to continue"
     )
     if question:
+        print("* Stopping docker container for safety\n* Run toolbox after you reboot to get back online or start your container manually with `docker container start findorad` when you re-login!")
+        subprocess.call(["docker", "container", "stop", "findorad"])
         os.system("sudo reboot")
     else:
         print("Invalid option.")
