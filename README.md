@@ -7,6 +7,8 @@
 
 ## Findora Validator Toolbox
 
+![image](https://guides.easynode.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ffindora_loader.be572de6.png&w=1080&q=75)
+
 Here's the [EasyNode.PRO](https://easynode.pro) validator toolbox for the Findora network.
 
 ### Requirements
