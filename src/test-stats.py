@@ -1,25 +1,40 @@
 import requests
 import json
 import web3
+import re
+import subprocess
 from datetime import datetime, timezone
-from library import capture_stats
+from library import capture_stats, findora_gwei_convert
 from pprint import pprint
 from decimal import Decimal
 
-now = datetime.now(timezone.utc)
+def get_fn_stats():
+    output = subprocess.check_output(["fn", "show"])
+    json_string = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
 
-response = requests.get("http://localhost:26657/status")
-stats = json.loads(response.text)
+    lines = json_string.split("\n")
 
-def convert(findora):
-    fra_amount = int(findora) / 1000000
-    return fra_amount
+    fn_info = {}
+    if int(lines[17].split()[1][:-1]) == 0:
+        fn_info["Network"] = lines[1]
+        fn_info["Current Block"] = lines[29].split()[1][:-1]
+        fn_info["Balance"] = f"{findora_gwei_convert(int(fra_bal))} FRA"
+    else:
+        fn_info["Network"] = lines[1]
+        fn_info["Current Block"] = lines[34].split()[1][:-1]
+        fn_info["Proposed Blocks"] = lines[36].split()[1]
+        fn_info["Self Delegation"] = f"{findora_gwei_convert(int(lines[17].split()[1][:-1]))} FRA"
+        fn_info["Balance"] = f"{findora_gwei_convert(int(lines[10].split()[0][:-1]))} FRA"
+        fn_info["Unclaimed FRA"] = f"{findora_gwei_convert(int(lines[51].split()[1][:-1]))} FRA"
+        fn_info["Server Rank"] = lines[45].split()[1][:-1]
+        fn_info["Delegator Count"] = lines[66].split()[1]
+        fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
 
-fra = convert(stats['result']['validator_info']['voting_power'])
+    for i in fn_info:
+        spaces = "                                      "
+        print(f"* {i}: {spaces[len(i):]}{fn_info[i]}")
 
-print(f"* Address:           {stats['result']['validator_info']['address']}")
-print(f"* Current Stake:     {'{:,}'.format(round(fra, 2))} FRA")
-print(f"* Catching Up:       {stats['result']['sync_info']['catching_up']}")
-print(f"* Latest Block:      {stats['result']['sync_info']['latest_block_height']}")
-print(f"* Latest Block Time: {stats['result']['sync_info']['latest_block_time'][:-11]}")
-print(f"* Current Time UTC:  {now.strftime('%Y-%m-%dT%H:%M:%S')}")
+    return fn_info
+
+get_fn_stats()
+    

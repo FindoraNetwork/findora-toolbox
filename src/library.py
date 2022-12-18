@@ -558,36 +558,51 @@ def findora_container_update(update) -> None:
         return
 
 
-def convert(findora):
+def findora_gwei_convert(findora):
     fra_amount = int(findora) / 1000000
     return fra_amount
+
+
+def get_fn_stats():
+    output = subprocess.check_output(["fn", "show"])
+    json_string = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
+
+    lines = json_string.split("\n")
+
+    fn_info = {}
+    if int(lines[17].split()[1][:-1]) == 0:
+        fn_info["Network"] = lines[1]
+        fn_info["Current Block"] = lines[29].split()[1][:-1]
+        fn_info["Balance"] = f"{findora_gwei_convert(int(fra_bal))} FRA"
+    else:
+        fn_info["Network"] = lines[1]
+        fn_info["Current Block"] = lines[34].split()[1][:-1]
+        fn_info["Proposed Blocks"] = lines[36].split()[1]
+        fn_info["Self Delegation"] = f"{findora_gwei_convert(int(lines[17].split()[1][:-1]))} FRA"
+        fn_info["Balance"] = f"{findora_gwei_convert(int(lines[10].split()[0][:-1]))} FRA"
+        fn_info["Unclaimed FRA"] = f"{findora_gwei_convert(int(lines[51].split()[1][:-1]))} FRA"
+        fn_info["Server Rank"] = lines[45].split()[1][:-1]
+        fn_info["Delegator Count"] = lines[66].split()[1]
+        fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
+
+    return fn_info
 
 
 def menu_topper() -> None:
     try:
         Load1, Load5, Load15 = os.getloadavg()
-        stats = capture_stats()
+        curl_stats = capture_stats()
         now = datetime.now(timezone.utc)
-        fra = convert(stats['result']['validator_info']['voting_power'])
+        fra = findora_gwei_convert(curl_stats['result']['validator_info']['voting_power'])
         our_version = get_container_version("http://localhost:8668/version")
-    except TimeoutError:
+        our_fn_stats = get_fn_stats()
+        online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
+    except TimeoutError as e:
         our_version = "No Response"
-        print_stars()
-        print(
-            "* Container is running but there is no response from http://localhost:8668/version - Are your ports open?"
-            + "\n* We can continue though, press enter to load the menu."
-        )
-        print_stars()
-    try:
-        online_version = get_container_version(
-            f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version'
-        )
-    except TimeoutError:
         online_version = "No Response"
         print_stars()
         print(
-            "* No response from findora node, network may be offline or there are internet troubles"
-            + "\n* We can continue though, press enter to load the menu."
+            f"* Timeout error: {e}"
         )
         print_stars()
         input()
@@ -599,16 +614,19 @@ def menu_topper() -> None:
         + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
     )
     print_stars()
-    print(f"* Public Address:    https://findorascan.io/node/{stats['result']['validator_info']['address']}")
+    print(f"* Public Address:    https://findorascan.io/node/{curl_stats['result']['validator_info']['address']}")
     print(f"* Current FRA Staked:             {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
-    if stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
-    else: print(f"* Catching Up:                    {Fore.GREEN}{stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
-    print(f"* Latest Block:                   {stats['result']['sync_info']['latest_block_height']}")
+    if curl_stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
+    else: print(f"* Catching Up:                    {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
+    print(f"* Latest Block:                   {curl_stats['result']['sync_info']['latest_block_height']}")
     print(
         f"* Server Hostname & IP:           {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Latest Block Time:              {stats['result']['sync_info']['latest_block_time'][:-11]}")
+    for i in our_fn_stats:
+        spaces = "                                      "
+        print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
+    print(f"* Latest Block Time:              {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:               {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
         f"* Current disk space free:        {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
