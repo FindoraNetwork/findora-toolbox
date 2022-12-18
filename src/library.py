@@ -600,7 +600,7 @@ def menu_topper() -> None:
     )
     print_stars()
     print(f"* Public Address:    https://findorascan.io/node/{stats['result']['validator_info']['address']}")
-    print(f"* Current FRA Staked:             {'{:,}'.format(round(fra, 2))} FRA")
+    print(f"* Current FRA Staked:             {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
     if stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
     else: print(f"* Catching Up:                    {Fore.GREEN}{stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
     print(f"* Latest Block:                   {stats['result']['sync_info']['latest_block_height']}")
@@ -611,7 +611,7 @@ def menu_topper() -> None:
     print(f"* Latest Block Time:              {stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:               {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current disk space free:          {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container {our_version}")
     if online_version != our_version:
