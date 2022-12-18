@@ -578,9 +578,9 @@ def get_fn_stats():
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[34].split()[1][:-1]
         fn_info["Proposed Blocks"] = lines[36].split()[1]
-        fn_info["Self Delegation"] = f"{findora_gwei_convert(int(lines[17].split()[1][:-1]))} FRA"
-        fn_info["Balance"] = f"{findora_gwei_convert(int(lines[10].split()[0][:-1]))} FRA"
-        fn_info["Unclaimed FRA"] = f"{findora_gwei_convert(int(lines[51].split()[1][:-1]))} FRA"
+        fn_info["Self Delegation"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[17].split()[1][:-1])), 2))} FRA"
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0][:-1])), 2))} FRA"
+        fn_info["Pool Unclaimed FRA"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[51].split()[1][:-1])), 2))} FRA"
         fn_info["Server Rank"] = lines[45].split()[1][:-1]
         fn_info["Delegator Count"] = lines[66].split()[1]
         fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
@@ -614,26 +614,33 @@ def menu_topper() -> None:
         + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
     )
     print_stars()
-    print(f"* Public Address:    https://findorascan.io/node/{curl_stats['result']['validator_info']['address']}")
-    print(f"* Current FRA Staked:             {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
-    if curl_stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
-    else: print(f"* Catching Up:                    {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
-    print(f"* Latest Block:                   {curl_stats['result']['sync_info']['latest_block_height']}")
     print(
         f"* Server Hostname & IP:           {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
+    print(f"* Public Address:                 {curl_stats['result']['validator_info']['address']}")
+    if our_fn_stats['Network'] == 'https://prod-mainnet.prod.findora.org': print(f"* Network:                        Mainnet")
+    if our_fn_stats['Network'] == 'https://prod-testnet.prod.findora.org': print(f"* Network:                        Testnet")
+    our_fn_stats.pop('Network')
+    print(f"* Current FRA Staked:             {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
+    if curl_stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
+    else: print(f"* Catching Up:                    {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
+    print(f"* Local Latest Block:             {our_fn_stats['Current Block']}")
+    our_fn_stats.pop('Current Block')
+    print(f"* Remote Latest Block:            {curl_stats['result']['sync_info']['latest_block_height']}")
+    print(f"* Local Latest Block:             {our_fn_stats['Proposed Blocks']}")
+    our_fn_stats.pop('Proposed Blocks')
     for i in our_fn_stats:
-        spaces = "                                      "
+        spaces = "                              "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
     print(f"* Latest Block Time:              {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:               {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current disk space free:        {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current Disk Space Free:        {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Current Container {our_version}")
+    print(f"* Current Container Build         {our_version.split()[1]}")
     if online_version != our_version:
-        print(f"* Container Update Available: {online_version}")
+        print(f"* Container Update Available:     {online_version}")
         update = True
     else:
         update = False

@@ -14,6 +14,8 @@ def get_fn_stats():
 
     lines = json_string.split("\n")
 
+    print(lines)
+
     fn_info = {}
     if int(lines[17].split()[1][:-1]) == 0:
         fn_info["Network"] = lines[1]
@@ -23,9 +25,9 @@ def get_fn_stats():
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[34].split()[1][:-1]
         fn_info["Proposed Blocks"] = lines[36].split()[1]
-        fn_info["Self Delegation"] = f"{findora_gwei_convert(int(lines[17].split()[1][:-1]))} FRA"
-        fn_info["Balance"] = f"{findora_gwei_convert(int(lines[10].split()[0][:-1]))} FRA"
-        fn_info["Unclaimed FRA"] = f"{findora_gwei_convert(int(lines[51].split()[1][:-1]))} FRA"
+        fn_info["Self Delegation"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[17].split()[1][:-1])), 2))} FRA"
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0][:-1])), 2))} FRA"
+        fn_info["Pool Unclaimed FRA"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[51].split()[1][:-1])), 2))} FRA"
         fn_info["Server Rank"] = lines[45].split()[1][:-1]
         fn_info["Delegator Count"] = lines[66].split()[1]
         fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
