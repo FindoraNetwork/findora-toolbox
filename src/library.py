@@ -293,10 +293,8 @@ def get_size(bytes, suffix="B"):
 def docker_check():
     status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status == 0:
-        print("* Docker is available and working properly.")
-        print_stars()
-        time.sleep(2)
-        return 0
+        print('* Docker ready.')
+        time.sleep(1)
     else:
         print("* Docker is not installed and/or is not working properly.")
         print("* Install docker on this server and give the user access to continue.")
@@ -628,8 +626,9 @@ def menu_topper() -> None:
     print(f"* Local Latest Block:             {our_fn_stats['Current Block']}")
     our_fn_stats.pop('Current Block')
     print(f"* Remote Latest Block:            {curl_stats['result']['sync_info']['latest_block_height']}")
-    print(f"* Local Latest Block:             {our_fn_stats['Proposed Blocks']}")
-    our_fn_stats.pop('Proposed Blocks')
+    if our_fn_stats['Proposed Blocks']:
+        print(f"* Proposed Blocks:                {our_fn_stats['Proposed Blocks']}")
+        our_fn_stats.pop('Proposed Blocks')
     for i in our_fn_stats:
         spaces = "                              "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
