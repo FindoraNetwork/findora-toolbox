@@ -8,6 +8,7 @@ from library import capture_stats, findora_gwei_convert
 from pprint import pprint
 from decimal import Decimal
 
+# This is just a script for testing stuff, will print out stats currently.
 def get_fn_stats():
     output = subprocess.check_output(["fn", "show"])
     json_string = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
