@@ -611,7 +611,7 @@ def menu_topper() -> None:
     print(f"* Latest Block Time:              {stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:               {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current disk space free:          {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current disk space free:        {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container {our_version}")
     if online_version != our_version:
