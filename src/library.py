@@ -637,7 +637,7 @@ def menu_topper() -> None:
     print(
         f"* Current Disk Space Free:        {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Current Container Build         {our_version.split()[1]}")
+    print(f"* Current Container Build:        {our_version.split()[1]}")
     if online_version != our_version:
         print(f"* Container Update Available:     {online_version}")
         update = True
