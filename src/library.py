@@ -11,6 +11,7 @@ import docker
 import dotenv
 import hashlib
 import psutil
+from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
 from datetime import datetime
@@ -478,13 +479,26 @@ def get_curl_stats() -> None:
     print_stars()
     print(Fore.GREEN)
     try:
-        output = subprocess.check_output(["curl", "http://localhost:26657/status"])
-        output = output.decode().replace("b'", "")
-        output = json.loads(output)
-        pprint(output)
+        response = requests.get("http://localhost:26657/status")
+        stats = json.loads(response.text)
+        print_stars()
+        pprint(stats)
     except subprocess.CalledProcessError as err:
         print(f"* No response from the rpc. Error: {err}")
     print(Fore.MAGENTA)
+
+
+def capture_stats() -> None:
+    try:
+        response = requests.get("http://localhost:26657/status")
+        stats = json.loads(response.text)
+        # data = json.dumps(output, ensure_ascii=False, indent=4)
+        # status_code = int(output[1])
+        print_stars()
+        return stats
+    except:
+        print("* No response from the rpc.\n* Is Docker running?")
+        finish_node()
 
 
 def refresh_fn_stats() -> None:
@@ -544,12 +558,17 @@ def findora_container_update(update) -> None:
         return
 
 
+def convert(findora):
+    fra_amount = int(findora) / 1000000
+    return fra_amount
+
+
 def menu_topper() -> None:
-    Load1, Load5, Load15 = os.getloadavg()
-    # get sign pct
-    # get balances
-    # get other validator data
     try:
+        Load1, Load5, Load15 = os.getloadavg()
+        stats = capture_stats()
+        now = datetime.now(timezone.utc)
+        fra = convert(stats['result']['validator_info']['voting_power'])
         our_version = get_container_version("http://localhost:8668/version")
     except TimeoutError:
         our_version = "No Response"
@@ -580,6 +599,12 @@ def menu_topper() -> None:
         + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
     )
     print_stars()
+    print(f"* Public Address:    https://findorascan.io/node/{stats['result']['validator_info']['address']}")
+    print(f"* Current Stake:     {'{:,}'.format(round(fra, 2))} FRA")
+    print(f"* Catching Up:       {stats['result']['sync_info']['catching_up']}")
+    print(f"* Latest Block:      {stats['result']['sync_info']['latest_block_height']}")
+    print(f"* Latest Block Time: {stats['result']['sync_info']['latest_block_time'][:-11]}")
+    print(f"* Current Time UTC:  {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
         f"* Server Hostname & IP:             {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
