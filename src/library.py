@@ -572,6 +572,7 @@ def get_fn_stats():
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[29].split()[1][:-1]
         fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
+        fn_info["Proposed Blocks"] = "0"
     else:
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[34].split()[1][:-1]
@@ -626,9 +627,8 @@ def menu_topper() -> None:
     print(f"* Local Latest Block:             {our_fn_stats['Current Block']}")
     our_fn_stats.pop('Current Block')
     print(f"* Remote Latest Block:            {curl_stats['result']['sync_info']['latest_block_height']}")
-    if our_fn_stats['Proposed Blocks']:
-        print(f"* Proposed Blocks:                {our_fn_stats['Proposed Blocks']}")
-        our_fn_stats.pop('Proposed Blocks')
+    print(f"* Proposed Blocks:                {our_fn_stats['Proposed Blocks']}")
+    our_fn_stats.pop('Proposed Blocks')
     for i in our_fn_stats:
         spaces = "                              "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
