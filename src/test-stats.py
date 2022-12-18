@@ -21,13 +21,13 @@ def get_fn_stats():
     if int(lines[17].split()[1][:-1]) == 0:
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[29].split()[1][:-1]
-        fn_info["Balance"] = f"{findora_gwei_convert(int(fra_bal))} FRA"
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
     else:
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[34].split()[1][:-1]
         fn_info["Proposed Blocks"] = lines[36].split()[1]
         fn_info["Self Delegation"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[17].split()[1][:-1])), 2))} FRA"
-        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0][:-1])), 2))} FRA"
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
         fn_info["Pool Unclaimed FRA"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[51].split()[1][:-1])), 2))} FRA"
         fn_info["Server Rank"] = lines[45].split()[1][:-1]
         fn_info["Delegator Count"] = lines[66].split()[1]
