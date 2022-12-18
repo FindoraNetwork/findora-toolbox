@@ -11,6 +11,7 @@ import docker
 import dotenv
 import hashlib
 import psutil
+from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
 from datetime import datetime
@@ -292,10 +293,8 @@ def get_size(bytes, suffix="B"):
 def docker_check():
     status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status == 0:
-        print("* Docker is available and working properly.")
-        print_stars()
-        time.sleep(2)
-        return 0
+        print('* Docker ready.')
+        time.sleep(1)
     else:
         print("* Docker is not installed and/or is not working properly.")
         print("* Install docker on this server and give the user access to continue.")
@@ -478,13 +477,26 @@ def get_curl_stats() -> None:
     print_stars()
     print(Fore.GREEN)
     try:
-        output = subprocess.check_output(["curl", "http://localhost:26657/status"])
-        output = output.decode().replace("b'", "")
-        output = json.loads(output)
-        pprint(output)
+        response = requests.get("http://localhost:26657/status")
+        stats = json.loads(response.text)
+        print_stars()
+        pprint(stats)
     except subprocess.CalledProcessError as err:
         print(f"* No response from the rpc. Error: {err}")
     print(Fore.MAGENTA)
+
+
+def capture_stats() -> None:
+    try:
+        response = requests.get("http://localhost:26657/status")
+        stats = json.loads(response.text)
+        # data = json.dumps(output, ensure_ascii=False, indent=4)
+        # status_code = int(output[1])
+        print_stars()
+        return stats
+    except:
+        print("* No response from the rpc.\n* Is Docker running?")
+        finish_node()
 
 
 def refresh_fn_stats() -> None:
@@ -544,31 +556,52 @@ def findora_container_update(update) -> None:
         return
 
 
+def findora_gwei_convert(findora):
+    fra_amount = int(findora) / 1000000
+    return fra_amount
+
+
+def get_fn_stats():
+    output = subprocess.check_output(["fn", "show"])
+    json_string = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
+
+    lines = json_string.split("\n")
+
+    fn_info = {}
+    if int(lines[17].split()[1][:-1]) == 0:
+        fn_info["Network"] = lines[1]
+        fn_info["Current Block"] = lines[29].split()[1][:-1]
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
+        fn_info["Proposed Blocks"] = "0"
+    else:
+        fn_info["Network"] = lines[1]
+        fn_info["Current Block"] = lines[34].split()[1][:-1]
+        fn_info["Proposed Blocks"] = lines[36].split()[1]
+        fn_info["Self Delegation"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[17].split()[1][:-1])), 2))} FRA"
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
+        fn_info["Pool Unclaimed FRA"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[51].split()[1][:-1])), 2))} FRA"
+        fn_info["Server Rank"] = lines[45].split()[1][:-1]
+        fn_info["Delegator Count"] = lines[66].split()[1]
+        fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
+
+    return fn_info
+
+
 def menu_topper() -> None:
-    Load1, Load5, Load15 = os.getloadavg()
-    # get sign pct
-    # get balances
-    # get other validator data
     try:
+        Load1, Load5, Load15 = os.getloadavg()
+        curl_stats = capture_stats()
+        now = datetime.now(timezone.utc)
+        fra = findora_gwei_convert(curl_stats['result']['validator_info']['voting_power'])
         our_version = get_container_version("http://localhost:8668/version")
-    except TimeoutError:
+        our_fn_stats = get_fn_stats()
+        online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
+    except TimeoutError as e:
         our_version = "No Response"
-        print_stars()
-        print(
-            "* Container is running but there is no response from http://localhost:8668/version - Are your ports open?"
-            + "\n* We can continue though, press enter to load the menu."
-        )
-        print_stars()
-    try:
-        online_version = get_container_version(
-            f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version'
-        )
-    except TimeoutError:
         online_version = "No Response"
         print_stars()
         print(
-            "* No response from findora node, network may be offline or there are internet troubles"
-            + "\n* We can continue though, press enter to load the menu."
+            f"* Timeout error: {e}"
         )
         print_stars()
         input()
@@ -581,15 +614,32 @@ def menu_topper() -> None:
     )
     print_stars()
     print(
-        f"* Server Hostname & IP:             {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Server Hostname & IP:           {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
+    print(f"* Public Address:                 {curl_stats['result']['validator_info']['address']}")
+    if our_fn_stats['Network'] == 'https://prod-mainnet.prod.findora.org': print(f"* Network:                        Mainnet")
+    if our_fn_stats['Network'] == 'https://prod-testnet.prod.findora.org': print(f"* Network:                        Testnet")
+    our_fn_stats.pop('Network')
+    print(f"* Current FRA Staked:             {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
+    if curl_stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
+    else: print(f"* Catching Up:                    {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
+    print(f"* Local Latest Block:             {our_fn_stats['Current Block']}")
+    our_fn_stats.pop('Current Block')
+    print(f"* Remote Latest Block:            {curl_stats['result']['sync_info']['latest_block_height']}")
+    print(f"* Proposed Blocks:                {our_fn_stats['Proposed Blocks']}")
+    our_fn_stats.pop('Proposed Blocks')
+    for i in our_fn_stats:
+        spaces = "                              "
+        print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
+    print(f"* Latest Block Time:              {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
+    print(f"* Current Time UTC:               {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current disk space free: {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current Disk Space Free:        {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Current Container Version: {our_version}")
+    print(f"* Current Container Build         {our_version.split()[1]}")
     if online_version != our_version:
-        print(f"* Container Update Available: {online_version}")
+        print(f"* Container Update Available:     {online_version}")
         update = True
     else:
         update = False
