@@ -784,8 +784,8 @@ def run_clean_script() -> None:
 
 
 def create_staker_memo() -> None:
-    if os.path.exists is False:
-        shutil.move(
+    if os.path.exists(f'{easy_env_fra.user_home_dir}/staker_memo') is False:
+        shutil.copy(
                     f"{easy_env_fra.toolbox_location}/src/bin/staker_memo",
                     f'{easy_env_fra.user_home_dir}',
                 )
