@@ -783,7 +783,15 @@ def run_clean_script() -> None:
             rescue_menu()
 
 
-def findora_installer() -> None:
+def create_staker_memo() -> None:
+    if os.path.exists is False:
+        shutil.move(
+                    f"{easy_env_fra.toolbox_location}/src/bin/staker_memo",
+                    f'{easy_env_fra.user_home_dir}',
+                )
+
+
+def install_findora() -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
@@ -810,10 +818,11 @@ def findora_installer() -> None:
             "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
         )
         print_stars()
-        time.sleep(3)
+        time.sleep(1)
         print_stars()
         subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
         print_stars()
+        create_staker_memo()
         print(
             "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your "
             + "validator on-chain or migrate from another server onto this server."

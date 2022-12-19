@@ -2,7 +2,7 @@ import os
 from os import environ
 from library import (
     run_findora_menu,
-    findora_installer,
+    install_findora,
     update_findora_container,
     set_main_or_test,
     rescue_menu,
@@ -34,7 +34,7 @@ def main() -> None:
     # Does `fn` exist?
     if not os.path.exists("/usr/local/bin/fn"):
         # Nope, let's ask to install!
-        findora_installer()
+        install_findora()
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
     # do we know network?
     if not environ.get("FRA_NETWORK"):
