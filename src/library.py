@@ -579,7 +579,7 @@ def get_fn_stats():
         fn_info["Proposed Blocks"] = lines[36].split()[1]
         fn_info["Self Delegation"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[17].split()[1][:-1])), 2))} FRA"
         fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
-        fn_info["Unclaimed Rewards"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[25].split()[0])), 2))} FRA"
+        fn_info["Unclaimed Rewards"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[25].split()[1][:-1])), 2))} FRA"
         fn_info["Pool Unclaimed FRA"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[51].split()[1][:-1])), 2))} FRA"
         fn_info["Server Rank"] = lines[45].split()[1][:-1]
         fn_info["Delegator Count"] = lines[66].split()[1]
