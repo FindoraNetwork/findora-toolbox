@@ -531,7 +531,7 @@ def change_rate(our_fn_stats):
     answer = input("* What would you like the new rate to be?\n* Please use findora notation, example for 5% fees use: 0.05\n* Enter your new rate now: ")
     answer2 = input("* Please re-enter your new rate to confirm: ")
     if answer == answer2:
-        question = ask_yes_no(f'* Are you sure you want to change your rate to {answer/100} %? (Y/N) ')
+        question = ask_yes_no(f'* Are you sure you want to change your rate to {float(answer)/100} %? (Y/N) ')
         if question:
             subprocess.call(["fn", "staker-update", "-R", answer])   
         else:
