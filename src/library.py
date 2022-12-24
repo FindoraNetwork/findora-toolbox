@@ -778,7 +778,36 @@ def create_staker_memo() -> None:
                 )
 
 
-def install_findora() -> None:
+def run_findora_installer() -> None:
+    subprocess.call(
+        [
+            "wget",
+            f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('FRA_NETWORK')}.sh",
+            "-O",
+            f"/tmp/install_{environ.get('FRA_NETWORK')}.sh",
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    subprocess.run("clear")
+    print_stars()
+    print(
+        "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
+    )
+    print_stars()
+    time.sleep(1)
+    print_stars()
+    subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
+    print_stars()
+    create_staker_memo()
+    print(
+        "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your "
+        + "validator on-chain or migrate from another server onto this server."
+    )
+    pause_for_cause()
+
+
+def menu_install_findora() -> None:
     # mainnet or testnet
     set_main_or_test()
     # Run installer ya'll!
@@ -789,32 +818,7 @@ def install_findora() -> None:
     )
     answer = ask_yes_no("* Do you want to install it now? (Y/N) ")
     if answer:
-        subprocess.call(
-            [
-                "wget",
-                f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('FRA_NETWORK')}.sh",
-                "-O",
-                f"/tmp/install_{environ.get('FRA_NETWORK')}.sh",
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        subprocess.run("clear")
-        print_stars()
-        print(
-            "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
-        )
-        print_stars()
-        time.sleep(1)
-        print_stars()
-        subprocess.call(["bash", "-x", f"/tmp/install_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir)
-        print_stars()
-        create_staker_memo()
-        print(
-            "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your "
-            + "validator on-chain or migrate from another server onto this server."
-        )
-        pause_for_cause()
+        run_findora_installer()
     else:
         raise SystemExit(0)
 
@@ -1131,9 +1135,11 @@ def parse_flags(parser):
 
     if args.mainnet:
         set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "mainnet")
+        run_findora_installer()
 
     if args.testnet:
         set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
+        run_findora_installer()
 
     if args.stats:
         menu_topper()
