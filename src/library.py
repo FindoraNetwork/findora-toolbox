@@ -668,7 +668,7 @@ def set_send_options() -> None:
         address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
         # this isn't triggering, figure it out.
         if address == environ.get("RECEIVER_WALLET"):
-            print('* This is already your saved wallet, try again with a new wallet to update this option.')
+            input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the menu.')
             set_send_options()
         address2 = input(f'*\n* Please re-input the fra address you would like to send your FRA for verification: ')
         if address == address2:
