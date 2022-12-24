@@ -671,12 +671,10 @@ def set_send_options() -> None:
     ]
     print_stars()
     terminal_menu = TerminalMenu(
-        menu_options, title="* Which type of restore method would you like to use for your validator wallet?"
+        menu_options, title="* Which option would you like to update?"
     )
     menu_option = terminal_menu.show()
-    if menu_option == 3:
-        return
-    elif menu_option == 0:
+    if menu_option == 0:
         address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
         if address[:4] != "fra1" or len(address) != 62: 
             input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.')
@@ -716,6 +714,8 @@ def set_send_options() -> None:
         if menu_option == 1:    
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
         set_send_options()
+    elif menu_option == 3:
+        return
 
 
 def server_disk_check() -> None:
