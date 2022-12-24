@@ -514,7 +514,7 @@ def get_receiver_address() -> None:
 
 def get_privacy_option() -> None:
     if environ.get("PRIVACY"):
-        question = ask_yes_no(f'* We have Privacy = {environ.get("PRIVACY")} on file, is this still accurate? (Y/N) ')
+        question = ask_yes_no(f'* We have Privacy = {environ.get("PRIVACY")} on file, Would you like to use this option for this transaction as well? (Y/N) ')
         if question:
             return environ.get("PRIVACY")
     privacy = ask_yes_no('*\n* Would you like this to be a private transaction? (Y/N) ')
@@ -525,15 +525,14 @@ def get_privacy_option() -> None:
 
 
 def set_privacy(receiver_address, privacy) -> None:
-    if environ.get("PRIVACY") is None or environ.get("RECEIVER_WALLET") is None:
-        print(f'* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}')
-        question = ask_yes_no(f'*\n* Would you like to save this wallet and privacy setting as default options to bypass all these questions next time? (Y/N) ')
-        if question:
-            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
-            set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
-            set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
-        print(f'* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
-        return
+    print(f'* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}')
+    question = ask_yes_no(f'*\n* Would you like to save this wallet and privacy setting as default options to bypass all these questions next time? (Y/N) ')
+    if question:
+        set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+        set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
+        set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
+    print(f'* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
+    return
 
 
 def pre_send_findora() -> None:
@@ -576,7 +575,6 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
         print(f"{Fore.MAGENTA}*\n* Sent {Fore.GREEN}{fra_amount}{Fore.MAGENTA} to {Fore.YELLOW}{to_address}{Fore.MAGENTA} with privacy = {privacy}\n*\n* Please note it will take at least a block to get updated stats in toolbox.\n*\n*")
     except subprocess.CalledProcessError as err:
         print(f'{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later.')
-
     return
 
 
