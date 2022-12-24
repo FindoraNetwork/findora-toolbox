@@ -646,6 +646,7 @@ def change_validator_info():
 
 def set_wallet_options() -> None:
     # Give'm some options!
+    subprocess.run('clear')
     print(f"* Select an option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Currently set to {environ.get('PRIVACY')}\n* 2. Express Option - Change current express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*")
     menu_options = [
         "* [0] - Set Wallet",
