@@ -1150,6 +1150,7 @@ def parse_flags(parser):
 
     if args.claim:
         claim_findora_rewards()
+        finish_node()
 
     if args.mainnet:
         if environ.get("FRA_NETWORK"): 
