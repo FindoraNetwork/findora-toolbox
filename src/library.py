@@ -590,7 +590,7 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
             subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,)
-        print(f"{Fore.MAGENTA}* Sent {fra_amount} to {to_address} with privacy = {privacy}")
+        print(f"{Fore.MAGENTA}*\n* Sent {fra_amount} to {to_address} with privacy = {privacy}\n* Please note it will take at least a block to get updated stats in toolbox.\n*")
     except subprocess.CalledProcessError as err:
         print(f'{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later.')
 
