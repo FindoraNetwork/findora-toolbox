@@ -498,10 +498,6 @@ def get_total_send(our_fn_stats) -> None:
 
 def get_receiver_address() -> None:
     load_dotenv(easy_env_fra.dotenv_file)
-    if environ.get("RECEIVER_WALLET"):
-        question = ask_yes_no(f'* We have {environ.get("RECEIVER_WALLET")} on file, is this still accurate? (Y/N) ')
-        if question:
-            return environ.get("RECEIVER_WALLET")
     address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
     if address == environ.get("RECEIVER_WALLET"):
         print('* This is already your saved wallet, try again with a new wallet to update this option.')
