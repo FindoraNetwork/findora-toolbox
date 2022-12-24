@@ -596,7 +596,6 @@ def menu_topper() -> None:
         input()
     subprocess.run("clear")
     print(Fore.MAGENTA)
-    print_stars()
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node"
         + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
@@ -1116,7 +1115,7 @@ def run_findora_menu() -> None:
 
 def parse_flags(parser):
     # add the '--verbose' flag
-    parser.add_argument('--stats', action='store_true',
+    parser.add_argument('-s', '--stats', action='store_true',
                         help='Run your stats if Findora is installed and running.')
 
     parser.add_argument('--reset', action='store_true', help='This will wipe everything to allow you to reload Findora.')
