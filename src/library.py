@@ -647,6 +647,36 @@ def change_validator_info():
     return
 
 
+def send_findora_options() -> None:
+    # Give'm some options!
+    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}")
+    question = input("* Input 1 or 2 now:")
+    if question < 1 or question > 2:
+        input("* We didn't catch that answer, try again. Press enter to continue.")
+        send_findora_options()
+    if question == 1:
+        address = input(f'* Please input the fra address you would like to send your FRA: ')
+        address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
+        if address == address2:
+            set_var(easy_env_fra.dotenv_file, "SEND_WALLET", address)
+            return
+        else:
+            input('* Address did not match, try again. Press enter to try again.')
+            send_findora_options()
+        return
+    elif question == 2:
+        menu_options = {1: "True", 2: "False"}
+        answer = input("* Which option would you like to set? ")
+        if answer < 1 or answer > 2:
+            input("* We didn't catch that answer, try again. Press enter to continue.")
+            send_findora_options()
+        if answer == 1:
+            set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
+        if answer == 2:
+            set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
+        return
+
+
 def server_disk_check() -> None:
     print_stars_reset()
     print("* Here are all of your mount points: ")
@@ -1228,7 +1258,7 @@ def run_findora_menu() -> None:
         2: refresh_fn_stats,
         3: claim_findora_rewards,
         4: pre_send_findora,
-        5: coming_soon,
+        5: send_findora_options,
         6: coming_soon,
         7: update_fn_wallet,
         8: run_container_update,
