@@ -530,7 +530,7 @@ def set_privacy(receiver_address, privacy) -> None:
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
             set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
-        print(f'* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n*\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
+        print(f'* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
         return
 
 def pre_send_findora() -> None:
