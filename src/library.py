@@ -439,7 +439,7 @@ def menu_findora() -> None:
     print("*   9 -  Run Safety Clean          - Stop your container, reset and download database fresh")
     print("*  10 -  Update Operating System   - Update Ubuntu Operating System Files")
     print(
-        f"*                                   {Fore.MAGENTA}{Back.GREEN}Informational Section:{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"*                                   {Fore.BLUE}{Back.YELLOW}Informational Section:{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print("*  13 -  Show system disk info     - Current drive space status")
     print("*  14 -  TMI about your Validator  - Seriously too much information")
@@ -621,7 +621,7 @@ def menu_topper() -> None:
     print(f"* Latest Block Time:              {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:               {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current Disk Space Free:        {Fore.CYAN}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current Disk Space Free:        {Fore.BLUE}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container Build:        {our_version.split()[1]}")
     if online_version != our_version:
