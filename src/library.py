@@ -524,14 +524,14 @@ def get_privacy_option() -> None:
 
 def set_privacy(receiver_address, privacy) -> None:
     if environ.get("PRIVACY") is None or environ.get("RECEIVER_WALLET") is None:
-        question = ask_yes_no(f'* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
-        if question:
-            # save these two for next time
-            set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
-            set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
-        question = ask_yes_no(f'* Would you like to set this wallet and privacy as your default options and bypass all these questions next time? (Y/N) ')
+        print(f'* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}')
+        question = ask_yes_no(f'*\n* Would you like to save this wallet and privacy setting as default options to bypass all these questions next time? (Y/N) ')
         if question:
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+            set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
+            set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
+        print(f'* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n*\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
+
     question = ask_yes_no(f'* Your current settings are:\n* Receiver Wallet: {environ.get("RECEIVER_WALLET")}')
 
 def pre_send_findora() -> None:
