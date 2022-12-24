@@ -497,8 +497,10 @@ def get_total_send(our_fn_stats) -> None:
 
 
 def get_receiver_address() -> None:
+    if environ.get("RECEIVER_WALLET"):
+        question = ask_yes_no(f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")} on file. Would you like to send to this addres? (Y/N)')
+        if question: return environ.get("RECEIVER_WALLET")
     address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
-    # this isn't triggering, figure it out.
     if address == environ.get("RECEIVER_WALLET"):
         print('* This is already your saved wallet, try again with a new wallet to update this option.')
         return environ.get("RECEIVER_WALLET")
