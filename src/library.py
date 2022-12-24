@@ -629,7 +629,7 @@ def change_validator_info():
         "[0] - Exit to Main Menu"
     ]    
     terminal_menu = TerminalMenu(
-        menu_options, title="* Which type of restore method would you like to use for your validator wallet?"
+        menu_options, title="* What would you like to update today? "
     )
     question = terminal_menu.show()
     # add logic for choices here pass our_fn_stats to #2
@@ -644,41 +644,53 @@ def change_validator_info():
     return
 
 
-def send_findora_options() -> None:
+def set_wallet_options() -> None:
     # Give'm some options!
-    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n*\n* 0. Exit - Return to Main Menu\n*")
+    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n* 3. Express Option - Change current express option: {environ.get('EXPRESS')}\n* 0. Exit - Return to Main Menu\n*")
     menu_options = [
-        "[1] - Set Wallet",
-        "[2] - Set Privacy",
-        "[0] - Exit to Main Menu"
+        "* [1] - Set Wallet",
+        "* [2] - Set Privacy",
+        "* [3] - Set Express",
+        "* [0] - Exit to Main Menu"
     ]
     terminal_menu = TerminalMenu(
         menu_options, title="* Which type of restore method would you like to use for your validator wallet?"
     )
-    question = terminal_menu.show()
-    if question == 0:
+    menu_option = terminal_menu.show()
+    if menu_option == 0:
         return
-    if question == 1:
+    elif menu_option == 1:
         address = input(f'* Please input the fra address you would like to send your FRA: ')
         address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
         if address == address2:
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
-            return
+            set_wallet_options()
         else:
             input('* Address did not match, try again. Press enter to try again.')
-            send_findora_options()
-        return
-    elif question == 2:
-        menu_options = {1: "True", 2: "False"}
-        answer = input("* Which option would you like to set? ")
-        if answer < 1 or answer > 2:
-            input("* We didn't catch that answer, try again. Press enter to continue.")
-            send_findora_options()
-        if answer == 1:
+            set_wallet_options()
+    elif menu_option == 2:
+        print(f"* Select an option. Privacy enabled on transactions, True or False: ")
+        menu_options = [ "* [1] - True", "* [2] - False"]
+        terminal_menu = TerminalMenu(
+            menu_options, title="* Would you like private transactions? "
+        )
+        menu_option = terminal_menu.show()
+        if menu_option == 1:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
-        if answer == 2:
+            set_wallet_options()
+        if menu_option == 2:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
-        return
+            set_wallet_options()
+    elif menu_option == 3:
+        question = ask_yes_no(f'* Express option currently set to {environ.get("EXPRESS")}. Would you like to switch this? (Y/N) ')
+        if question:
+            current = environ.get("EXPRESS")
+            if current == "True":
+                set_var(easy_env_fra.dotenv_file, "EXPRESS", "False")
+                set_wallet_options()
+            elif current == "False":
+                set_var(easy_env_fra.dotenv_file, "EXPRESS", "True")
+                set_wallet_options()
 
 
 def server_disk_check() -> None:
@@ -1262,7 +1274,7 @@ def run_findora_menu() -> None:
         2: refresh_fn_stats,
         3: claim_findora_rewards,
         4: pre_send_findora,
-        5: send_findora_options,
+        5: set_wallet_options,
         6: coming_soon,
         7: update_fn_wallet,
         8: run_container_update,
