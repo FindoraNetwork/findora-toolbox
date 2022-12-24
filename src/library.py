@@ -1135,14 +1135,14 @@ def parse_flags(parser):
 
     if args.mainnet:
         if environ.get("FRA_NETWORK"): 
-            print('* You already have a network in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.')
+            input('* You already have a network in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.')
         else:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "mainnet")
             run_findora_installer()
 
     if args.testnet:
         if environ.get("FRA_NETWORK"): 
-            print('* You already have a network in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.')
+            input('* You already have a network in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.')
         else:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
             run_findora_installer()
