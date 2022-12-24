@@ -502,6 +502,10 @@ def get_receiver_address() -> None:
         if question:
             return environ.get("RECEIVER_WALLET")
     address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
+    if environ.get("RECIEVER_WALLET"):
+        if address == environ.get("RECEIVER_WALLET"):
+            print('* This is already your saved wallet, try again with a new wallet to update this option.')
+            return environ.get("RECEIVER_WALLET")
     address2 = input(f'*\n* Please re-input the fra address you would like to send your FRA for verification: ')
     if address == address2:
         return address
