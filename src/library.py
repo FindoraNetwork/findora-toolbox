@@ -487,8 +487,8 @@ def claim_findora_rewards() -> None:
 
 
 def get_total_send(our_fn_stats) -> None:
-    total = input(f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}{Fore.MAGENTA}\n*\n* How much would you like to send from your validator? ')
-    total2 = input(f'*\n* Please re-enter the amount you would like to send for verification: ')
+    total = input(f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? ')
+    total2 = input(f'*\n* Please re-enter the amount of FRA you would like to transfer for verification: ')
     if total == total2:
         return total
     else:
@@ -525,7 +525,8 @@ def get_privacy_option() -> None:
 
 
 def set_privacy(receiver_address, privacy) -> None:
-    print(f'* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}')
+    print_stars()
+    print(f'*\n* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
     question = ask_yes_no(f'*\n* Would you like to save this wallet and privacy setting as default options to bypass all these questions next time? (Y/N) ')
     if question:
         set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
