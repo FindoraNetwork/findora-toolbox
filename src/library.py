@@ -558,16 +558,16 @@ def pre_send_findora() -> None:
     express = environ.get("SEND_EXPRESS")
     convert_send_total = str(int(float(send_total)*1000000))
     if express == "True":
-        send_findora(convert_send_total, environ.get("SEND_WALLET"), environ.get("PRIVACY"))
+        send_findora(convert_send_total, send_total, environ.get("SEND_WALLET"), environ.get("PRIVACY"))
         return
     send_address = get_send_address()
     privacy = get_privacy_option()
     if privacy == "True":
         # Send tx, with privacy
-        send_findora(convert_send_total, send_address, "True")
+        send_findora(convert_send_total, send_total, send_address, "True")
     else:
         # Send tx regular
-        send_findora(convert_send_total, send_address, "False")
+        send_findora(convert_send_total, send_total, send_address, "False")
     if environ.get("PRIVACY") is None or environ.get("SEND_WALLET") is None:
         question = ask_yes_no(f'* Address: {send_address}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
         if question:
@@ -579,13 +579,13 @@ def pre_send_findora() -> None:
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
         
 
-def send_findora(send_amount, to_address, privacy="False") -> None:
+def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
     # transfer if privacy on
     if privacy == "True":
         subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address, "--confidential-amount", "--confidential-type"])
     else:
         subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address])
-    print(f"* Sent {send_amount} to {to_address} with privacy = {privacy}")
+    print(f"* Sent {fra_amount} FRA to {to_address} with privacy = {privacy}")
     return
 
 
