@@ -1139,7 +1139,7 @@ def parse_flags(parser):
     if args.mainnet:
         if environ.get("FRA_NETWORK"): 
             print_stars()
-            print('* You already have a network in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.')
+            print(f'* You already have {environ.get("FRA_NETWORK")} set in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.')
             print_stars()
             input()
         else:
@@ -1149,7 +1149,7 @@ def parse_flags(parser):
     if args.testnet:
         if environ.get("FRA_NETWORK"): 
             print_stars()
-            print('* You already have a network in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.')
+            print(f'* You already have {environ.get("FRA_NETWORK")} set in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.')
             print_stars()
             input()
         else:
