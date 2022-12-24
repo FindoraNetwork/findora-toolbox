@@ -658,9 +658,9 @@ def set_wallet_options() -> None:
         menu_options, title="* Which type of restore method would you like to use for your validator wallet?"
     )
     menu_option = terminal_menu.show()
-    if menu_option == 0:
+    if menu_option == 3:
         return
-    elif menu_option == 1:
+    elif menu_option == 0:
         address = input(f'* Please input the fra address you would like to send your FRA: ')
         address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
         if address == address2:
@@ -669,20 +669,20 @@ def set_wallet_options() -> None:
         else:
             input('* Address did not match, try again. Press enter to try again.')
             set_wallet_options()
-    elif menu_option == 2:
+    elif menu_option == 1:
         print(f"* Select an option. Privacy enabled on transactions, True or False: ")
-        menu_options = [ "* [1] - True", "* [2] - False"]
+        menu_options = [ "* [0] - True", "* [1] - False"]
         terminal_menu = TerminalMenu(
             menu_options, title="* Would you like private transactions? "
         )
         menu_option = terminal_menu.show()
-        if menu_option == 1:
+        if menu_option == 0:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
             set_wallet_options()
-        if menu_option == 2:
+        if menu_option == 1:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
             set_wallet_options()
-    elif menu_option == 3:
+    elif menu_option == 2:
         question = ask_yes_no(f'* Express option currently set to {environ.get("EXPRESS")}. Would you like to switch this? (Y/N) ')
         if question:
             current = environ.get("EXPRESS")
