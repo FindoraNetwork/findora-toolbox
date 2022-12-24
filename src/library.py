@@ -437,6 +437,7 @@ def menu_findora() -> None:
     print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
     print("*   3 -  Claim Pending FRA         - Claim all of your unclaimed FRA now")
     print("*   4 -  Transfer FRA              - Send FRA to another fra address now")
+    print("*   5 -  Set Transfer Options      - Configure your preferred send wallet & privacy")
     print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
     print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
     findora_container_update(update)
