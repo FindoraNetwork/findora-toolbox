@@ -804,7 +804,7 @@ def menu_topper() -> None:
         fra = findora_gwei_convert(curl_stats['result']['validator_info']['voting_power'])
         our_version = get_container_version("http://localhost:8668/version")
         our_fn_stats = get_fn_stats()
-        our_fn_stats.pop("memo")
+        if our_fn_stats("memo"): our_fn_stats.pop("memo")
         online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
     except TimeoutError as e:
         our_version = "No Response"
