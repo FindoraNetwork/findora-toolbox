@@ -525,6 +525,8 @@ def send_findora(send_amount, to_address, privacy) -> None:
 
 
 def change_rate(our_fn_stats):
+    print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
+
     # show current rate, ask for new rate
     # fn staker-update -R {new_rate}
     return
@@ -534,7 +536,7 @@ def change_memo(our_fn_stats):
     print("* Current Settings: ")
     # allow edit one by one, then have commit changes at the end?
     for i in our_fn_stats["memo"]:
-        print(i)
+        print(f"* {our_fn_stats['memo'][i]}: {i}")
     # show current staker_memo info, update records and send
     # fn staker-update -M "$(cat staker_memo)"
     return
@@ -1160,6 +1162,7 @@ def run_findora_menu() -> None:
         14: coming_soon,
         15: all_sys_info,
         16: migration_instructions,
+        49: change_validator_info,
         888: migrate_to_server,
         999: menu_reboot_server,
     }
