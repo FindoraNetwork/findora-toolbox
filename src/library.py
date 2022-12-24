@@ -516,7 +516,7 @@ def claim_findora_rewards() -> None:
 
 
 def get_total_send(our_fn_stats) -> None:
-    total = input(f'* Current balance is: {our_fn_stats["Balance"]} FRA\n*\n* How much would you like to send from your validator? ')
+    total = input(f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}{Fore.MAGENTA}\n*\n* How much would you like to send from your validator? ')
     total2 = input(f'*\n* Please re-enter the amount you would like to send for verification: ')
     if total == total2:
         return total
@@ -569,7 +569,7 @@ def pre_send_findora() -> None:
         # Send tx regular
         send_findora(convert_send_total, send_total, send_address, "False")
     if environ.get("PRIVACY") is None or environ.get("SEND_WALLET") is None:
-        question = ask_yes_no(f'* Address: {send_address}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
+        question = ask_yes_no(f'* Address: {Fore.YELLOW}{send_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
         if question:
             # save these two for next time
             set_var(easy_env_fra.dotenv_file, "SEND_WALLET", send_address)
@@ -590,7 +590,7 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
             subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,)
-        print(f"{Fore.MAGENTA}*\n* Sent {fra_amount} to {to_address} with privacy = {privacy}\n*\n* Please note it will take at least a block to get updated stats in toolbox.\n*\n*")
+        print(f"{Fore.MAGENTA}*\n* Sent {Fore.GREEN}{fra_amount}{Fore.MAGENTA} to {Fore.YELLOW}{to_address}{Fore.MAGENTA} with privacy = {privacy}\n*\n* Please note it will take at least a block to get updated stats in toolbox.\n*\n*")
     except subprocess.CalledProcessError as err:
         print(f'{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later.')
 
