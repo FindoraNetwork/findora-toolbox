@@ -80,15 +80,15 @@ def set_var(env_file, key_name, update_name):
 
 
 def compare_two_files(input1, input2) -> None:
-    #open the files
-    file1 = open(input1, 'rb')
-    file2 = open(input2, 'rb')
+    # open the files
+    file1 = open(input1, "rb")
+    file2 = open(input2, "rb")
 
-    #generate their hashes
+    # generate their hashes
     hash1 = hashlib.md5(file1.read()).hexdigest()
     hash2 = hashlib.md5(file2.read()).hexdigest()
 
-    #compare the hashes
+    # compare the hashes
     if hash1 == hash2:
         return True
     else:
@@ -174,7 +174,9 @@ def menu_reboot_server() -> str:
         + "* We will stop your container safely before restarting\n* Are you sure you would like to proceed with rebooting your server? (Y/N) "
     )
     if question:
-        print("* Stopping docker container for safety\n* Run toolbox after you reboot to get back online or start your container manually with `docker container start findorad` when you re-login!")
+        print(
+            "* Stopping docker container for safety\n* Run toolbox after you reboot to get back online or start your container manually with `docker container start findorad` when you re-login!"
+        )
         subprocess.call(["docker", "container", "stop", "findorad"])
         os.system("sudo reboot")
     else:
@@ -502,7 +504,9 @@ def claim_findora_rewards() -> None:
     subprocess.run("clear")
     print_stars()
     try:
-        output = subprocess.check_output(["fn", "claim"])
+        output = subprocess.call(["fn", "claim"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,)
         print(output)
     except subprocess.CalledProcessError as err:
         print(
