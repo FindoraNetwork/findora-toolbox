@@ -1126,15 +1126,18 @@ def parse_flags(parser):
 
     # Load Vars / Set Network
     first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
-    
+
     # check if the '--verbose' flag is set
     if args.verbose:
         print('Verbose mode enabled')
     
     if args.reset:
-        # wipe data here
-        shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}')
-        subprocess.run(f'sudo rm /usr/local/bin/fn')
-        os.remove(easy_env_fra.dotenv_file)
-        print(f'* Findora Data, fn and our .easynode.env file have been removed, rerun toolbox to reload!')
-        finish_node()
+        print_stars()
+        answer = ask_yes_no(f"* You've started the reset process. Press enter to wipe your system or ctrl+c to exit.")
+        if answer:
+            # wipe data here
+            shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}')
+            subprocess.getoutput(f'sudo rm /usr/local/bin/fn')
+            os.remove(easy_env_fra.dotenv_file)
+            print(f'* Findora Data, fn and our .easynode.env file have been removed, rerun toolbox to reload!')
+            finish_node()
