@@ -592,7 +592,7 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
             stderr=subprocess.DEVNULL,)
         print(f"{Fore.MAGENTA}* Sent {fra_amount} to {to_address} with privacy = {privacy}")
     except subprocess.CalledProcessError as err:
-        print(f'* Error sending transaction:\n* {err}')
+        print(f'{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later.')
 
     return
 
