@@ -42,8 +42,7 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 # loader intro splash screen
 def loader_intro():
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     p = f"""
 
  ▌ ▐· ▄▄▄· ▄▄▌  ▪  ·▄▄▄▄   ▄▄▄· ▄▄▄▄▄      ▄▄▄      ▄▄▄▄▄            ▄▄▌  ▄▄▄▄·       ▐▄• ▄ 
@@ -152,8 +151,7 @@ def os_upgrades() -> None:
 
 
 def menu_error() -> None:
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     print(
         "* "
         + Fore.RED
@@ -436,8 +434,7 @@ def menu_findora() -> None:
 
 
 def get_curl_stats() -> None:
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     print(Fore.GREEN)
     try:
         response = requests.get("http://localhost:26657/status")
@@ -460,8 +457,7 @@ def capture_stats() -> None:
 
 
 def refresh_fn_stats() -> None:
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     try:
         output = subprocess.check_output(["fn", "show"])
         output = output.decode().replace("b'", "")
@@ -472,9 +468,15 @@ def refresh_fn_stats() -> None:
         )
 
 
-def claim_findora_rewards() -> None:
+def standalone_option():
+    # For menu options that can run on their own, always clear and stars first.
     subprocess.run("clear")
     print_stars()
+    return
+
+
+def claim_findora_rewards() -> None:
+    standalone_option()
     try:
         output = subprocess.call(["fn", "claim"],
                 stdout=subprocess.DEVNULL,
@@ -487,6 +489,7 @@ def claim_findora_rewards() -> None:
 
 
 def get_total_send(our_fn_stats) -> None:
+    # Get fra input and process
     total = input(f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? ')
     total2 = input(f'*\n* Please re-enter the amount of FRA you would like to transfer for verification: ')
     if total == total2:
@@ -497,6 +500,7 @@ def get_total_send(our_fn_stats) -> None:
 
 
 def get_receiver_address() -> None:
+    # IF we've already got it, check it or ask
     if environ.get("RECEIVER_WALLET"):
         question = ask_yes_no(f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")}{Fore.MAGENTA} on file. Would you like to send to this address? (Y/N)')
         if question: return environ.get("RECEIVER_WALLET")
@@ -513,6 +517,7 @@ def get_receiver_address() -> None:
 
 
 def get_privacy_option() -> None:
+    # IF we've already got it, check it or ask
     if environ.get("PRIVACY"):
         question = ask_yes_no(f'* We have Privacy = {environ.get("PRIVACY")} on file, Would you like to use this option for this transaction as well? (Y/N) ')
         if question:
@@ -525,6 +530,9 @@ def get_privacy_option() -> None:
 
 
 def set_privacy(receiver_address, privacy) -> None:
+    # if these are already set, bypass
+    if receiver_address == environ.get("RECEIVER_WALLET") and privacy == environ.get("PRIVACY"): return
+    # ask and set
     print_stars()
     print(f'*\n* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
     question = ask_yes_no(f'*\n* Would you like to save this wallet and privacy setting as default options to bypass all these questions next time? (Y/N) ')
@@ -998,8 +1006,7 @@ def run_findora_installer() -> None:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     print(
         "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
     )
