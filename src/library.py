@@ -493,7 +493,7 @@ def get_total_send(our_fn_stats) -> None:
         return total
     else:
         input('*\n* Balances did not match, try again. Press enter to try again.')
-        get_total_send()
+        get_total_send(our_fn_stats)
 
 
 def get_receiver_address() -> None:
@@ -532,6 +532,7 @@ def set_privacy(receiver_address, privacy) -> None:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
         print(f'* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
         return
+
 
 def pre_send_findora() -> None:
     # Get balance
@@ -644,7 +645,7 @@ def change_validator_info():
     return
 
 
-def set_wallet_options() -> None:
+def set_send_options() -> None:
     # Give'm some options!
     print(Fore.MAGENTA)
     subprocess.run('clear')
@@ -668,10 +669,10 @@ def set_wallet_options() -> None:
         address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
         if address == address2:
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
-            set_wallet_options()
+            set_send_options()
         else:
             input('* Address did not match, try again. Press enter to try again.')
-            set_wallet_options()
+            set_send_options()
     elif menu_option == 1:
         print(f"* Select an option. Privacy enabled on transactions, True or False: ")
         menu_options = [ "* [0] - True", "* [1] - False"]
@@ -681,19 +682,22 @@ def set_wallet_options() -> None:
         menu_option = terminal_menu.show()
         if menu_option == 0:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
-            set_wallet_options()
+            set_send_options()
         if menu_option == 1:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
-            set_wallet_options()
+            set_send_options()
     elif menu_option == 2:
-        question = ask_yes_no(f'* Express option currently set to {environ.get("SEND_EXPRESS")}. Would you like to switch this? (Y/N) ')
-        if question:
-            current = environ.get("SEND_EXPRESS")
-            if current == "True":
-                set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
-            elif current == "False":
-                set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
-        set_wallet_options()
+        print(f"* Select an option. Express enabled to auto send with your saved options, would you like it enabled or disabled? ")
+        menu_options = [ "* [0] - True", "* [1] - False"]
+        terminal_menu = TerminalMenu(
+            menu_options, title=f'* Express option currently set to {environ.get("SEND_EXPRESS")}. Would you like to switch this?'
+        )
+        menu_option = terminal_menu.show()
+        if menu_option == 0:
+            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+        if menu_option == 1:    
+            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
+        set_send_options()
 
 
 def server_disk_check() -> None:
@@ -1277,7 +1281,7 @@ def run_findora_menu() -> None:
         2: refresh_fn_stats,
         3: claim_findora_rewards,
         4: pre_send_findora,
-        5: set_wallet_options,
+        5: set_send_options,
         6: coming_soon,
         7: update_fn_wallet,
         8: run_container_update,
