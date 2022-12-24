@@ -1116,6 +1116,10 @@ def parse_flags(parser):
     parser.add_argument('-s', '--stats', action='store_true',
                         help='Run your stats if Findora is installed and running.')
 
+    parser.add_argument('--mainnet', action='store_true', help='Will run the installer set to mainnet')
+
+    parser.add_argument('--testnet', action='store_true', help='Will run the installer set to testnet')
+
     parser.add_argument('--reset', action='store_true', help='This will wipe everything to allow you to reload Findora.')
 
     # parse the arguments
@@ -1124,7 +1128,12 @@ def parse_flags(parser):
     # Load Vars / Set Network
     first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
 
-    # check if the '--verbose' flag is set
+    if args.mainnet:
+        set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "mainnet")
+
+    if args.testnet:
+        set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
+
     if args.stats:
         menu_topper()
         finish_node()
