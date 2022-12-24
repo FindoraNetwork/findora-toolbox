@@ -689,7 +689,7 @@ def set_send_options() -> None:
         else:
             input('* Address did not match, try again. Press enter to try again.')
             set_send_options()
-    elif menu_option == 1:
+    if menu_option == 1:
         print(f"* Select an option. Privacy enabled on transactions, True or False: ")
         menu_options = [ "* [0] - True", "* [1] - False"]
         terminal_menu = TerminalMenu(
@@ -702,7 +702,7 @@ def set_send_options() -> None:
         if menu_option == 1:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
             set_send_options()
-    elif menu_option == 2:
+    if menu_option == 2:
         print(f"* Select an option. Express enabled to auto send with your saved options, would you like it enabled or disabled? ")
         menu_options = [ "* [0] - True", "* [1] - False"]
         terminal_menu = TerminalMenu(
@@ -714,7 +714,7 @@ def set_send_options() -> None:
         if menu_option == 1:    
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
         set_send_options()
-    elif menu_option == 3:
+    if menu_option == 3:
         return
 
 
