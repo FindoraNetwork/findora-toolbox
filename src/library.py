@@ -779,6 +779,8 @@ def create_staker_memo() -> None:
 
 
 def install_findora() -> None:
+    # mainnet or testnet
+    set_main_or_test()
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
@@ -787,8 +789,6 @@ def install_findora() -> None:
     )
     answer = ask_yes_no("* Do you want to install it now? (Y/N) ")
     if answer:
-        # mainnet or testnet
-        set_main_or_test()
         subprocess.call(
             [
                 "wget",
