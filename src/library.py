@@ -661,7 +661,7 @@ def check_address_input(address) -> None:
         input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to the menu.')
         return
     if address == environ.get("RECEIVER_WALLET"):
-        input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the main menu.')
+        input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the menu.')
         return
     address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
     if address == address2:
@@ -669,7 +669,7 @@ def check_address_input(address) -> None:
         input(f'* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}')
         return
     else:
-        input('* Address did not match, try again with matching info. Press enter to return to the main menu.')
+        input('* Address did not match, try again with matching info. Press enter to return to the menu.')
         return
 
 
