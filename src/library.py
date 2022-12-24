@@ -527,10 +527,11 @@ def get_total_send(our_fn_stats) -> None:
 
 def get_send_address() -> None:
     if environ.get("SEND_WALLET"):
-        return environ.get("SEND_WALLET")
-    else:
-        address = input(f'* Please input the fra address you would like to send your FRA: ')
-        address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
+        question = ask_yes_no(f'* We have {environ.get("SEND_WALLET")} on file, is this still accurate? (Y/N) ')
+        if question:
+            return environ.get("SEND_WALLET")
+    address = input(f'* Please input the fra address you would like to send your FRA: ')
+    address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
     if address == address2:
         return address
     else:
@@ -540,20 +541,25 @@ def get_send_address() -> None:
 
 def get_privacy_option() -> None:
     if environ.get("PRIVACY"):
-        return environ.get("PRIVACY")
+        question = ask_yes_no(f'* We have Privacy = {} on file, is this still accurate? (Y/N) ')
+        if question:
+            return environ.get("PRIVACY")
+    privacy = ask_yes_no('* Would you like this to be a private transaction? (Y/N) ')
+    if privacy:
+        return "True"
     else:
-        privacy = ask_yes_no('* Would you like this to be a private transaction? (Y/N) ')
-        if privacy:
-            return "True"
-        else:
-            return
+        return "False"
 
 
 def pre_send_findora() -> None:
     # Get balance
     our_fn_stats = get_fn_stats()
     send_total = get_total_send(our_fn_stats)
+    express = environ.get("SEND_EXPRESS")
     convert_send_total = str(int(float(send_total)*1000000))
+    if express == "True":
+        send_findora(convert_send_total, environ.get("SEND_WALLET"), environ.get("PRIVACY"))
+        return
     send_address = get_send_address()
     privacy = get_privacy_option()
     if privacy == "True":
@@ -562,12 +568,16 @@ def pre_send_findora() -> None:
     else:
         # Send tx regular
         send_findora(convert_send_total, send_address, "False")
-    question = ask_yes_no(f'* Address: {send_address}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
-    if question:
-        # save these two for next time
-        set_var(easy_env_fra.dotenv_file, "SEND_WALLET", send_address)
-        set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
-    
+    if environ.get("PRIVACY") is None or environ.get("SEND_WALLET") is None:
+        question = ask_yes_no(f'* Address: {send_address}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
+        if question:
+            # save these two for next time
+            set_var(easy_env_fra.dotenv_file, "SEND_WALLET", send_address)
+            set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
+        question = ask_yes_no(f'* Would you like to set this wallet and privacy as your default options and bypass all these questions next time? (Y/N) ')
+        if question:
+            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+        
 
 def send_findora(send_amount, to_address, privacy="False") -> None:
     # transfer if privacy on
