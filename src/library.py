@@ -190,36 +190,6 @@ def free_space_check(mount) -> str:
     return freeConverted
 
 
-def server_drive_check(dot_env, directory) -> None:
-    if environ.get("MOUNT_POINT") is not None:
-        ourDiskMount = environ.get("MOUNT_POINT")
-    else:
-        dotenv.set_key(dot_env, "MOUNT_POINT", directory)
-        load_var_file(dot_env)
-        ourDiskMount = environ.get("MOUNT_POINT")
-    print_stars()
-    print("Here are all of your mount points: ")
-    for part in disk_partitions():
-        print(part)
-    print_stars()
-    total, used, free = shutil.disk_usage(ourDiskMount)
-    total = str(converted_unit(total))
-    used = str(converted_unit(used))
-    print(
-        "Disk: "
-        + str(ourDiskMount)
-        + "\n"
-        + free_space_check(directory)
-        + " Free\n"
-        + used
-        + " Used\n"
-        + total
-        + " Total"
-    )
-    print_stars()
-    input("Disk check complete, press ENTER to return to the main menu. ")
-
-
 def disk_partitions(all=False):
     disk_ntuple = namedtuple("partition", "device mountpoint fstype")
     # Return all mounted partitions as a nameduple.
@@ -525,18 +495,18 @@ def get_total_send(our_fn_stats) -> None:
         get_total_send()
 
 
-def get_send_address() -> None:
-    if environ.get("SEND_WALLET"):
-        question = ask_yes_no(f'* We have {environ.get("SEND_WALLET")} on file, is this still accurate? (Y/N) ')
+def get_receiver_address() -> None:
+    if environ.get("RECEIVER_WALLET"):
+        question = ask_yes_no(f'* We have {environ.get("RECEIVER_WALLET")} on file, is this still accurate? (Y/N) ')
         if question:
-            return environ.get("SEND_WALLET")
+            return environ.get("RECEIVER_WALLET")
     address = input(f'* Please input the fra address you would like to send your FRA: ')
     address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
     if address == address2:
         return address
     else:
         input('* Address did not match, try again. Press enter to try again.')
-        get_send_address()
+        get_receiver_address()
 
 
 def get_privacy_option() -> None:
@@ -551,6 +521,18 @@ def get_privacy_option() -> None:
         return "False"
 
 
+def set_privacy(receiver_address, privacy) -> None:
+    if environ.get("PRIVACY") is None or environ.get("RECEIVER_WALLET") is None:
+        question = ask_yes_no(f'* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
+        if question:
+            # save these two for next time
+            set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
+            set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
+        question = ask_yes_no(f'* Would you like to set this wallet and privacy as your default options and bypass all these questions next time? (Y/N) ')
+        if question:
+            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+    question = ask_yes_no(f'* Your current settings are:\n* Receiver Wallet: {environ.get("RECEIVER_WALLET")}')
+
 def pre_send_findora() -> None:
     # Get balance
     our_fn_stats = get_fn_stats()
@@ -558,25 +540,23 @@ def pre_send_findora() -> None:
     express = environ.get("SEND_EXPRESS")
     convert_send_total = str(int(float(send_total)*1000000))
     if express == "True":
-        send_findora(convert_send_total, send_total, environ.get("SEND_WALLET"), environ.get("PRIVACY"))
+        send_findora(convert_send_total, send_total, environ.get("RECEIVER_WALLET"), environ.get("PRIVACY"))
         return
-    send_address = get_send_address()
+    receiver_address = get_receiver_address()
     privacy = get_privacy_option()
     if privacy == "True":
         # Send tx, with privacy
-        send_findora(convert_send_total, send_total, send_address, "True")
+        question = ask_yes_no(f'* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to True.\n* Press Y to send or N to return to the main menu. (Y/N) ')
+        if question:
+            send_findora(convert_send_total, send_total, receiver_address, "True")
+        else:
+            return
     else:
         # Send tx regular
-        send_findora(convert_send_total, send_total, send_address, "False")
-    if environ.get("PRIVACY") is None or environ.get("SEND_WALLET") is None:
-        question = ask_yes_no(f'* Address: {Fore.YELLOW}{send_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
-        if question:
-            # save these two for next time
-            set_var(easy_env_fra.dotenv_file, "SEND_WALLET", send_address)
-            set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
-        question = ask_yes_no(f'* Would you like to set this wallet and privacy as your default options and bypass all these questions next time? (Y/N) ')
-        if question:
-            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+        question = ask_yes_no(f'* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to False.\n* Press Y to send or N to return to the main menu. (Y/N) ')
+        send_findora(convert_send_total, send_total, receiver_address, "False")
+    set_privacy(receiver_address, privacy)
+    
         
 
 def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
@@ -668,7 +648,7 @@ def send_findora_options() -> None:
         address = input(f'* Please input the fra address you would like to send your FRA: ')
         address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
         if address == address2:
-            set_var(easy_env_fra.dotenv_file, "SEND_WALLET", address)
+            set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
             return
         else:
             input('* Address did not match, try again. Press enter to try again.')
