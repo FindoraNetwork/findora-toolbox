@@ -646,13 +646,14 @@ def change_validator_info():
 
 def set_wallet_options() -> None:
     # Give'm some options!
-    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n* 3. Express Option - Change current express option: {environ.get('EXPRESS')}\n* 0. Exit - Return to Main Menu\n*")
+    print(f"* Select an option to change: \n*\n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n* 3. Express Option - Change current express option: {environ.get('EXPRESS')}\n* 0. Exit - Return to Main Menu\n*")
     menu_options = [
-        "* [1] - Set Wallet",
-        "* [2] - Set Privacy",
-        "* [3] - Set Express",
-        "* [0] - Exit to Main Menu"
+        "* [0] - Set Wallet",
+        "* [1] - Set Privacy",
+        "* [2] - Set Express",
+        "* [3] - Exit to Main Menu"
     ]
+    print_stars()
     terminal_menu = TerminalMenu(
         menu_options, title="* Which type of restore method would you like to use for your validator wallet?"
     )
