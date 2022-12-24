@@ -634,22 +634,22 @@ def change_validator_info():
     print(
         f"* Which validator options would you like to update? Rate, Info or Both?\n*\n* [1] - Change validator commission rate.\n* [2] - Change staker_memo info.\n* [3] - Change both!\n* [0] - Exit to Main Menu"
     )
-    menu_options = [
+    change_info_menu = [
         "[1] - Change Commission Rate",
-        "[2] - Change staker_memo fino",
+        "[2] - Change staker_memo Information",
         "[3] - Change Both",
         "[0] - Exit to Main Menu"
     ]    
     terminal_menu = TerminalMenu(
-        menu_options, title="* What would you like to update today? "
+        change_info_menu, title="* What would you like to update today? "
     )
-    question = terminal_menu.show()
+    response = terminal_menu.show()
     # add logic for choices here pass our_fn_stats to #2
-    if question == 1:
+    if response == 1:
         change_rate(our_fn_stats)
-    if question == 2:
+    if response == 2:
         change_memo(our_fn_stats)
-    if question == 3:
+    if response == 3:
         run_both_updates(our_fn_stats)
     return
 
