@@ -478,9 +478,6 @@ def capture_stats() -> None:
     try:
         response = requests.get("http://localhost:26657/status")
         stats = json.loads(response.text)
-        # data = json.dumps(output, ensure_ascii=False, indent=4)
-        # status_code = int(output[1])
-        print_stars()
         return stats
     except:
         print("* No response from the rpc.\n* Is Docker running?")
@@ -1116,8 +1113,8 @@ def run_findora_menu() -> None:
 
 def parse_flags(parser):
     # add the '--verbose' flag
-    parser.add_argument('--verbose', action='store_true',
-                        help='increase output verbosity')
+    parser.add_argument('-s', '--stats', action='store_true',
+                        help='Run your stats if Findora is installed and running.')
 
     parser.add_argument('--reset', action='store_true', help='This will wipe everything to allow you to reload Findora.')
 
@@ -1128,12 +1125,13 @@ def parse_flags(parser):
     first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
 
     # check if the '--verbose' flag is set
-    if args.verbose:
-        print('Verbose mode enabled')
+    if args.stats:
+        menu_topper()
+        finish_node()
     
     if args.reset:
         print_stars()
-        answer = ask_yes_no(f"* You've started the reset process. Press enter to wipe your system or ctrl+c to exit.")
+        answer = ask_yes_no(f"* You've started the reset process. Press Y to reset or N ot exit: (Y/N) ")
         if answer:
             # wipe data here
             shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}')
