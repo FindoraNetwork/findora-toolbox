@@ -591,8 +591,7 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
 
 
 def change_rate(our_fn_stats):
-    subprocess.run('clear')
-    print_stars()
+    standalone_option()
     print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
     answer = input("* What would you like the new rate to be?\n* Please use findora notation, example for 5% fees use: 0.05\n* Enter your new rate now: ")
     answer2 = input("* Please re-enter your new rate to confirm: ")
@@ -660,9 +659,8 @@ def change_validator_info():
 def set_send_options() -> None:
     # Give'm some options!
     print(Fore.MAGENTA)
-    subprocess.run('clear')
-    print_stars()
-    print(f"* Select an option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current privacy option: {environ.get('PRIVACY')}\n* 2. Express Option - Change current express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*")
+    standalone_option()
+    print(f"* Select a send tx option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current privacy option: {environ.get('PRIVACY')}\n* 2. Express Option - Change current express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*")
     menu_options = [
         "* [0] - Set Wallet",
         "* [1] - Set Privacy",
@@ -677,18 +675,15 @@ def set_send_options() -> None:
     if menu_option == 0:
         address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
         if address[:4] != "fra1" or len(address) != 62: 
-            input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.')
-            set_send_options()
+            input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to the main menu.')
         if address == environ.get("RECEIVER_WALLET"):
-            input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the menu.')
-            set_send_options()
+            input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the main menu.')
         address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
         if address == address2:
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
-            set_send_options()
+            input(f'* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}')
         else:
-            input('* Address did not match, try again. Press enter to try again.')
-            set_send_options()
+            input('* Address did not match, try again with matching info. Press enter to return to the main menu.')
     if menu_option == 1:
         print(f"* Select an option. Privacy enabled on transactions, True or False: ")
         menu_options = [ "* [0] - True", "* [1] - False"]
@@ -698,10 +693,8 @@ def set_send_options() -> None:
         menu_option = terminal_menu.show()
         if menu_option == 0:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
-            set_send_options()
         if menu_option == 1:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
-            set_send_options()
     if menu_option == 2:
         print(f"* Select an option. Express enabled to auto send with your saved options, would you like it enabled or disabled? ")
         menu_options = [ "* [0] - True", "* [1] - False"]
@@ -713,9 +706,9 @@ def set_send_options() -> None:
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
         if menu_option == 1:    
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
-        set_send_options()
     if menu_option == 3:
         return
+    set_send_options()
 
 
 def server_disk_check() -> None:
