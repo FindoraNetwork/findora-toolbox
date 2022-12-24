@@ -558,10 +558,10 @@ def pre_send_findora() -> None:
     privacy = get_privacy_option()
     if privacy:
         # Send tx, with privacy
-        send_findora(convert_send_total, send_address, True)
+        send_findora(str(convert_send_total), send_address, True)
     else:
         # Send tx regular
-        send_findora(convert_send_total, send_address, False)
+        send_findora(str(convert_send_total), send_address, False)
     question = ask_yes_no(f'* Address: {send_address}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
     if question:
         # save these two for next time
