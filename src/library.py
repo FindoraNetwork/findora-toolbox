@@ -688,10 +688,9 @@ def set_wallet_options() -> None:
             current = environ.get("EXPRESS")
             if current == "True":
                 set_var(easy_env_fra.dotenv_file, "EXPRESS", "False")
-                set_wallet_options()
             elif current == "False":
                 set_var(easy_env_fra.dotenv_file, "EXPRESS", "True")
-                set_wallet_options()
+        set_wallet_options()
 
 
 def server_disk_check() -> None:
