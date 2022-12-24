@@ -513,9 +513,62 @@ def claim_findora_rewards() -> None:
         )
 
 
-def send_findora(send_amount, to_address, privacy) -> None:
-    # Ok, here's a story...amount in millions (5 mil = 5 FRA) last 2 are private tx yes.
-    # fn transfer --amount {send_amount} -T {to_address} --confidential-amount --confidential-type
+def get_total_send(our_fn_stats) -> None:
+    total = input(f'* Current balance is: {our_fn_stats["Balance"]} FRA\n* How much would you like to send? ')
+    total2 = input(f'* Please re-enter the amount you would like to send for verification: ')
+    if total == total2:
+        return total
+    else:
+        input('* Balances did not match, try again. Press enter to try again.')
+        get_total_send()
+
+
+def get_send_address() -> None:
+    if environ.get("SEND_WALLET"):
+        return environ.get("SEND_WALLET")
+    else:
+        address = input(f'* Please input the fra address you would like to send your FRA: ')
+        address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
+    if address == address2:
+        return address
+    else:
+        input('* Address did not match, try again. Press enter to try again.')
+        get_send_address()
+
+
+def get_privacy_option() -> None:
+    if environ.get("PRIVACY"):
+        return environ.get("PRIVACY")
+    else:
+        privacy = ask_yes_no('* Would you like this to be a private transaction? (Y/N) ')
+        if privacy:
+            return True
+        else:
+            return
+
+
+def pre_send_findora() -> None:
+    # Get balance
+    our_fn_stats = get_fn_stats()
+    send_total = get_total_send(our_fn_stats)
+    convert_send_total = float(send_total)*1000000
+    send_address = get_send_address()
+    privacy = get_privacy_option()
+    if privacy:
+        # Send tx, with privacy
+        send_findora(convert_send_total, send_address, True)
+    else:
+        # Send tx regular
+        send_findora(convert_send_total, send_address, False)
+    question = ask_yes_no(f'* Address: {send_address}\n* Privacy {privacy}\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
+    if question:
+        # save these two for next time
+        set_var(easy_env_fra.dotenv_file, "SEND_WALLET", send_address)
+        set_var(easy_env_fra.dotenv_file, "PRIVACY", privacy)
+    
+
+def send_findora(send_amount, to_address, privacy=False) -> None:
+    # transfer if privacy on
     if privacy:
         subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address, "--confidential-amount", "--confidential-type"])
     else:
@@ -549,6 +602,7 @@ def change_memo(our_fn_stats):
     for i in our_fn_stats["memo"]:
         print(f'* "{i}": {our_fn_stats["memo"][i]}')
     # show current staker_memo info, update records and send
+    print('* This feature is not implemented yet, but enjoy the info, coming soon!')
     # fn staker-update -M "$(cat staker_memo)"
     return
 
