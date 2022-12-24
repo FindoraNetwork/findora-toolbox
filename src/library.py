@@ -627,6 +627,8 @@ def run_both_updates(our_fn_stats):
 
 def change_validator_info():
     our_fn_stats = get_fn_stats()
+    if 'Self Delegation' not in our_fn_stats:
+        input(f'* You have not created your validator yet. Please exit, stake with your validator wallet and send the create validator command.\n* See our post install guide at https://guides.easynode.pro/findora/post#validator-wallet-commands\n*\n* Press enter to return to the main menu.')
     # Change the rate & staker memo info
     print(
         "* Which validator options would you like to update? Rate, Info or Both?\n*"
