@@ -436,6 +436,7 @@ def menu_findora() -> None:
     print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
     print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
     print("*   3 -  Claim Pending FRA         - Claim all of your unclaimed FRA now")
+    print("*   4 -  Transfer FRA              - Send FRA to another fra address now")
     print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
     print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
     findora_container_update(update)
@@ -602,7 +603,7 @@ def change_memo(our_fn_stats):
     for i in our_fn_stats["memo"]:
         print(f'* "{i}": {our_fn_stats["memo"][i]}')
     # show current staker_memo info, update records and send
-    print('* This feature is not implemented yet, but enjoy the info, coming soon!')
+    print('*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n*')
     # fn staker-update -M "$(cat staker_memo)"
     return
 
@@ -1215,7 +1216,7 @@ def run_findora_menu() -> None:
         1: get_curl_stats,
         2: refresh_fn_stats,
         3: claim_findora_rewards,
-        4: coming_soon,
+        4: pre_send_findora,
         5: coming_soon,
         6: coming_soon,
         7: update_fn_wallet,
