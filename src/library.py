@@ -585,7 +585,7 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
         subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address, "--confidential-amount", "--confidential-type"])
     else:
         subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address])
-    print(f"* Sent {fra_amount} FRA to {to_address} with privacy = {privacy}")
+    print(f"* Sent {fra_amount} to {to_address} with privacy = {privacy}")
     return
 
 
