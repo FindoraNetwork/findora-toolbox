@@ -600,7 +600,7 @@ def change_rate(our_fn_stats):
         if question:
             subprocess.call(["fn", "staker-update", "-R", answer])   
         else:
-            input('* You answered No, returning to main menu. Press enter to continue.')     
+            print('* You answered No, returning to main menu. Press enter to continue.')     
     else:
         input("* Your answers didn't match, let's try again. Press enter to continue.")
         change_rate(our_fn_stats)
@@ -614,7 +614,7 @@ def change_memo(our_fn_stats):
     for i in our_fn_stats["memo"]:
         print(f'* "{i}": {our_fn_stats["memo"][i]}')
     # show current staker_memo info, update records and send
-    print('*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n*')
+    input('*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n* Press enter to continue.')
     # fn staker-update -M "$(cat staker_memo)"
     return
 
@@ -632,10 +632,7 @@ def change_validator_info():
         return
     # Change the rate & staker memo info
     print(
-        "* Which validator options would you like to update? Rate, Info or Both?\n*"
-        + f"\n* 1 - Change validator commission rate."
-        + "\n* 2 - Change staker_memo info."
-        + "\n* 3 - Change both!"
+        f"* Which validator options would you like to update? Rate, Info or Both?\n*\n* [1] - Change validator commission rate.\n* [2] - Change staker_memo info.\n* [3] - Change both!\n* [0] - Exit to Main Menu"
     )
     menu_options = [
         "[1] - Change Commission Rate",
