@@ -626,13 +626,14 @@ def run_both_updates(our_fn_stats):
 
 
 def change_validator_info():
+    # fix this menu, it's nuts. Always does change_rate
     our_fn_stats = get_fn_stats()
     if 'Self Delegation' not in our_fn_stats:
         print(f'* You have not created your validator yet. Please exit, stake with your validator wallet and send the create validator command.\n* See our post install guide at https://guides.easynode.pro/findora/post#validator-wallet-commands\n*\n* Press enter to return to the main menu.')
         return
     # Change the rate & staker memo info
     print(
-        f"* Which validator options would you like to update? Rate, Info or Both?\n*\n* [1] - Change validator commission rate.\n* [2] - Change staker_memo info.\n* [3] - Change both!\n* [0] - Exit to Main Menu"
+        f"* Which validator options would you like to update?"
     )
     change_info_menu = [
         "[1] - Change Commission Rate",
@@ -645,6 +646,8 @@ def change_validator_info():
     )
     response = terminal_menu.show()
     # add logic for choices here pass our_fn_stats to #2
+    if response == 0:
+        return
     if response == 1:
         change_rate(our_fn_stats)
     if response == 2:
