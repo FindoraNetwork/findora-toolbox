@@ -526,9 +526,17 @@ def send_findora(send_amount, to_address, privacy) -> None:
 
 def change_rate(our_fn_stats):
     print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
-
-    # show current rate, ask for new rate
-    # fn staker-update -R {new_rate}
+    answer = input("* What would you like the new rate to be?\n* Please use findora notation, example for 5% fees use: 0.05\n* Enter your new rate now: ")
+    answer2 = input("* Please re-enter your new rate to confirm: ")
+    if answer == answer2:
+        question = ask_yes_no(f'* Are you sure you want to change your rate to {int(answer)/100} %? (Y/N) ')
+        if question:
+            subprocess.call(["fn", "staker-update", "-R", answer])   
+        else:
+            input('* You answered No, returning to main menu. Press enter to continue.')     
+    else:
+        input("* Your answers didn't match, let's try again. Press enter to continue.")
+        change_rate(our_fn_stats)
     return
 
 
@@ -642,7 +650,7 @@ def get_fn_stats():
         memo["name"] = lines[53].partition('"name":')[2][:-1]
         memo["desc"] = lines[54].partition('"desc":')[2][:-1]
         memo["website"] = lines[55].partition('"website":')[2][:-1]
-        memo["logo"] = lines[56].partition('"logo":')[2][:-1]
+        memo["logo"] = lines[56].partition('"logo":')[2]
         fn_info["memo"] = memo
 
     return fn_info
