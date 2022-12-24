@@ -113,7 +113,7 @@ def load_var_file(var_file):
 
 def finish_node():
     print(
-        "* Thanks for using Easy Node - EZ Mode!\n*\n* We serve up free tools and guides for validators every day.\n*\n* Check our guides out at https://guides.easynode.pro\n*\n"
+        "* Thanks for using Easy Node Toolbox - Making everything Easy Mode!\n*\n* We serve up free tools and guides for validators every day.\n*\n* Check our guides out at https://guides.easynode.pro\n*\n"
         + "* Please consider supporting us one time or monthly at https://github.com/sponsors/easy-node-pro today!\n*\n* Goodbye!"
     )
     print_stars()
