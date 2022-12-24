@@ -531,8 +531,7 @@ def set_privacy(receiver_address, privacy) -> None:
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
             set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
         print(f'* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n*\n* Would you like us to save your privacy options and wallet use for future tx? (Y/N)')
-
-    question = ask_yes_no(f'* Your current settings are:\n* Receiver Wallet: {environ.get("RECEIVER_WALLET")}')
+        return
 
 def pre_send_findora() -> None:
     # Get balance
