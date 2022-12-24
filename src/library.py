@@ -513,8 +513,59 @@ def claim_findora_rewards() -> None:
         )
 
 
-def check_balance_menu() -> None:
-    coming_soon()
+def send_findora(send_amount, to_address, privacy) -> None:
+    # Ok, here's a story...amount in millions (5 mil = 5 FRA) last 2 are private tx yes.
+    # fn transfer --amount {send_amount} -T {to_address} --confidential-amount --confidential-type
+    if privacy:
+        subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address, "--confidential-amount", "--confidential-type"])
+    else:
+        subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address])
+    print(f"* Sent {send_amount} to {to_address} with privacy = {privacy}")
+    return
+
+
+def change_rate(our_fn_stats):
+    # show current rate, ask for new rate
+    # fn staker-update -R {new_rate}
+    return
+
+
+def change_memo(our_fn_stats):
+    print("* Current Settings: ")
+    # allow edit one by one, then have commit changes at the end?
+    for i in our_fn_stats["memo"]:
+        print(i)
+    # show current staker_memo info, update records and send
+    # fn staker-update -M "$(cat staker_memo)"
+    return
+
+
+def run_both_updates(our_fn_stats):
+    change_rate(our_fn_stats)
+    change_memo(our_fn_stats)
+    return
+
+
+def change_validator_info():
+    our_fn_stats = get_fn_stats()
+    # Change the rate & staker memo info
+    menu_options = {1: change_rate, 2: change_memo, 3: run_both_updates}
+    print(
+        "* Which validator options would you like to update? Rate, Info or Both?\n*"
+        + f"\n* 1 - Change validator commission rate."
+        + "\n* 2 - Change staker_memo info."
+        + "\n* 3 - Change both!"
+    )
+    print_stars()
+    try:
+        option = int(input("Enter your option: "))
+    except ValueError:
+        # on bad input, pull updated version from main menu
+        return
+    # post option cleanup & load option
+    subprocess.run("clear")
+    menu_options[option](our_fn_stats)
+    return
 
 
 def server_disk_check() -> None:
@@ -567,6 +618,7 @@ def get_fn_stats():
     lines = json_string.split("\n")
 
     fn_info = {}
+    memo = {}
     if int(lines[17].split()[1][:-1]) == 0:
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[29].split()[1][:-1]
@@ -583,6 +635,12 @@ def get_fn_stats():
         fn_info["Server Rank"] = lines[45].split()[1][:-1]
         fn_info["Delegator Count"] = lines[66].split()[1]
         fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
+        fn_info["Raw Commission"] = int(lines[47][:-1])
+        memo["name"] = lines[53].partition('"name":')[2][:-1]
+        memo["desc"] = lines[54].partition('"desc":')[2][:-1]
+        memo["website"] = lines[55].partition('"website":')[2][:-1]
+        memo["logo"] = lines[56].partition('"logo":')[2][:-1]
+        fn_info["memo"] = memo
 
     return fn_info
 
