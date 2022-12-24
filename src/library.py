@@ -478,9 +478,6 @@ def capture_stats() -> None:
     try:
         response = requests.get("http://localhost:26657/status")
         stats = json.loads(response.text)
-        # data = json.dumps(output, ensure_ascii=False, indent=4)
-        # status_code = int(output[1])
-        print_stars()
         return stats
     except:
         print("* No response from the rpc.\n* Is Docker running?")
@@ -595,6 +592,8 @@ def menu_topper() -> None:
         print_stars()
         input()
     subprocess.run("clear")
+    print(Fore.MAGENTA)
+    print_stars()
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node"
         + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
