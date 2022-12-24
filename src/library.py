@@ -553,7 +553,7 @@ def pre_send_findora() -> None:
     # Get balance
     our_fn_stats = get_fn_stats()
     send_total = get_total_send(our_fn_stats)
-    convert_send_total = int(float(send_total)*1000000)
+    convert_send_total = str(int(float(send_total)*1000000))
     send_address = get_send_address()
     privacy = get_privacy_option()
     if privacy:
