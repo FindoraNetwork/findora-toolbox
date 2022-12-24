@@ -1,16 +1,4 @@
-import subprocess
-import platform
-import os
-import time
-import json
-import shutil
-import pwd
-import getpass
-import requests
-import docker
-import dotenv
-import hashlib
-import psutil
+import subprocess, platform, os, time, argparse, json, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
@@ -1125,3 +1113,25 @@ def run_findora_menu() -> None:
             print_stars()
             print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
         pause_for_cause()
+
+def parse_flags(parser):
+    # add the '--verbose' flag
+    parser.add_argument('--verbose', action='store_true',
+                        help='increase output verbosity')
+
+    parser.add_argument('--reset', action='store_true', help='This will wipe everything to allow you to reload Findora.')
+
+    # parse the arguments
+    args = parser.parse_args()
+
+    # check if the '--verbose' flag is set
+    if args.verbose:
+        print('Verbose mode enabled')
+    
+    if args.reset:
+        # wipe data here
+        shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}')
+        subprocess.run(f'sudo rm /usr/local/bin/fn')
+        os.remove(easy_env_fra.dotenv_file)
+        print(f'* Findora Data, fn and our .easynode.env file have been removed, rerun toolbox to reload!')
+        finish_node()

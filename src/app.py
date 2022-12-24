@@ -1,4 +1,4 @@
-import os
+import os, argparse
 from os import environ
 from library import (
     run_findora_menu,
@@ -14,6 +14,7 @@ from library import (
     finish_node,
     first_env_check,
     ask_yes_no,
+    parse_flags
 )
 from colorama import Fore
 from config import easy_env_fra
@@ -22,6 +23,9 @@ from config import easy_env_fra
 
 
 def main() -> None:
+    # Init parser for flags:
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parse_flags(parser)
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
