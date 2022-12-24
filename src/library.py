@@ -282,6 +282,7 @@ def docker_check():
     status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if status == 0:
         print('* Docker ready.')
+        print_stars()
         time.sleep(1)
     else:
         print("* Docker is not installed and/or is not working properly.")
