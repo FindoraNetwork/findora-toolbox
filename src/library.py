@@ -656,6 +656,23 @@ def change_validator_info():
     return
 
 
+def check_address_input(address) -> None:
+    if address[:4] != "fra1" or len(address) != 62: 
+        input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to the menu.')
+        return
+    if address == environ.get("RECEIVER_WALLET"):
+        input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the main menu.')
+        return
+    address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
+    if address == address2:
+        set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
+        input(f'* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}')
+        return
+    else:
+        input('* Address did not match, try again with matching info. Press enter to return to the main menu.')
+        return
+
+
 def set_send_options() -> None:
     # Give'm some options!
     print(Fore.MAGENTA)
@@ -674,20 +691,7 @@ def set_send_options() -> None:
     menu_option = terminal_menu.show()
     if menu_option == 0:
         address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
-        if address[:4] != "fra1" or len(address) != 62: 
-            input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to the main menu.')
-            pass
-        if address == environ.get("RECEIVER_WALLET"):
-            input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the main menu.')
-            pass
-        address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
-        if address == address2:
-            set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
-            input(f'* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}')
-            pass
-        else:
-            input('* Address did not match, try again with matching info. Press enter to return to the main menu.')
-            pass
+        check_address_input(address)
     if menu_option == 1:
         print(f"* Select an option. Privacy enabled on transactions, True or False: ")
         menu_options = [ "* [0] - True", "* [1] - False"]
@@ -697,10 +701,8 @@ def set_send_options() -> None:
         sub_menu_option = terminal_menu.show()
         if sub_menu_option == 0:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
-            pass
         if sub_menu_option == 1:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
-            pass
     if menu_option == 2:
         print(f"* Select an option. Express enabled to auto send with your saved options, would you like it enabled or disabled? ")
         menu_options = [ "* [0] - True", "* [1] - False"]
@@ -710,10 +712,8 @@ def set_send_options() -> None:
         sub_menu_2_option = terminal_menu.show()
         if sub_menu_2_option == 0:
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
-            pass
         if sub_menu_2_option == 1:    
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
-            pass
     if menu_option == 3:
         return
     set_send_options()
