@@ -649,11 +649,13 @@ def change_validator_info():
 
 def send_findora_options() -> None:
     # Give'm some options!
-    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}")
-    question = input("* Input 1 or 2 now:")
-    if question < 1 or question > 2:
+    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n* 0. - Return to Main Menu\n*")
+    question = input("* Which would you like to update? Input 1 or 2 now:")
+    if question < 0 or question > 2:
         input("* We didn't catch that answer, try again. Press enter to continue.")
         send_findora_options()
+    if question == 0:
+        return
     if question == 1:
         address = input(f'* Please input the fra address you would like to send your FRA: ')
         address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
