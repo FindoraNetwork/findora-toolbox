@@ -637,7 +637,7 @@ def change_validator_info():
 
 def send_findora_options() -> None:
     # Give'm some options!
-    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n* 0. - Return to Main Menu\n*")
+    print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n*\n* 0. Exit - Return to Main Menu\n*")
     question = input("* Which would you like to update? Input 1 or 2 now:")
     if question < 0 or question > 2:
         input("* We didn't catch that answer, try again. Press enter to continue.")
