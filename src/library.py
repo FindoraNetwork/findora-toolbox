@@ -1131,7 +1131,7 @@ def parse_flags(parser):
     parser.add_argument('-s', '--stats', action='store_true',
                         help='Run your stats if Findora is installed and running.')
 
-    parser.add_argument('-c', '--claim', action='store_true' help='Claim all of your pending Unclaimed FRA.')
+    parser.add_argument('-c', '--claim', action='store_true', help='Claim all of your pending Unclaimed FRA.')
 
     parser.add_argument('--mainnet', action='store_true', help='Will run the installer set to mainnet.')
 
