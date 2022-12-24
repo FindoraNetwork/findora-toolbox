@@ -676,36 +676,44 @@ def set_send_options() -> None:
         address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
         if address[:4] != "fra1" or len(address) != 62: 
             input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to the main menu.')
+            pass
         if address == environ.get("RECEIVER_WALLET"):
             input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the main menu.')
+            pass
         address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
         if address == address2:
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
             input(f'* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}')
+            pass
         else:
             input('* Address did not match, try again with matching info. Press enter to return to the main menu.')
+            pass
     if menu_option == 1:
         print(f"* Select an option. Privacy enabled on transactions, True or False: ")
         menu_options = [ "* [0] - True", "* [1] - False"]
         terminal_menu = TerminalMenu(
             menu_options, title="* Would you like private transactions? "
         )
-        menu_option = terminal_menu.show()
-        if menu_option == 0:
+        sub_menu_option = terminal_menu.show()
+        if sub_menu_option == 0:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
-        if menu_option == 1:
+            pass
+        if sub_menu_option == 1:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
+            pass
     if menu_option == 2:
         print(f"* Select an option. Express enabled to auto send with your saved options, would you like it enabled or disabled? ")
         menu_options = [ "* [0] - True", "* [1] - False"]
         terminal_menu = TerminalMenu(
             menu_options, title=f'* Express option currently set to {environ.get("SEND_EXPRESS")}. Would you like to switch this?'
         )
-        menu_option = terminal_menu.show()
-        if menu_option == 0:
+        sub_menu_2_option = terminal_menu.show()
+        if sub_menu_2_option == 0:
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
-        if menu_option == 1:    
+            pass
+        if sub_menu_2_option == 1:    
             set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
+            pass
     if menu_option == 3:
         return
     set_send_options()
