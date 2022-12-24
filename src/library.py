@@ -497,10 +497,7 @@ def get_total_send(our_fn_stats) -> None:
 
 
 def get_receiver_address() -> None:
-    load_dotenv(easy_env_fra.dotenv_file)
     address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
-    print(f'* Debug Input: {address}')
-    print(f'*   Debug var: {environ.get("RECEIVER_WALLET")}')
     # this isn't triggering, figure it out.
     if address == environ.get("RECEIVER_WALLET"):
         print('* This is already your saved wallet, try again with a new wallet to update this option.')
@@ -668,8 +665,12 @@ def set_send_options() -> None:
     if menu_option == 3:
         return
     elif menu_option == 0:
-        address = input(f'* Please input the fra address you would like to send your FRA: ')
-        address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
+        address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
+        # this isn't triggering, figure it out.
+        if address == environ.get("RECEIVER_WALLET"):
+            print('* This is already your saved wallet, try again with a new wallet to update this option.')
+            set_send_options()
+        address2 = input(f'*\n* Please re-input the fra address you would like to send your FRA for verification: ')
         if address == address2:
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
             set_send_options()
