@@ -497,6 +497,7 @@ def get_total_send(our_fn_stats) -> None:
 
 
 def get_receiver_address() -> None:
+    load_dotenv(easy_env_fra.dotenv_file)
     if environ.get("RECEIVER_WALLET"):
         question = ask_yes_no(f'* We have {environ.get("RECEIVER_WALLET")} on file, is this still accurate? (Y/N) ')
         if question:
