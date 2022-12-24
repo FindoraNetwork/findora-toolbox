@@ -501,8 +501,8 @@ def get_receiver_address() -> None:
         question = ask_yes_no(f'* We have {environ.get("RECEIVER_WALLET")} on file, is this still accurate? (Y/N) ')
         if question:
             return environ.get("RECEIVER_WALLET")
-    address = input(f'* Please input the fra address you would like to send your FRA: ')
-    address2 = input(f'* Please re-input the fra address you would like to send your FRA for verification: ')
+    address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
+    address2 = input(f'\n* Please re-input the fra address you would like to send your FRA for verification: ')
     if address == address2:
         return address
     else:
