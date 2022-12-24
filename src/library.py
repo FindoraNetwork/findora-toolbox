@@ -1144,8 +1144,13 @@ def parse_flags(parser):
         answer = ask_yes_no(f"* You've started the reset process. Press Y to reset or N ot exit: (Y/N) ")
         if answer:
             # wipe data here
-            shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}')
-            subprocess.getoutput(f'sudo rm /usr/local/bin/fn')
-            os.remove(easy_env_fra.dotenv_file)
-            print(f'* Findora Data, fn and our .easynode.env file have been removed, rerun toolbox to reload!')
-            finish_node()
+            subprocess.call(
+                [
+                    "wget",
+                    "-O",
+                    f"/tmp/wipe_findora_{environ.get('FRA_NETWORK')}.sh",
+                    f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/wipe_findora_{environ.get('FRA_NETWORK')}.sh",
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
