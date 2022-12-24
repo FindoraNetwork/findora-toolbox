@@ -536,7 +536,7 @@ def change_memo(our_fn_stats):
     print("* Current Settings: ")
     # allow edit one by one, then have commit changes at the end?
     for i in our_fn_stats["memo"]:
-        print(f"* {our_fn_stats['memo'][i]}: {i}")
+        print(f'* "{i}": {our_fn_stats["memo"][i]}')
     # show current staker_memo info, update records and send
     # fn staker-update -M "$(cat staker_memo)"
     return
