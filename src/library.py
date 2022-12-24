@@ -541,7 +541,7 @@ def get_send_address() -> None:
 
 def get_privacy_option() -> None:
     if environ.get("PRIVACY"):
-        question = ask_yes_no(f'* We have Privacy = {} on file, is this still accurate? (Y/N) ')
+        question = ask_yes_no(f'* We have Privacy = {environ.get("PRIVACY")} on file, is this still accurate? (Y/N) ')
         if question:
             return environ.get("PRIVACY")
     privacy = ask_yes_no('* Would you like this to be a private transaction? (Y/N) ')
