@@ -24,7 +24,7 @@ from config import easy_env_fra
 
 def main() -> None:
     # Init parser for flags:
-    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser = argparse.ArgumentParser(description='Findora Validator Toolbox - Help Menu')
     parse_flags(parser)
     # Wear purple
     print(Fore.MAGENTA)

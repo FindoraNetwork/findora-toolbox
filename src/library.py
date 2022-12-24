@@ -1116,8 +1116,8 @@ def run_findora_menu() -> None:
 
 def parse_flags(parser):
     # add the '--verbose' flag
-    parser.add_argument('--verbose', action='store_true',
-                        help='increase output verbosity')
+    parser.add_argument('--stats', action='store_true',
+                        help='Run your stats if Findora is installed and running.')
 
     parser.add_argument('--reset', action='store_true', help='This will wipe everything to allow you to reload Findora.')
 
@@ -1129,7 +1129,8 @@ def parse_flags(parser):
 
     # check if the '--verbose' flag is set
     if args.verbose:
-        print('Verbose mode enabled')
+        menu_topper()
+        finish_node()
     
     if args.reset:
         print_stars()
