@@ -595,7 +595,6 @@ def menu_topper() -> None:
         print_stars()
         input()
     subprocess.run("clear")
-    print(Fore.MAGENTA)
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node"
         + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
