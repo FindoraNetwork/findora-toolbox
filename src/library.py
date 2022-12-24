@@ -645,8 +645,6 @@ def change_validator_info():
     )
     question = terminal_menu.show()
     # add logic for choices here pass our_fn_stats to #2
-    if question == 0:
-        return
     if question == 1:
         change_rate(our_fn_stats)
     if question == 2:
