@@ -1131,9 +1131,11 @@ def parse_flags(parser):
     parser.add_argument('-s', '--stats', action='store_true',
                         help='Run your stats if Findora is installed and running.')
 
-    parser.add_argument('--mainnet', action='store_true', help='Will run the installer set to mainnet')
+    parser.add_argument('-c', '--claim', action='store_true' help='Claim all of your pending Unclaimed FRA.')
 
-    parser.add_argument('--testnet', action='store_true', help='Will run the installer set to testnet')
+    parser.add_argument('--mainnet', action='store_true', help='Will run the installer set to mainnet.')
+
+    parser.add_argument('--testnet', action='store_true', help='Will run the installer set to testnet.')
 
     parser.add_argument('--reset', action='store_true', help='This will wipe everything to allow you to reload Findora.')
 
@@ -1145,6 +1147,9 @@ def parse_flags(parser):
 
     subprocess.run('clear')
     print(Fore.MAGENTA)
+
+    if args.claim:
+        claim_findora_rewards()
 
     if args.mainnet:
         if environ.get("FRA_NETWORK"): 
