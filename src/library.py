@@ -629,8 +629,6 @@ def change_validator_info():
     our_fn_stats = get_fn_stats()
     if 'Self Delegation' not in our_fn_stats:
         print(f'* You have not created your validator yet. Please exit, stake with your validator wallet and send the create validator command.\n* See our post install guide at https://guides.easynode.pro/findora/post#validator-wallet-commands\n*\n* Press enter to return to the main menu.')
-        print_stars()
-        input()
         return
     # Change the rate & staker memo info
     print(
