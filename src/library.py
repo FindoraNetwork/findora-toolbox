@@ -547,14 +547,14 @@ def pre_send_findora() -> None:
     privacy = get_privacy_option()
     if privacy == "True":
         # Send tx, with privacy
-        question = ask_yes_no(f'*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to True.\n* Press Y to send or N to return to the main menu. (Y/N) ')
+        question = ask_yes_no(f'*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to True.\n*\n* Press Y to send or N to return to the main menu. (Y/N) ')
         if question:
             send_findora(convert_send_total, send_total, receiver_address, "True")
         else:
             return
     else:
         # Send tx regular
-        question = ask_yes_no(f'*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to False.\n* Press Y to send or N to return to the main menu. (Y/N) ')
+        question = ask_yes_no(f'*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to False.\n*\n* Press Y to send or N to return to the main menu. (Y/N) ')
         send_findora(convert_send_total, send_total, receiver_address, "False")
     set_privacy(receiver_address, privacy)
     
