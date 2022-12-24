@@ -581,11 +581,19 @@ def pre_send_findora() -> None:
 
 def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
     # transfer if privacy on
-    if privacy == "True":
-        subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address, "--confidential-amount", "--confidential-type"])
-    else:
-        subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address])
-    print(f"* Sent {fra_amount} to {to_address} with privacy = {privacy}")
+    try:
+        if privacy == "True":
+            subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address, "--confidential-amount", "--confidential-type"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,)
+        else:
+            subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,)
+        print(f"{Fore.MAGENTA}* Sent {fra_amount} to {to_address} with privacy = {privacy}")
+    except subprocess.CalledProcessError as err:
+        print(f'* Error sending transaction:\n* {err}')
+
     return
 
 
