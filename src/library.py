@@ -433,7 +433,7 @@ def menu_findora() -> None:
     print("*")
     print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
     print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
-    print("*   3 -  Show Balance              - Check Any Wallet Balance")
+    print("*   3 -  Claim Pending FRA         - Claim all of your unclaimed FRA now")
     print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
     print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
     findora_container_update(update)
@@ -494,9 +494,19 @@ def refresh_fn_stats() -> None:
         print(output)
     except subprocess.CalledProcessError as err:
         print(
-            "* Error, no response from local API, try your curl stats again. If the stats give the "
-            + "same reply try option #10 to get back online and as a last resort option #12!\n"
-            + f"* Error: {err}"
+            f"* Error, no response from local API, try your command again or check your fn stats to see if there's an issue.\n* Error: {err}"
+        )
+
+
+def claim_findora_rewards() -> None:
+    subprocess.run("clear")
+    print_stars()
+    try:
+        output = subprocess.check_output(["fn", "claim"])
+        print(output)
+    except subprocess.CalledProcessError as err:
+        print(
+            f"* Error, no response from local API, try your command again or check your fn stats to see if there's an issue.\n* Error: {err}"
         )
 
 
@@ -1075,7 +1085,7 @@ def run_findora_menu() -> None:
         0: finish_node,
         1: get_curl_stats,
         2: refresh_fn_stats,
-        3: check_balance_menu,
+        3: claim_findora_rewards,
         4: coming_soon,
         5: coming_soon,
         6: coming_soon,
