@@ -504,11 +504,14 @@ def get_receiver_address() -> None:
     if environ.get("RECEIVER_WALLET"):
         question = ask_yes_no(f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")}{Fore.MAGENTA} on file. Would you like to send to this address? (Y/N)')
         if question: return environ.get("RECEIVER_WALLET")
-    address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
+    address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
+    if address[:4] != "fra1" or len(address) != 62: 
+        input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.')
+        get_receiver_address()
     if address == environ.get("RECEIVER_WALLET"):
         print('* This is already your saved wallet, try again with a new wallet to update this option.')
         return environ.get("RECEIVER_WALLET")
-    address2 = input(f'*\n* Please re-input the fra address you would like to send your FRA for verification: ')
+    address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
     if address == address2:
         return address
     else:
@@ -674,12 +677,14 @@ def set_send_options() -> None:
     if menu_option == 3:
         return
     elif menu_option == 0:
-        address = input(f'*\n* Please input the fra address you would like to send your FRA: ')
-        # this isn't triggering, figure it out.
+        address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
+        if address[:4] != "fra1" or len(address) != 62: 
+            input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.')
+            set_send_options()
         if address == environ.get("RECEIVER_WALLET"):
             input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the menu.')
             set_send_options()
-        address2 = input(f'*\n* Please re-input the fra address you would like to send your FRA for verification: ')
+        address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
         if address == address2:
             set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
             set_send_options()
