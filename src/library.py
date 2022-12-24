@@ -1133,6 +1133,7 @@ def parse_flags(parser):
     # Load Vars / Set Network
     first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
 
+    subprocess.run('clear')
     print(Fore.MAGENTA)
 
     if args.mainnet:
