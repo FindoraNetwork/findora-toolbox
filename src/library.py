@@ -1154,3 +1154,7 @@ def parse_flags(parser):
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
+            subprocess.call(
+                ["bash", "-x", f"/tmp/wipe_findora_{environ.get('FRA_NETWORK')}.sh"], cwd=easy_env_fra.user_home_dir
+            )
+            finish_node()
