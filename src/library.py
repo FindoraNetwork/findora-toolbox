@@ -616,32 +616,46 @@ def run_both_updates(our_fn_stats):
 def change_validator_info():
     our_fn_stats = get_fn_stats()
     # Change the rate & staker memo info
-    menu_options = {1: change_rate, 2: change_memo, 3: run_both_updates}
     print(
         "* Which validator options would you like to update? Rate, Info or Both?\n*"
         + f"\n* 1 - Change validator commission rate."
         + "\n* 2 - Change staker_memo info."
         + "\n* 3 - Change both!"
     )
-    print_stars()
-    try:
-        option = int(input("Enter your option: "))
-    except ValueError:
-        # on bad input, pull updated version from main menu
+    menu_options = [
+        "[1] - Change Commission Rate",
+        "[2] - Change staker_memo fino",
+        "[3] - Change Both",
+        "[0] - Exit to Main Menu"
+    ]    
+    terminal_menu = TerminalMenu(
+        menu_options, title="* Which type of restore method would you like to use for your validator wallet?"
+    )
+    question = terminal_menu.show()
+    # add logic for choices here pass our_fn_stats to #2
+    if question == 0:
         return
-    # post option cleanup & load option
-    subprocess.run("clear")
-    menu_options[option](our_fn_stats)
+    if question == 1:
+        change_rate(our_fn_stats)
+    if question == 2:
+        change_memo(our_fn_stats)
+    if question == 3:
+        run_both_updates(our_fn_stats)
     return
 
 
 def send_findora_options() -> None:
     # Give'm some options!
     print(f"* Select an option to change: \n* 1. Express Wallet - Currently {environ.get('SEND_WALLET')}\n* 2. Privacy Option - Currently set to {environ.get('PRIVACY')}\n*\n* 0. Exit - Return to Main Menu\n*")
-    question = input("* Which would you like to update? Input 1 or 2 now:")
-    if question != 0 or question != 1 or question != 2:
-        input("* We didn't catch that answer, try again. Press enter to continue.")
-        send_findora_options()
+    menu_options = [
+        "[1] - Set Wallet",
+        "[2] - Set Privacy",
+        "[0] - Exit to Main Menu"
+    ]
+    terminal_menu = TerminalMenu(
+        menu_options, title="* Which type of restore method would you like to use for your validator wallet?"
+    )
+    question = terminal_menu.show()
     if question == 0:
         return
     if question == 1:
