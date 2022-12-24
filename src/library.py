@@ -1132,7 +1132,7 @@ def parse_flags(parser):
     
     if args.reset:
         print_stars()
-        answer = ask_yes_no(f"* You've started the reset process. Press enter to wipe your system or ctrl+c to exit.")
+        answer = ask_yes_no(f"* You've started the reset process. Press Y to reset or N ot exit: (Y/N) ")
         if answer:
             # wipe data here
             shutil.rmtree(f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}')
