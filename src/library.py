@@ -683,13 +683,13 @@ def set_wallet_options() -> None:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
             set_wallet_options()
     elif menu_option == 2:
-        question = ask_yes_no(f'* Express option currently set to {environ.get("EXPRESS")}. Would you like to switch this? (Y/N) ')
+        question = ask_yes_no(f'* Express option currently set to {environ.get("SEND_EXPRESS")}. Would you like to switch this? (Y/N) ')
         if question:
-            current = environ.get("EXPRESS")
+            current = environ.get("SEND_EXPRESS")
             if current == "True":
-                set_var(easy_env_fra.dotenv_file, "EXPRESS", "False")
+                set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
             elif current == "False":
-                set_var(easy_env_fra.dotenv_file, "EXPRESS", "True")
+                set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
         set_wallet_options()
 
 
