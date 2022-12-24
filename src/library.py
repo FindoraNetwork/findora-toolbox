@@ -1124,6 +1124,9 @@ def parse_flags(parser):
     # parse the arguments
     args = parser.parse_args()
 
+    # Load Vars / Set Network
+    first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
+    
     # check if the '--verbose' flag is set
     if args.verbose:
         print('Verbose mode enabled')
