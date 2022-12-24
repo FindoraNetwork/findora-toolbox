@@ -42,8 +42,7 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 # loader intro splash screen
 def loader_intro():
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     p = f"""
 
  ▌ ▐· ▄▄▄· ▄▄▌  ▪  ·▄▄▄▄   ▄▄▄· ▄▄▄▄▄      ▄▄▄      ▄▄▄▄▄            ▄▄▌  ▄▄▄▄·       ▐▄• ▄ 
@@ -152,8 +151,7 @@ def os_upgrades() -> None:
 
 
 def menu_error() -> None:
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     print(
         "* "
         + Fore.RED
@@ -188,36 +186,6 @@ def free_space_check(mount) -> str:
     _, _, free = shutil.disk_usage(ourDiskMount)
     freeConverted = str(converted_unit(free))
     return freeConverted
-
-
-def server_drive_check(dot_env, directory) -> None:
-    if environ.get("MOUNT_POINT") is not None:
-        ourDiskMount = environ.get("MOUNT_POINT")
-    else:
-        dotenv.set_key(dot_env, "MOUNT_POINT", directory)
-        load_var_file(dot_env)
-        ourDiskMount = environ.get("MOUNT_POINT")
-    print_stars()
-    print("Here are all of your mount points: ")
-    for part in disk_partitions():
-        print(part)
-    print_stars()
-    total, used, free = shutil.disk_usage(ourDiskMount)
-    total = str(converted_unit(total))
-    used = str(converted_unit(used))
-    print(
-        "Disk: "
-        + str(ourDiskMount)
-        + "\n"
-        + free_space_check(directory)
-        + " Free\n"
-        + used
-        + " Used\n"
-        + total
-        + " Total"
-    )
-    print_stars()
-    input("Disk check complete, press ENTER to return to the main menu. ")
 
 
 def disk_partitions(all=False):
@@ -436,6 +404,8 @@ def menu_findora() -> None:
     print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
     print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
     print("*   3 -  Claim Pending FRA         - Claim all of your unclaimed FRA now")
+    print("*   4 -  Transfer FRA              - Send FRA to another fra address now")
+    print("*   5 -  Set Transfer Options      - Configure your preferred send wallet & privacy")
     print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
     print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
     findora_container_update(update)
@@ -464,8 +434,7 @@ def menu_findora() -> None:
 
 
 def get_curl_stats() -> None:
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     print(Fore.GREEN)
     try:
         response = requests.get("http://localhost:26657/status")
@@ -488,8 +457,7 @@ def capture_stats() -> None:
 
 
 def refresh_fn_stats() -> None:
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     try:
         output = subprocess.check_output(["fn", "show"])
         output = output.decode().replace("b'", "")
@@ -500,21 +468,255 @@ def refresh_fn_stats() -> None:
         )
 
 
-def claim_findora_rewards() -> None:
+def standalone_option():
+    # For menu options that can run on their own, always clear and stars first.
     subprocess.run("clear")
     print_stars()
+    return
+
+
+def claim_findora_rewards() -> None:
+    standalone_option()
     try:
         output = subprocess.call(["fn", "claim"],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,)
+        print(f'* Claim all pending completed, refresh your stats after the next block.')
     except subprocess.CalledProcessError as err:
         print(
             f"* Error, no response from local API, try your command again or check your fn stats to see if there's an issue.\n* Error: {err}"
         )
 
 
-def check_balance_menu() -> None:
-    coming_soon()
+def get_total_send(our_fn_stats) -> None:
+    # Get fra input and process
+    total = input(f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? ')
+    total2 = input(f'*\n* Please re-enter the amount of FRA you would like to transfer for verification: ')
+    if total == total2:
+        return total
+    else:
+        input('*\n* Balances did not match, try again. Press enter to try again.')
+        get_total_send(our_fn_stats)
+
+
+def get_receiver_address() -> None:
+    # IF we've already got it, check it or ask
+    if environ.get("RECEIVER_WALLET"):
+        question = ask_yes_no(f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")}{Fore.MAGENTA} on file. Would you like to send to this address? (Y/N)')
+        if question: return environ.get("RECEIVER_WALLET")
+    address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
+    if address[:4] != "fra1" or len(address) != 62: 
+        input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.')
+        get_receiver_address()
+    if address == environ.get("RECEIVER_WALLET"):
+        print('* This is already your saved wallet, try again with a new wallet to update this option.')
+        return environ.get("RECEIVER_WALLET")
+    address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
+    if address == address2:
+        return address
+    else:
+        input('* Address did not match, try again. Press enter to try again.')
+        get_receiver_address()
+
+
+def get_privacy_option() -> None:
+    # IF we've already got it, check it or ask
+    if environ.get("PRIVACY"):
+        question = ask_yes_no(f'* We have Privacy = {environ.get("PRIVACY")} on file, Would you like to use this option for this transaction as well? (Y/N) ')
+        if question:
+            return environ.get("PRIVACY")
+    privacy = ask_yes_no('*\n* Would you like this to be a private transaction? (Y/N) ')
+    if privacy:
+        return "True"
+    else:
+        return "False"
+
+
+def set_privacy(receiver_address, privacy) -> None:
+    # if these are already set, bypass
+    if receiver_address == environ.get("RECEIVER_WALLET") and privacy == environ.get("PRIVACY"): return
+    # ask and set
+    print_stars()
+    print(f'*\n* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
+    question = ask_yes_no(f'*\n* Would you like to save this wallet and privacy setting as default options to bypass all these questions next time? (Y/N) ')
+    if question:
+        set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+        set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
+        set_var(easy_env_fra.dotenv_file, "PRIVACY", f'{privacy}')
+    print(f'* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}')
+    return
+
+
+def pre_send_findora() -> None:
+    # Get balance
+    our_fn_stats = get_fn_stats()
+    send_total = get_total_send(our_fn_stats)
+    express = environ.get("SEND_EXPRESS")
+    convert_send_total = str(int(float(send_total)*1000000))
+    if express == "True":
+        send_findora(convert_send_total, send_total, environ.get("RECEIVER_WALLET"), environ.get("PRIVACY"))
+        return
+    receiver_address = get_receiver_address()
+    privacy = get_privacy_option()
+    if privacy == "True":
+        # Send tx, with privacy
+        question = ask_yes_no(f'*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to True.\n*\n* Press Y to send or N to return to the main menu. (Y/N) ')
+        if question:
+            send_findora(convert_send_total, send_total, receiver_address, "True")
+        else:
+            return
+    else:
+        # Send tx regular
+        question = ask_yes_no(f'*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to False.\n*\n* Press Y to send or N to return to the main menu. (Y/N) ')
+        send_findora(convert_send_total, send_total, receiver_address, "False")
+    set_privacy(receiver_address, privacy)
+    
+        
+
+def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
+    # transfer if privacy on
+    try:
+        if privacy == "True":
+            subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address, "--confidential-amount", "--confidential-type"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,)
+        else:
+            subprocess.call(["fn", "transfer", "--amount", send_amount, "-T", to_address],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,)
+        print(f"{Fore.MAGENTA}*\n* Sent {Fore.GREEN}{fra_amount}{Fore.MAGENTA} to {Fore.YELLOW}{to_address}{Fore.MAGENTA} with privacy = {privacy}\n*\n* Please note it will take at least a block to get updated stats in toolbox.\n*\n*")
+    except subprocess.CalledProcessError as err:
+        print(f'{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later.')
+    return
+
+
+def change_rate(our_fn_stats):
+    standalone_option()
+    print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
+    answer = input("* What would you like the new rate to be?\n* Please use findora notation, example for 5% fees use: 0.05\n* Enter your new rate now: ")
+    answer2 = input("* Please re-enter your new rate to confirm: ")
+    if answer == answer2:
+        question = ask_yes_no(f'* Are you sure you want to change your rate to {float(answer)*100} %? (Y/N) ')
+        if question:
+            subprocess.call(["fn", "staker-update", "-R", answer])   
+        else:
+            input('* You answered No, returning to main menu. Press enter to continue.')     
+    else:
+        input("* Your answers didn't match, let's try again. Press enter to continue.")
+        change_rate(our_fn_stats)
+    return
+
+
+def change_memo(our_fn_stats):
+    print_stars()
+    print("* Current Settings: ")
+    # allow edit one by one, then have commit changes at the end?
+    for i in our_fn_stats["memo"]:
+        print(f'* "{i}": {our_fn_stats["memo"][i]}')
+    # show current staker_memo info, update records and send
+    print('*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n*')
+    # fn staker-update -M "$(cat staker_memo)"
+    return
+
+
+def run_both_updates(our_fn_stats):
+    change_rate(our_fn_stats)
+    change_memo(our_fn_stats)
+    return
+
+
+def change_validator_info():
+    our_fn_stats = get_fn_stats()
+    # Change the rate & staker memo info
+    print(
+        "* Which validator options would you like to update? Rate, Info or Both?\n*"
+        + f"\n* 1 - Change validator commission rate."
+        + "\n* 2 - Change staker_memo info."
+        + "\n* 3 - Change both!"
+    )
+    menu_options = [
+        "[1] - Change Commission Rate",
+        "[2] - Change staker_memo fino",
+        "[3] - Change Both",
+        "[0] - Exit to Main Menu"
+    ]    
+    terminal_menu = TerminalMenu(
+        menu_options, title="* What would you like to update today? "
+    )
+    question = terminal_menu.show()
+    # add logic for choices here pass our_fn_stats to #2
+    if question == 0:
+        return
+    if question == 1:
+        change_rate(our_fn_stats)
+    if question == 2:
+        change_memo(our_fn_stats)
+    if question == 3:
+        run_both_updates(our_fn_stats)
+    return
+
+
+def check_address_input(address) -> None:
+    if address[:4] != "fra1" or len(address) != 62: 
+        input(f'* {address} does not look like a valid fra1 address, please retry. Press enter to return to the menu.')
+        return
+    if address == environ.get("RECEIVER_WALLET"):
+        input('* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the menu.')
+        return
+    address2 = input(f'*\n* Please re-input the fra1 address you would like to send your FRA for verification: ')
+    if address == address2:
+        set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
+        input(f'* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}')
+        return
+    else:
+        input('* Address did not match, try again with matching info. Press enter to return to the menu.')
+        return
+
+
+def set_send_options() -> None:
+    # Give'm some options!
+    print(Fore.MAGENTA)
+    standalone_option()
+    print(f"* Select a send tx option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current privacy option: {environ.get('PRIVACY')}\n* 2. Express Option - Change current express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*")
+    menu_options = [
+        "* [0] - Set Wallet",
+        "* [1] - Set Privacy",
+        "* [2] - Set Express",
+        "* [3] - Exit to Main Menu"
+    ]
+    print_stars()
+    terminal_menu = TerminalMenu(
+        menu_options, title="* Which option would you like to update?"
+    )
+    menu_option = terminal_menu.show()
+    if menu_option == 0:
+        address = input(f'*\n* Please input the fra1 address you would like to send your FRA: ')
+        check_address_input(address)
+    if menu_option == 1:
+        print(f"* Select an option. Privacy enabled on transactions, True or False: ")
+        menu_options = [ "* [0] - True", "* [1] - False"]
+        terminal_menu = TerminalMenu(
+            menu_options, title="* Would you like private transactions? "
+        )
+        sub_menu_option = terminal_menu.show()
+        if sub_menu_option == 0:
+            set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
+        if sub_menu_option == 1:
+            set_var(easy_env_fra.dotenv_file, "PRIVACY", "False")
+    if menu_option == 2:
+        print(f"* Select an option. Express enabled to auto send with your saved options, would you like it enabled or disabled? ")
+        menu_options = [ "* [0] - True", "* [1] - False"]
+        terminal_menu = TerminalMenu(
+            menu_options, title=f'* Express option currently set to {environ.get("SEND_EXPRESS")}. Would you like to switch this?'
+        )
+        sub_menu_2_option = terminal_menu.show()
+        if sub_menu_2_option == 0:
+            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
+        if sub_menu_2_option == 1:    
+            set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "False")
+    if menu_option == 3:
+        return
+    set_send_options()
 
 
 def server_disk_check() -> None:
@@ -567,6 +769,7 @@ def get_fn_stats():
     lines = json_string.split("\n")
 
     fn_info = {}
+    memo = {}
     if int(lines[17].split()[1][:-1]) == 0:
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[29].split()[1][:-1]
@@ -583,6 +786,12 @@ def get_fn_stats():
         fn_info["Server Rank"] = lines[45].split()[1][:-1]
         fn_info["Delegator Count"] = lines[66].split()[1]
         fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
+        fn_info["Raw Commission"] = int(lines[47][:-1])
+        memo["name"] = lines[53].partition('"name":')[2][:-1]
+        memo["desc"] = lines[54].partition('"desc":')[2][:-1]
+        memo["website"] = lines[55].partition('"website":')[2][:-1]
+        memo["logo"] = lines[56].partition('"logo":')[2]
+        fn_info["memo"] = memo
 
     return fn_info
 
@@ -595,6 +804,7 @@ def menu_topper() -> None:
         fra = findora_gwei_convert(curl_stats['result']['validator_info']['voting_power'])
         our_version = get_container_version("http://localhost:8668/version")
         our_fn_stats = get_fn_stats()
+        our_fn_stats.pop("memo")
         online_version = get_container_version(f'https://{easy_env_fra.fra_env}-{environ.get("FRA_NETWORK")}.{easy_env_fra.fra_env}.findora.org:8668/version')
     except TimeoutError as e:
         our_version = "No Response"
@@ -802,8 +1012,7 @@ def run_findora_installer() -> None:
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
-    subprocess.run("clear")
-    print_stars()
+    standalone_option()
     print(
         "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
     )
@@ -1089,8 +1298,8 @@ def run_findora_menu() -> None:
         1: get_curl_stats,
         2: refresh_fn_stats,
         3: claim_findora_rewards,
-        4: coming_soon,
-        5: coming_soon,
+        4: pre_send_findora,
+        5: set_send_options,
         6: coming_soon,
         7: update_fn_wallet,
         8: run_container_update,
@@ -1102,6 +1311,7 @@ def run_findora_menu() -> None:
         14: coming_soon,
         15: all_sys_info,
         16: migration_instructions,
+        49: change_validator_info,
         888: migrate_to_server,
         999: menu_reboot_server,
     }
