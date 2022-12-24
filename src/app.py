@@ -18,14 +18,12 @@ from library import (
 )
 from colorama import Fore
 from config import easy_env_fra
+from dotenv import load_dotenv
 
 # Check the status and print a message
 
 
 def main() -> None:
-    # Init parser for flags:
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parse_flags(parser)
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
@@ -33,6 +31,9 @@ def main() -> None:
     print_stars()
     # Load Vars / Set Network
     first_env_check(easy_env_fra.dotenv_file, easy_env_fra.user_home_dir)
+    # Init parser for flags:
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parse_flags(parser)
     # Can we use docker on this user?
     docker_check()
     # Does `fn` exist?
