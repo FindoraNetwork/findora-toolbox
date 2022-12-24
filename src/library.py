@@ -507,7 +507,6 @@ def claim_findora_rewards() -> None:
         output = subprocess.call(["fn", "claim"],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,)
-        print(output)
     except subprocess.CalledProcessError as err:
         print(
             f"* Error, no response from local API, try your command again or check your fn stats to see if there's an issue.\n* Error: {err}"
