@@ -603,7 +603,7 @@ def change_rate(our_fn_stats):
         else:
             print('* You answered No, returning to main menu.')     
     else:
-        input("* Your answers didn't match, returning to main menu. ")
+        print("* Your answers didn't match, returning to main menu. ")
     return
 
 
