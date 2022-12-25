@@ -834,29 +834,28 @@ def menu_topper() -> None:
         f"* Server Hostname & IP:           {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Public Address:                 {curl_stats['result']['validator_info']['address']}")
+    print(f"* Public Address:            {curl_stats['result']['validator_info']['address']}")
     if our_fn_stats['Network'] == 'https://prod-mainnet.prod.findora.org': print(f"* Network:                        Mainnet")
     if our_fn_stats['Network'] == 'https://prod-testnet.prod.findora.org': print(f"* Network:                        Testnet")
     our_fn_stats.pop('Network')
-    print(f"* Current FRA Staked:             {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
+    print(f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
     if curl_stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
-    else: print(f"* Catching Up:                    {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
-    print(f"* Local Latest Block:             {our_fn_stats['Current Block']}")
+    else: print(f"* Catching Up:               {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
+    print(f"* Local Latest Block:        {our_fn_stats['Current Block']}  * Remote Latest Block:       {curl_stats['result']['sync_info']['latest_block_height']}")
     our_fn_stats.pop('Current Block')
-    print(f"* Remote Latest Block:            {curl_stats['result']['sync_info']['latest_block_height']}")
-    print(f"* Proposed Blocks:                {our_fn_stats['Proposed Blocks']}")
+    print(f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}")
     our_fn_stats.pop('Proposed Blocks')
     for i in our_fn_stats:
-        spaces = "                              "
+        spaces = "                         "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
-    print(f"* Latest Block Time:              {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
-    print(f"* Current Time UTC:               {now.strftime('%Y-%m-%dT%H:%M:%S')}")
+    print(f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
+    print(f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current Disk Space Free:        {Fore.BLUE}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Current Container Build:        {our_version.split()[1]}")
+    print(f"* Current Container Build:   {our_version.split()[1]}")
     if online_version != our_version:
-        print(f"* Container Update Available:     {online_version}")
+        print(f"* Update Available:          {online_version}")
         update = True
     else:
         update = False
