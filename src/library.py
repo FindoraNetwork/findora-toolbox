@@ -470,6 +470,7 @@ def refresh_fn_stats() -> None:
 
 def standalone_option():
     # For menu options that can run on their own, always clear and stars first.
+    print(Fore.MAGENTA)
     subprocess.run("clear")
     print_stars()
     return
@@ -627,6 +628,7 @@ def run_both_updates(our_fn_stats):
 
 def change_validator_info():
     # fix this menu, it's nuts. Always does change_rate
+    standalone_option()
     our_fn_stats = get_fn_stats()
     if 'Self Delegation' not in our_fn_stats:
         print(f'* You have not created your validator yet. Please exit, stake with your validator wallet and send the create validator command.\n* See our post install guide at https://guides.easynode.pro/findora/post#validator-wallet-commands\n*\n* Press enter to return to the main menu.')
@@ -636,24 +638,25 @@ def change_validator_info():
         f"* Which validator options would you like to update?"
     )
     change_info_menu = [
-        "[1] - Change Commission Rate",
-        "[2] - Change staker_memo Information",
-        "[3] - Change Both",
-        "[0] - Exit to Main Menu"
+        "[0] - Change Commission Rate",
+        "[1] - Change staker_memo Information",
+        "[2] - Change Both",
+        "[3] - Exit to Main Menu"
     ]    
+    print_stars()
     terminal_menu = TerminalMenu(
         change_info_menu, title="* What would you like to update today? "
     )
     response = terminal_menu.show()
     # add logic for choices here pass our_fn_stats to #2
     if response == 0:
-        return
-    if response == 1:
         change_rate(our_fn_stats)
-    if response == 2:
+    if response == 1:
         change_memo(our_fn_stats)
-    if response == 3:
+    if response == 2:
         run_both_updates(our_fn_stats)
+    if response == 3:
+        return
     return
 
 
