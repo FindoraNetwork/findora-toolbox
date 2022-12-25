@@ -415,10 +415,9 @@ def menu_findora() -> None:
     print(
         f"*                                   {Fore.BLUE}{Back.YELLOW}Informational Section:{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print("*  13 -  Show system disk info     - Current drive space status")
-    print("*  14 -  TMI about your Validator  - Seriously too much information")
-    print("*  15 -  TMI about your Server     - Seriously a lot of info about this server")
-    print("*  16 -  Instructions on Migrating - Run this to read info on migrating to this server.")
+    print("*  11 -  Show system disk info     - Current drive space status")
+    print("*  12 -  TMI about your Server     - Seriously a lot of info about this server")
+    print("*  13 -  Instructions on Migrating - Run this to read info on migrating to this server.")
     print_stars()
     if migration_check(): print_migrate()
     print(
@@ -1311,12 +1310,12 @@ def run_findora_menu() -> None:
         8: run_container_update,
         9: run_clean_script,
         10: run_ubuntu_updates,
-        11: coming_soon,
-        12: coming_soon,
-        13: server_disk_check,
+        11: server_disk_check,
+        12: all_sys_info,
+        13: migration_instructions,
         14: coming_soon,
-        15: all_sys_info,
-        16: migration_instructions,
+        15: coming_soon,
+        16: coming_soon,
         888: migrate_to_server,
         999: menu_reboot_server,
     }
