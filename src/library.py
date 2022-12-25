@@ -830,12 +830,12 @@ def menu_topper() -> None:
     )
     print_stars()
     print(
-        f"* Server Hostname & IP:           {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Server Hostname & IP:      {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Public Address:            {curl_stats['result']['validator_info']['address']}")
-    if our_fn_stats['Network'] == 'https://prod-mainnet.prod.findora.org': print(f"* Network:                        Mainnet")
-    if our_fn_stats['Network'] == 'https://prod-testnet.prod.findora.org': print(f"* Network:                        Testnet")
+    if our_fn_stats['Network'] == 'https://prod-mainnet.prod.findora.org': print(f"* Network:                   Mainnet")
+    if our_fn_stats['Network'] == 'https://prod-testnet.prod.findora.org': print(f"* Network:                   Testnet")
     our_fn_stats.pop('Network')
     print(f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
     if curl_stats['result']['sync_info']['catching_up'] == "False": print(f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}")
