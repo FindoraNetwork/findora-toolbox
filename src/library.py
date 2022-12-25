@@ -405,7 +405,8 @@ def menu_findora() -> None:
     print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
     print("*   3 -  Claim Pending FRA         - Claim all of your unclaimed FRA now")
     print("*   4 -  Transfer FRA              - Send FRA to another fra address now")
-    print("*   5 -  Set Transfer Options      - Configure your preferred send wallet & privacy")
+    print("*   5 -  Set Transfer Options Menu - Configure your preferred send wallet & privacy")
+    print("*   6 -  Change Rate or Info Menu  - Change your rate. Change info coming soon.")
     print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
     print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
     findora_container_update(update)
@@ -1306,7 +1307,7 @@ def run_findora_menu() -> None:
         3: claim_findora_rewards,
         4: pre_send_findora,
         5: set_send_options,
-        6: coming_soon,
+        6: change_validator_info,
         7: update_fn_wallet,
         8: run_container_update,
         9: run_clean_script,
@@ -1317,7 +1318,6 @@ def run_findora_menu() -> None:
         14: coming_soon,
         15: all_sys_info,
         16: migration_instructions,
-        49: change_validator_info,
         888: migrate_to_server,
         999: menu_reboot_server,
     }
