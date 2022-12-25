@@ -601,10 +601,9 @@ def change_rate(our_fn_stats):
         if question:
             subprocess.call(["fn", "staker-update", "-R", answer])   
         else:
-            print('* You answered No, returning to main menu. Press enter to continue.')     
+            print('* You answered No, returning to main menu.')     
     else:
-        input("* Your answers didn't match, let's try again. Press enter to continue.")
-        change_rate(our_fn_stats)
+        input("* Your answers didn't match, returning to main menu. ")
     return
 
 
