@@ -792,7 +792,6 @@ def get_fn_stats():
         fn_info["Server Rank"] = lines[45].split()[1][:-1]
         fn_info["Delegator Count"] = lines[66].split()[1]
         fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
-        fn_info["Raw Commission"] = int(lines[47][:-1])
         memo["name"] = lines[53].partition('"name":')[2][:-1]
         memo["desc"] = lines[54].partition('"desc":')[2][:-1]
         memo["website"] = lines[55].partition('"website":')[2][:-1]
