@@ -3,9 +3,9 @@
 [![Discord Badge](https://img.shields.io/badge/chat-discord-purple?logo=discord)](https://discord.gg/Rcz5T6D9CV)
 [![Stake Now Badge](https://img.shields.io/badge/stake-findora-purple)](https://bit.ly/easynodefra)
 
-# EasyNode.PRO Validator Toolbox for Findora
+# Findora Toolbox by EasyNode.PRO
 
-## Findora Validator Toolbox
+## Application Repo
 
 ![image](https://guides.easynode.pro/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Ffindora_loader.be572de6.png&w=1080&q=75)
 
