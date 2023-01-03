@@ -1,2 +1,2 @@
-from .src import library
-from .src import config
+from .src.library import *
+from .src.config import *
