@@ -167,7 +167,7 @@ def menu_reboot_server() -> str:
     question = ask_yes_no(
         Fore.RED
         + "* WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.\n\n"
-        + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: python3 ~/validator-toolboxstart.py\n"
+        + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: python3 ~/findora-toolbox/start.py\n"
         + Fore.WHITE
         + "* We will stop your container safely before restarting\n* Are you sure you would like to proceed with rebooting your server? (Y/N) "
     )
@@ -827,7 +827,7 @@ def menu_topper() -> None:
     print(Fore.MAGENTA)
     print_stars()
     print(
-        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}validator-toolbox for Findora FRA Validators by Easy Node"
+        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}findora-toolbox for Findora FRA Validators by Easy Node"
         + f"   v{easy_env_fra.easy_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://easynode.pro *"
     )
     print_stars()
