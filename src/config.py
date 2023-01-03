@@ -19,7 +19,7 @@ class easy_env_fra:
     findora_root = "/data/findora"
     findora_root_mainnet = f"{findora_root}/mainnet"
     findora_root_testnet = f"{findora_root}/testnet"
-    toolbox_location = os.path.join(user_home_dir, "validatortoolbox_fra")
+    toolbox_location = os.path.join(user_home_dir, "findora-toolbox")
     our_external_ip = getUrl()
     findora_menu = os.path.join(toolbox_location, "src", "messages", "framenu.txt")
     container_name = "findorad"

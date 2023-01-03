@@ -1,5 +1,5 @@
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa50cae790bd4319a9cca9c6500301f6)](https://www.codacy.com/gh/easy-node-pro/validatortoolbox_fra/dashboard?utm_source=github.com&utm_medium=referral&utm_content=easy-node-pro/validatortoolbox_fra&utm_campaign=Badge_Grade)
-[![Codacy Security Scan](https://github.com/easy-node-pro/validatortoolbox_fra/actions/workflows/codacy.yml/badge.svg?branch=main)](https://github.com/easy-node-pro/validatortoolbox_fra/actions/workflows/codacy.yml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa50cae790bd4319a9cca9c6500301f6)](https://www.codacy.com/gh/easy-node-pro/findora-toolbox/dashboard?utm_source=github.com&utm_medium=referral&utm_content=easy-node-pro/findora-toolbox&utm_campaign=Badge_Grade)
+[![Codacy Security Scan](https://github.com/easy-node-pro/findora-toolbox/actions/workflows/codacy.yml/badge.svg?branch=main)](https://github.com/easy-node-pro/findora-toolbox/actions/workflows/codacy.yml)
 [![Discord Badge](https://img.shields.io/badge/chat-discord-purple?logo=discord)](https://discord.gg/Rcz5T6D9CV)
 [![Stake Now Badge](https://img.shields.io/badge/stake-findora-purple)](https://bit.ly/easynodefra)
 
@@ -30,7 +30,7 @@ We've also got a full breakdown of the components and how they work on the [Tool
 Currently we'll run the installer if `fn` is not present on your system. Clone the repository and run the app to get started:
 
 ```text
-cd ~/ && sudo apt install python3-pip -y && git clone https://github.com/easy-node-pro/validatortoolbox_fra.git && cd validatortoolbox_fra && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
+cd ~/ && sudo apt install python3-pip -y && git clone https://github.com/easy-node-pro/findora-toolbox.git && cd findora-toolbox && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/findora-toolbox/src/app.py
 ```
 
 ### Add to an existing Findora server
@@ -54,12 +54,12 @@ Once you're at that point, perform the following:
 After installing you can use the following code for a termius/moba snippet and we also suggest using this full command to update and run each time you want to launch the toolbox:
 
 ```text
-cd ~/validatortoolbox_fra/ && git pull && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/validatortoolbox_fra/src/app.py
+cd ~/findora-toolbox/ && git pull && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/findora-toolbox/src/app.py
 ```
 
 ## Future Enhancements
 
-This is a new product, there's a lot of enhancements yet to come but if you have any ideas put them into our [issues tracker](https://github.com/easy-node-pro/validatortoolbox_fra/issues)!
+This is a new product, there's a lot of enhancements yet to come but if you have any ideas put them into our [issues tracker](https://github.com/easy-node-pro/findora-toolbox/issues)!
 
 - Move Stats out of options 1 & 2 and onto the front page
 -

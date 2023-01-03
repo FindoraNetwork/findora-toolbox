@@ -23,6 +23,11 @@ from config import easy_env_fra
 
 
 def main() -> None:
+    # Preflight check:
+    if os.path.exists(f'{easy_env_fra.user_home_dir}/validatortoolbox_fra'): 
+        print('* Exiting, please renmae your ~/validatortoolbox_fra folder to ~/findora-toolbox and update your command paths!\n* Run: mv ~/validatortoolbox_fra ~/findora-toolbox\n* After you run the move command, relaunch with: python3 ~/findora-toolbox/src/app.py\n\n')
+        print_stars()
+        finish_node()
     # Init parser for flags:
     parser = argparse.ArgumentParser(description='Findora Validator Toolbox - Help Menu')
     parse_flags(parser)
