@@ -56,10 +56,3 @@ After installing you can use the following code for a termius/moba snippet and w
 ```text
 cd ~/findora-toolbox/ && git pull && pip3 install -r requirements.txt --quiet && cd ~/ && python3 ~/findora-toolbox/src/app.py
 ```
-
-## Future Enhancements
-
-This is a new product, there's a lot of enhancements yet to come but if you have any ideas put them into our [issues tracker](https://github.com/easy-node-pro/findora-toolbox/issues)!
-
-- Move Stats out of options 1 & 2 and onto the front page
--
