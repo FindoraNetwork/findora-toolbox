@@ -988,7 +988,7 @@ def menu_topper() -> None:
             f"* Catching Up:               {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
         )
     print(
-        f"* Local Latest Block:        {our_fn_stats['Current Block']}  * Remote Latest Block:       {curl_stats['result']['sync_info']['latest_block_height']}"
+        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  * Remote Latest Block:        {our_fn_stats['Current Block']}"
     )
     our_fn_stats.pop("Current Block")
     print(f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}")
