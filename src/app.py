@@ -12,9 +12,8 @@ from library import (
     docker_check,
     container_running,
     finish_node,
-    first_env_check,
     ask_yes_no,
-    parse_flags
+    parse_flags,
 )
 from colorama import Fore
 from config import easy_env_fra
@@ -28,7 +27,7 @@ def main() -> None:
         subprocess.run('clear') 
         print(Fore.MAGENTA)
         print_stars()
-        print('*\n* Old folder found, Exiting\n*\n* Please renmae your ~/validatortoolbox_fra folder to ~/findora-toolbox and update your command paths!\n*\n* Run: cd ~/ && mv ~/validatortoolbox_fra ~/findora-toolbox\n*\n* After you run the move command, relaunch with: python3 ~/findora-toolbox/src/app.py\n*')
+        print('*\n* Old folder found, Exiting\n*\n* Please rename your ~/validatortoolbox_fra folder to ~/findora-toolbox and update your command paths!\n*\n* Run: cd ~/ && mv ~/validatortoolbox_fra ~/findora-toolbox\n*\n* After you run the move command, relaunch with: python3 ~/findora-toolbox/src/app.py\n*')
         print_stars()
         raise SystemExit(0)
     # Init parser for flags:
@@ -41,14 +40,13 @@ def main() -> None:
     print_stars()
     # Can we use docker on this user?
     docker_check()
+    # do we know network? mainnet or testnet
+    network = set_main_or_test()
     # Does `fn` exist?
     if not os.path.exists("/usr/local/bin/fn"):
         # Nope, let's ask to install!
-        menu_install_findora()
+        menu_install_findora(network)
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
-    # do we know network?
-    if not environ.get("FRA_NETWORK"):
-        set_main_or_test()
     if container_running(easy_env_fra.container_name):
         backup_folder_check()
         run_findora_menu()
