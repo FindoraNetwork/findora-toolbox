@@ -12,7 +12,7 @@ def getUrl() -> None:
 
 
 class easy_env_fra:
-    easy_version = version('findora-toolbox')
+    easy_version = version('findora_toolbox')
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.easynode.env"
