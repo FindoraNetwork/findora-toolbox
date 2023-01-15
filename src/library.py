@@ -410,10 +410,12 @@ def set_main_or_test() -> None:
         results = terminal_menu.show()
         if results == 0:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "mainnet")
+            network = "mainnet"
         if results == 1:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
+            network = "testnet"
         subprocess.run("clear")
-    return
+    return network
 
 
 def menu_findora() -> None:
@@ -1178,13 +1180,13 @@ def create_staker_memo() -> None:
         )
 
 
-def run_findora_installer() -> None:
+def run_findora_installer(network) -> None:
     subprocess.call(
         [
             "wget",
-            f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{environ.get('FRA_NETWORK')}.sh",
+            f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{network}.sh",
             "-O",
-            f"/tmp/install_{environ.get('FRA_NETWORK')}.sh",
+            f"/tmp/install_{network}.sh",
         ],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
@@ -1197,7 +1199,7 @@ def run_findora_installer() -> None:
     time.sleep(1)
     print_stars()
     subprocess.call(
-        ["bash", "-x", f"/tmp/install_{environ.get('FRA_NETWORK')}.sh"],
+        ["bash", "-x", f"/tmp/install_{network}.sh"],
         cwd=easy_env_fra.user_home_dir,
     )
     print_stars()
@@ -1209,18 +1211,16 @@ def run_findora_installer() -> None:
     pause_for_cause()
 
 
-def menu_install_findora() -> None:
-    # mainnet or testnet
-    set_main_or_test()
+def menu_install_findora(network) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
-        + "\n* But...it doesn't look like you have Findora installed."
+        + f"\n* But...it doesn't look like you have Findora {network} installed."
         + "\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
     )
-    answer = ask_yes_no("* Do you want to install it now? (Y/N) ")
+    answer = ask_yes_no(f"* Do you want to install {network} now? (Y/N) ")
     if answer:
-        run_findora_installer()
+        run_findora_installer(network)
     else:
         raise SystemExit(0)
 
@@ -1603,7 +1603,7 @@ def parse_flags(parser):
             input()
         else:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "mainnet")
-            run_findora_installer()
+            menu_install_findora(environ.get('FRA_NETWORK'))
 
     if args.testnet:
         if environ.get("FRA_NETWORK"):
@@ -1615,7 +1615,7 @@ def parse_flags(parser):
             input()
         else:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
-            run_findora_installer()
+            menu_install_findora(environ.get('FRA_NETWORK'))
 
     if args.stats:
         menu_topper()
