@@ -415,6 +415,8 @@ def set_main_or_test() -> None:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
             network = "testnet"
         subprocess.run("clear")
+    else:
+        network = environ.get("FRA_NETWORK")
     return network
 
 
