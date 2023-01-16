@@ -1,4 +1,4 @@
-import subprocess, platform, os, time, argparse, json, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil
+import subprocess, platform, os, time, argparse, json, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil, cmd2
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
@@ -711,23 +711,48 @@ def change_rate(our_fn_stats):
     return
 
 
+class MemoUpdater(cmd2.Cmd):
+    def __init__(self, our_fn_stats):
+        super().__init__()
+        self.our_fn_stats = our_fn_stats
+
+    def do_update(self, arg):
+        print_stars()
+        print("* Current Settings: ")
+        print_stars()
+        memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
+        options = []
+        for key, value in memo_items.items():
+            options.append(f'{key} - {value}')
+        options.append("Exit")
+        while True:
+            choice = self.select(options)
+            if choice == "Exit":
+                return memo_items
+            key = choice.split(" - ")[0]
+            new_value = input('Enter the new value: ')
+            memo_items[key] = new_value
+            options[options.index(choice)] = f'{key} - {new_value}'
+            print(f'Successfully updated "{key}" to "{new_value}"')
+        return memo_items
+
+
 def change_memo(our_fn_stats):
-    print_stars()
-    print("* Current Settings: ")
+    updater = MemoUpdater(our_fn_stats)
     # allow edit one by one, then have commit changes at the end?
-    for i in our_fn_stats["memo"]:
-        print(f'* "{i}": {our_fn_stats["memo"][i]}')
+    memo_items = updater.do_update(None)
     # show current staker_memo info, update records and send
-    input(
-        "*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n* Press enter to continue."
-    )
-    # fn staker-update -M "$(cat staker_memo)"
-    return
-
-
-def run_both_updates(our_fn_stats):
-    change_rate(our_fn_stats)
-    change_memo(our_fn_stats)
+    print_stars()
+    memo_items_json = json.dumps(memo_items)
+    print('* Here is your updated staker_memo information for verifictaion before sending changes:')
+    print(memo_items)
+    print_stars()
+    question = ask_yes_no("* Overwrite ~/staker_memo with your changes and send on chain update now? (Y/N) ")
+    if question:
+        with open(easy_env_fra.staker_memo_path, 'w') as file:
+            file.write(memo_items_json)
+        subprocess.call(['fn', 'staker-update', '-M', memo_items_json])
+    print_stars()
     return
 
 
@@ -745,8 +770,7 @@ def change_validator_info():
     change_info_menu = [
         "[0] - Change Commission Rate",
         "[1] - Change staker_memo Information",
-        "[2] - Change Both",
-        "[3] - Exit to Main Menu",
+        "[2] - Exit to Main Menu",
     ]
     print_stars()
     terminal_menu = TerminalMenu(
@@ -759,8 +783,6 @@ def change_validator_info():
     if response == 1:
         change_memo(our_fn_stats)
     if response == 2:
-        run_both_updates(our_fn_stats)
-    if response == 3:
         return
     return
 
