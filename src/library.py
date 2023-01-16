@@ -754,7 +754,7 @@ class MemoUpdater(cmd2.Cmd):
             memo_items[key] = new_value
             options[options.index(choice)] = f'{key} - {new_value}'
             options[-1] = "Exit and Send Update"
-            print(f'Successfully updated "{key}" to "{new_value}"')
+            subprocess.run("clear")
 
 
 def change_validator_info():
