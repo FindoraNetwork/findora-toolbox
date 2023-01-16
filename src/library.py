@@ -735,7 +735,7 @@ def change_memo(our_fn_stats):
     print("* Current Settings: ")
     print_stars()
     # allow edit one by one, then have commit changes at the end?
-    updater.do_update()
+    updater.do_update(None)
     # show current staker_memo info, update records and send
     input(
         "*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n* Press enter to continue."
