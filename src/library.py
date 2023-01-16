@@ -730,11 +730,12 @@ class MemoUpdater(cmd2.Cmd):
 
 
 def change_memo(our_fn_stats):
+    updater = MemoUpdater(our_fn_stats)
     print_stars()
     print("* Current Settings: ")
     print_stars()
     # allow edit one by one, then have commit changes at the end?
-    MemoUpdater(our_fn_stats).do_update()
+    updater.do_update()
     # show current staker_memo info, update records and send
     input(
         "*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n* Press enter to continue."
