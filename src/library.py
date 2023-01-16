@@ -714,6 +714,9 @@ def change_rate(our_fn_stats):
 def change_memo(our_fn_stats):
     print_stars()
     print("* Current Settings: ")
+    print_stars()
+    print(our_fn_stats["memo"])
+    print_stars()
     # allow edit one by one, then have commit changes at the end?
     for i in our_fn_stats["memo"]:
         print(f'* "{i}": {our_fn_stats["memo"][i]}')
