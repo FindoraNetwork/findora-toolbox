@@ -717,9 +717,6 @@ class MemoUpdater(cmd2.Cmd):
         self.our_fn_stats = our_fn_stats
 
     def do_update(self, arg):
-        print_stars()
-        print("* Current Settings: ")
-        print_stars()
         memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
         options = []
         for key, value in memo_items.items():
@@ -727,6 +724,9 @@ class MemoUpdater(cmd2.Cmd):
         options.append("Exit")
         file_updated = False
         while True:
+            print_stars()
+            print("* Current Settings: ")
+            print_stars()
             choice = self.select(options)
             if choice == "Exit" or choice == "Exit and Send Update":
                 if not file_updated:
