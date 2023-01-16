@@ -720,9 +720,10 @@ class MemoUpdater(cmd2.Cmd):
         print_stars()
         print("* Current Settings: ")
         print_stars()
-        count = 0
+        count = 1
         for i in self.our_fn_stats["memo"]:
             print(f'* [{count}]: "{i}" - {self.our_fn_stats["memo"][i]}')
+            count += 1
         memo_items = self.our_fn_stats["memo"].items()
         choice = self.select('Select an item to update:', memo_items)
         new_value = input('Enter the new value: ')
