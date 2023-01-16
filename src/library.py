@@ -724,6 +724,7 @@ class MemoUpdater(cmd2.Cmd):
         options.append("Exit")
         file_updated = False
         while True:
+            subprocess.run("clear")
             print_stars()
             print("* Current Settings: ")
             print_stars()
@@ -754,7 +755,6 @@ class MemoUpdater(cmd2.Cmd):
             memo_items[key] = new_value
             options[options.index(choice)] = f'{key} - {new_value}'
             options[-1] = "Exit and Send Update"
-            subprocess.run("clear")
 
 
 def change_validator_info():
