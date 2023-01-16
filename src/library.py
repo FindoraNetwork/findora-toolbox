@@ -720,7 +720,7 @@ class MemoUpdater(cmd2.Cmd):
         print_stars()
         print("* Current Settings: ")
         print_stars()
-        memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
+        memo_items_initial, memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
         options = []
         for key, value in memo_items.items():
             options.append(f'{key} - {value}')
@@ -728,32 +728,27 @@ class MemoUpdater(cmd2.Cmd):
         while True:
             choice = self.select(options)
             if choice == "Exit":
-                return memo_items
+                if memo_items == memo_items_initial:
+                    print("* No changes detected, returning to main menu.")
+                    return
+                else:
+                    memo_items_json = json.dumps(memo_items)
+                    print('* Here is your updated staker_memo information for verifictaion before sending changes:')
+                    print_stars()
+                    print(memo_items)
+                    print_stars()
+                    question = ask_yes_no("* Do you want to update ~/staker_memo with these changes and send on chain update now? (Y/N) ")
+                    if question:
+                        with open(easy_env_fra.staker_memo_path, 'w') as file:
+                            file.write(memo_items_json)
+                        subprocess.call(['fn', 'staker-update', '-M', memo_items_json])
+                    print_stars()
+                    return
             key = choice.split(" - ")[0]
             new_value = input('Enter the new value: ')
             memo_items[key] = new_value
             options[options.index(choice)] = f'{key} - {new_value}'
             print(f'Successfully updated "{key}" to "{new_value}"')
-        return memo_items
-
-
-def change_memo(our_fn_stats):
-    updater = MemoUpdater(our_fn_stats)
-    # allow edit one by one, then have commit changes at the end?
-    memo_items = updater.do_update(None)
-    # show current staker_memo info, update records and send
-    print_stars()
-    memo_items_json = json.dumps(memo_items)
-    print('* Here is your updated staker_memo information for verifictaion before sending changes:')
-    print(memo_items)
-    print_stars()
-    question = ask_yes_no("* Overwrite ~/staker_memo with your changes and send on chain update now? (Y/N) ")
-    if question:
-        with open(easy_env_fra.staker_memo_path, 'w') as file:
-            file.write(memo_items_json)
-        subprocess.call(['fn', 'staker-update', '-M', memo_items_json])
-    print_stars()
-    return
 
 
 def change_validator_info():
@@ -781,7 +776,10 @@ def change_validator_info():
     if response == 0:
         change_rate(our_fn_stats)
     if response == 1:
-        change_memo(our_fn_stats)
+        # Initialize and run
+        updater = MemoUpdater(our_fn_stats)
+        # allow edit one by one, then have commit changes at the end?
+        updater.do_update(None)
     if response == 2:
         return
     return
