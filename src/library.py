@@ -721,6 +721,7 @@ class MemoUpdater(cmd2.Cmd):
         print("* Current Settings: ")
         print_stars()
         memo_items = [f'{i} - {self.our_fn_stats["memo"][i]}' for i in self.our_fn_stats["memo"]]
+        memo_items.append("Exit")
         while True:
             choice = self.select(memo_items)
             if choice == 'Exit':
@@ -731,15 +732,16 @@ class MemoUpdater(cmd2.Cmd):
             self.our_fn_stats["memo"][key] = new_value
             memo_items[index] = f'{key} - {new_value}'
             print(f'Successfully updated "{key}" to "{new_value}"')
+        return memo_items
 
 
 def change_memo(our_fn_stats):
     updater = MemoUpdater(our_fn_stats)
     # allow edit one by one, then have commit changes at the end?
-    updater.do_update(None)
+    memo_items = updater.do_update(None)
     # show current staker_memo info, update records and send
     print_stars()
-    print(our_fn_stats)
+    print(memo_items)
     print_stars()
     input(
         "*\n*\n* Info saved, send update or edit more info first?\n*\n* Press enter to continue."
