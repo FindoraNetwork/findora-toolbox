@@ -728,7 +728,7 @@ class MemoUpdater(cmd2.Cmd):
         file_updated = False
         while True:
             choice = self.select(options)
-            if choice == "Exit":
+            if choice == "Exit" or choice == "Exit and Send Update":
                 if not file_updated:
                     print("* No changes detected, returning to main menu.")
                     return
@@ -753,6 +753,7 @@ class MemoUpdater(cmd2.Cmd):
             new_value = input('Enter the new value: ')
             memo_items[key] = new_value
             options[options.index(choice)] = f'{key} - {new_value}'
+            options[-1] = "Exit and Send Update"
             print(f'Successfully updated "{key}" to "{new_value}"')
 
 
