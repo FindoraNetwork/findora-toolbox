@@ -724,7 +724,8 @@ class MemoUpdater(cmd2.Cmd):
         memo_items.append("Exit")
         while True:
             choice = self.select(memo_items)
-            if choice == 'Exit':
+            if choice == memo_items[-1]:
+                memo_items.pop()
                 break
             index = memo_items.index(choice)
             key = choice.split(" - ")[0]
