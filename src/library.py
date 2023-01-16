@@ -730,7 +730,7 @@ class MemoUpdater(cmd2.Cmd):
             index = memo_items.index(choice)
             key = choice.split(": ")[0]
             new_value = input('Enter the new value: ')
-            self.our_fn_stats["memo"][key] = new_value
+            self.our_fn_stats["memo"][key] = f'"{new_value}"'
             memo_items[index] = f'{key} - {new_value}'
             print(f'Successfully updated "{key}" to "{new_value}"')
         return memo_items
