@@ -721,15 +721,15 @@ class MemoUpdater(cmd2.Cmd):
         print("* Current Settings: ")
         print_stars()
         memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
-        memo_items_initial = memo_items
         options = []
         for key, value in memo_items.items():
             options.append(f'{key} - {value}')
         options.append("Exit")
+        file_updated = 0
         while True:
             choice = self.select(options)
             if choice == "Exit":
-                if memo_items == memo_items_initial:
+                if file_updated == 1:
                     print("* No changes detected, returning to main menu.")
                     return
                 else:
@@ -745,6 +745,7 @@ class MemoUpdater(cmd2.Cmd):
                         subprocess.call(['fn', 'staker-update', '-M', memo_items_json])
                     print_stars()
                     return
+            file_updated = 1
             key = choice.split(" - ")[0]
             new_value = input('Enter the new value: ')
             memo_items[key] = new_value
