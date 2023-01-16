@@ -743,6 +743,7 @@ class MemoUpdater(cmd2.Cmd):
                         with open(easy_env_fra.staker_memo_path, 'w') as file:
                             file.write(memo_items_json)
                         subprocess.call(['fn', 'staker-update', '-M', memo_items_json])
+                        print(Fore.MAGENTA)
                         print_stars()
                         print(f'* Blockchain update completed, please wait at least 1 block before checking for updated information.')
                     print_stars()
