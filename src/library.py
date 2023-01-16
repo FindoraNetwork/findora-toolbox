@@ -775,11 +775,13 @@ def change_validator_info():
     # add logic for choices here pass our_fn_stats to #2
     if response == 0:
         change_rate(our_fn_stats)
+        return
     if response == 1:
         # Initialize and run
         updater = MemoUpdater(our_fn_stats)
         # allow edit one by one, then have commit changes at the end?
         updater.do_update(None)
+        return
     if response == 2:
         return
     return
