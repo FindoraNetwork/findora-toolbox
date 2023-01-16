@@ -720,8 +720,8 @@ class MemoUpdater(cmd2.Cmd):
         print_stars()
         print("* Current Settings: ")
         print_stars()
+        memo_items = [f'{i} - {self.our_fn_stats["memo"][i]}' for i in self.our_fn_stats["memo"]]
         while True:
-            memo_items = [f'{i} - {self.our_fn_stats["memo"][i]}' for i in self.our_fn_stats["memo"]]
             choice = self.select(memo_items)
             if choice == 'Exit':
                 break
@@ -729,7 +729,7 @@ class MemoUpdater(cmd2.Cmd):
             key = choice.split(" - ")[0]
             new_value = input('Enter the new value: ')
             self.our_fn_stats["memo"][key] = new_value
-            self.memo_items[index] = f'{key} - {new_value}'
+            memo_items[index] = f'{key} - {new_value}'
             print(f'Successfully updated "{key}" to "{new_value}"')
 
 
