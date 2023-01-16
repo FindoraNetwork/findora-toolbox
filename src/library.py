@@ -720,7 +720,8 @@ class MemoUpdater(cmd2.Cmd):
         print_stars()
         print("* Current Settings: ")
         print_stars()
-        memo_items_initial, memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
+        memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
+        memo_items_initial = memo_items
         options = []
         for key, value in memo_items.items():
             options.append(f'{key} - {value}')
