@@ -1,4 +1,4 @@
-import subprocess, platform, os, time, argparse, json, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil
+import subprocess, platform, os, time, argparse, json, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil, cmd2
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
@@ -711,15 +711,30 @@ def change_rate(our_fn_stats):
     return
 
 
+class MemoUpdater(cmd2.Cmd):
+    def __init__(self, our_fn_stats):
+        super().__init__()
+        self.our_fn_stats = our_fn_stats
+
+    def do_update(self, arg):
+        print_stars()
+        print("* Current Settings: ")
+        print_stars()
+        for i in self.our_fn_stats["memo"]:
+            print(f'* "{i}": {self.our_fn_stats["memo"][i]}')
+        memo_items = self.our_fn_stats["memo"].items()
+        choice = self.select('Select an item to update:', memo_items)
+        new_value = input('Enter the new value: ')
+        self.our_fn_stats["memo"][choice] = new_value
+        print(f'Successfully updated "{choice}" to "{new_value}"')
+
+
 def change_memo(our_fn_stats):
     print_stars()
     print("* Current Settings: ")
     print_stars()
-    print(our_fn_stats["memo"])
-    print_stars()
     # allow edit one by one, then have commit changes at the end?
-    for i in our_fn_stats["memo"]:
-        print(f'* "{i}": {our_fn_stats["memo"][i]}')
+    MemoUpdater(our_fn_stats)
     # show current staker_memo info, update records and send
     input(
         "*\n*\n* This feature is not implemented yet, but enjoy the info, coming soon!\n*\n* Press enter to continue."
