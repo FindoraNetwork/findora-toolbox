@@ -725,7 +725,7 @@ class MemoUpdater(cmd2.Cmd):
             choice = self.select(memo_items)
             if choice == 'Exit':
                 break
-            index = self.memo_items.index(choice)
+            index = memo_items.index(choice)
             key = choice.split(" - ")[0]
             new_value = input('Enter the new value: ')
             self.our_fn_stats["memo"][key] = new_value
