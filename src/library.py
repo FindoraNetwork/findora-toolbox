@@ -720,7 +720,7 @@ class MemoUpdater(cmd2.Cmd):
         print_stars()
         print("* Current Settings: ")
         print_stars()
-        memo_items = [f'{i} - {self.our_fn_stats["memo"][i]}' for i in self.our_fn_stats["memo"]]
+        memo_items = [f'"{i}": "{self.our_fn_stats["memo"][i]}"' for i in self.our_fn_stats["memo"]]
         memo_items.append("Exit")
         while True:
             choice = self.select(memo_items)
