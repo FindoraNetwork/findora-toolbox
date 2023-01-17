@@ -1086,21 +1086,7 @@ def update_findora_container(skip) -> None:
         )
     if answer:
         subprocess.call(
-            [
-                "wget",
-                "-O",
-                f"/tmp/update_{environ.get('FRA_NETWORK')}.sh",
-                f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_update_{environ.get('FRA_NETWORK')}.sh",
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        subprocess.run("clear")
-        print(
-            "* We will show the output of the upgrade & restart now, this may miss a block(s) depending on your timing."
-        )
-        subprocess.call(
-            ["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"],
+            ["bash", "-x", f"{easy_env_fra.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
             cwd=easy_env_fra.user_home_dir,
         )
         if container_running(easy_env_fra.container_name):
@@ -1125,17 +1111,7 @@ def update_findora_container(skip) -> None:
 
 def migration_update() -> None:
     subprocess.call(
-        [
-            "wget",
-            "-O",
-            f"/tmp/update_{environ.get('FRA_NETWORK')}.sh",
-            f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_update_{environ.get('FRA_NETWORK')}.sh",
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    subprocess.call(
-        ["bash", "-x", f"/tmp/update_{environ.get('FRA_NETWORK')}.sh"],
+        ["bash", "-x", f"{easy_env_fra.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
         cwd=easy_env_fra.user_home_dir,
     )
 
@@ -1144,20 +1120,10 @@ def update_fn_wallet() -> None:
     print("* This option upgrades the fn wallet application.")
     answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
     if answer:
-        subprocess.call(
-            [
-                "wget",
-                "-O",
-                f"/tmp/fn_update_{environ.get('FRA_NETWORK')}.sh",
-                f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/fn_update_{environ.get('FRA_NETWORK')}.sh",
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
         subprocess.run("clear")
         print("* We will show the output of the upgrade now.")
         subprocess.call(
-            ["bash", "-x", f"/tmp/fn_update_{environ.get('FRA_NETWORK')}.sh"],
+            ["bash", "-x", f"{easy_env_fra.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
             cwd=easy_env_fra.user_home_dir,
         )
 
@@ -1170,19 +1136,7 @@ def run_clean_script() -> None:
     answer = ask_yes_no("* Do you want to run safety clean now? (Y/N) ")
     if answer:
         subprocess.call(
-            [
-                "wget",
-                "-O",
-                f"/tmp/safety_clean_{environ.get('FRA_NETWORK')}.sh",
-                f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/safety_clean_{environ.get('FRA_NETWORK')}.sh",
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-        subprocess.run("clear")
-        print("* We will show the output of the reset now.")
-        subprocess.call(
-            ["bash", "-x", f"/tmp/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
+            ["bash", "-x", f"{easy_env_fra.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
             cwd=easy_env_fra.user_home_dir,
         )
         if container_running(easy_env_fra.container_name):
@@ -1211,16 +1165,6 @@ def create_staker_memo() -> None:
 
 
 def run_findora_installer(network) -> None:
-    subprocess.call(
-        [
-            "wget",
-            f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/easy_install_{network}.sh",
-            "-O",
-            f"/tmp/install_{network}.sh",
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
     standalone_option()
     print(
         "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
@@ -1229,7 +1173,7 @@ def run_findora_installer(network) -> None:
     time.sleep(1)
     print_stars()
     subprocess.call(
-        ["bash", "-x", f"/tmp/install_{network}.sh"],
+        ["bash", "-x", f"{easy_env_fra.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}.sh"],
         cwd=easy_env_fra.user_home_dir,
     )
     print_stars()
@@ -1659,17 +1603,7 @@ def parse_flags(parser):
         if answer:
             # wipe data here
             subprocess.call(
-                [
-                    "wget",
-                    "-O",
-                    f"/tmp/wipe_findora_{environ.get('FRA_NETWORK')}.sh",
-                    f"https://raw.githubusercontent.com/easy-node-pro/findora-validator-scripts/main/wipe_findora_{environ.get('FRA_NETWORK')}.sh",
-                ],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            subprocess.call(
-                ["bash", "-x", f"/tmp/wipe_findora_{environ.get('FRA_NETWORK')}.sh"],
+                ["bash", "-x", f"{easy_env_fra.toolbox_location}/src/bin/wipe_findora_{environ.get('FRA_NETWORK')}.sh"],
                 cwd=easy_env_fra.user_home_dir,
             )
             finish_node()

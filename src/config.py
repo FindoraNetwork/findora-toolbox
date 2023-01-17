@@ -1,5 +1,4 @@
 import os, socket, urllib.request
-from importlib.metadata import version
 
 
 def getUrl() -> None:
@@ -12,7 +11,7 @@ def getUrl() -> None:
 
 
 class easy_env_fra:
-    easy_version = version('findora_toolbox')
+    easy_version = '1.1.2'
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.easynode.env"
