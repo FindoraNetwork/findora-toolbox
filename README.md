@@ -1,5 +1,3 @@
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/aa50cae790bd4319a9cca9c6500301f6)](https://www.codacy.com/gh/easy-node-pro/findora-toolbox/dashboard?utm_source=github.com&utm_medium=referral&utm_content=easy-node-pro/findora-toolbox&utm_campaign=Badge_Grade)
-[![Codacy Security Scan](https://github.com/easy-node-pro/findora-toolbox/actions/workflows/codacy.yml/badge.svg?branch=main)](https://github.com/easy-node-pro/findora-toolbox/actions/workflows/codacy.yml)
 [![Discord Badge](https://img.shields.io/badge/chat-discord-purple?logo=discord)](https://discord.gg/Rcz5T6D9CV)
 [![Stake Now Badge](https://img.shields.io/badge/stake-findora-purple)](https://bit.ly/easynodefra)
 
