@@ -1,0 +1,28 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+    <div class="col-sm-12 col-md-10 col-lg-10 mx-auto d-block border rounded">
+        <div class="left-aligned-div">
+            <h1 class="text-center">Findora Toolbox - Web Stats</h1>
+            <p id="output">{{ output | safe }}</p>
+        </div>
+        <div class="mb-4">
+            <p id="countdown"></p>
+            <form action="/logout" method="post">
+                <input class="btn bg-easynode" type="submit" value="Log Out">
+            </form>
+        </div>
+        <script>
+            let time_left = 60
+            setInterval(function () {
+                document.getElementById("countdown").innerHTML = `This page will auto-update in ${time_left} seconds or <a href="/stats">Manual Refresh</a>.`;
+                time_left--;
+                if (time_left === 0) {
+                    location.reload()
+                } else if (time_left < 0) {
+                    time_left = 0;
+                }
+            }, 1000); // Update countdown every second
+        </script>
+    </div>
+</div>
+{% endblock %}

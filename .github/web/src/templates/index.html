@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+    <div class="col-10 mx-auto d-block">
+        <div class="center-aligned-div">
+            <h1>Findora Toolbox - Web Stats</h1><br />
+            <form id="login-form" method="post" enctype="application/json">
+                <div class="mb-3 w-25 mx-auto">
+                    <input type="text" class="form-control" name="username" id="username-box" aria-describedby="helpId"
+                        placeholder="Username">
+                </div>
+                <div class="mb-3 w-25 mx-auto">
+                    <input type="password" class="form-control" name="password" id="password-box"
+                        placeholder="Password">
+                </div>
+                <button type="submit" class="btn btn-primary">Log in</button>
+            </form>
+            <script>
+                const form = document.getElementById("login-form");
+                form.addEventListener("submit", event => {
+                    event.preventDefault();
+
+                    const formData = new FormData(form);
+                    const data = {};
+
+                    for (const [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+
+                    fetch("/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    })
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else {
+                                // There was an error, redirect the user to the badlogin page
+                                window.location.replace("/badlogin");
+                            }
+                        })
+                        .then(response => {
+                            if (response.jwt) {
+                                localStorage.setItem("jwt", response.jwt);
+                                document.cookie = "access_token_cookie=" + response.jwt + ";path=/"
+                                // Redirect the user to the protected page
+                                window.location.assign("/stats");
+                            }
+                        });
+                });
+            </script>
+            <br />
+        </div>
+    </div>
+</div>
+{% endblock %}

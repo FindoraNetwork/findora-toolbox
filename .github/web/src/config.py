@@ -11,7 +11,7 @@ def getUrl() -> None:
 
 
 class easy_env_fra:
-    easy_version = '1.1.3'
+    easy_version = "1.0.7"
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.easynode.env"
@@ -20,7 +20,7 @@ class easy_env_fra:
     findora_root_mainnet = f"{findora_root}/mainnet"
     findora_root_testnet = f"{findora_root}/testnet"
     toolbox_location = os.path.join(user_home_dir, "findora-toolbox")
-    staker_memo_path = os.path.join(user_home_dir, "staker_memo")
+    web_location = os.path.join(user_home_dir, "findora-toolbox-web")
     our_external_ip = getUrl()
     findora_menu = os.path.join(toolbox_location, "src", "messages", "framenu.txt")
     container_name = "findorad"
