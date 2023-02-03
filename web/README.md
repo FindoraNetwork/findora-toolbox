@@ -1,5 +1,7 @@
-# Findora Toolbox - Web UI by ⚡ EasyNode.PRO ⚡
-A web interface for the [findora-toolbox](https://github.com/FindoraNetwork/findora-toolbox) for Findora Validators.
+# Findora Toolbox - Web UI 
+Created by ⚡ EasyNode.PRO ⚡  
+
+A web interface for the [findora-toolbox](https://github.com/FindoraNetwork/findora-toolbox) for Findora Validators.  
 
 ## Web Stats
 Would you like to go to a web page on your validator server to get your stats? This is it! 
