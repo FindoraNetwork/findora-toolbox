@@ -1,7 +1,7 @@
 import subprocess, re, bleach, secrets, time, jwt
 from os import environ
 from werkzeug.exceptions import HTTPException
-from config import easy_env_fra
+from config import findora_env
 from findora_toolbox import load_var_file, set_var, ask_yes_no
 from flask import (
     Flask,
@@ -24,7 +24,7 @@ from flask_jwt_extended import (
 )
 from requests import HTTPError
 
-load_var_file(easy_env_fra.dotenv_file)
+load_var_file(findora_env.dotenv_file)
 
 app = Flask(__name__)
 
@@ -61,7 +61,7 @@ class MyClass:
 def updateStats():
     output = (
         subprocess.run(
-            ["python3", f"{easy_env_fra.toolbox_location}/src/app.py", "-s"],
+            ["python3", f"{findora_env.toolbox_location}/src/app.py", "-s"],
             capture_output=True,
         )
         .stdout.decode()
@@ -158,7 +158,7 @@ def setupUserAccount():
         username = input("No User Name found, please input a username: ")
         answer = ask_yes_no(f"* You picked {username}, is that correct? (Y/N) ")
         if answer:
-            set_var(easy_env_fra.dotenv_file, "WEB_USERNAME", username)
+            set_var(findora_env.dotenv_file, "WEB_USERNAME", username)
         else:
             raise SystemExit(0)
 
@@ -166,7 +166,7 @@ def setupUserAccount():
         password = input("No password found, please input a password now: ")
         answer = ask_yes_no(f"* You picked {password}, is that correct? (Y/N) ")
         if answer:
-            set_var(easy_env_fra.dotenv_file, "WEB_PASSWORD", password)
+            set_var(findora_env.dotenv_file, "WEB_PASSWORD", password)
         else:
             raise SystemExit(0)
 
@@ -176,7 +176,7 @@ def setupUserAccount():
         )
         answer = ask_yes_no(f"* You picked {port}, is that correct? (Y/N) ")
         if answer:
-            set_var(easy_env_fra.dotenv_file, "WEB_PORT", port)
+            set_var(findora_env.dotenv_file, "WEB_PORT", port)
         else:
             print("* No port, no server, goodbye!")
             raise SystemExit(0)

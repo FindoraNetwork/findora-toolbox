@@ -16,14 +16,14 @@ from library import (
     parse_flags,
 )
 from colorama import Fore
-from config import easy_env_fra
+from config import findora_env
 
 # Check the status and print a message
 
 
 def main() -> None:
     # Preflight check:
-    if os.path.exists(f'{easy_env_fra.user_home_dir}/validatortoolbox_fra'):
+    if os.path.exists(f'{findora_env.user_home_dir}/validatortoolbox_fra'):
         subprocess.run('clear') 
         print(Fore.MAGENTA)
         print_stars()
@@ -47,11 +47,11 @@ def main() -> None:
         # Nope, let's ask to install!
         menu_install_findora(network)
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
-    if container_running(easy_env_fra.container_name):
+    if container_running(findora_env.container_name):
         backup_folder_check()
         run_findora_menu()
     # Container is not running, ruh roh!
-    print(f"* The container '{easy_env_fra.container_name}' is not running.")
+    print(f"* The container '{findora_env.container_name}' is not running.")
     while True:
         answer = ask_yes_no(
             "* Would you like to attempt to run the update version script to try to get your container back online? (Y/N)"

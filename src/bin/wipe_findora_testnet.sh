@@ -25,4 +25,4 @@ fi
 
 sudo rm -r /data/findora/${NAMESPACE}
 sudo rm /usr/local/bin/fn
-rm ~/.easynode.env
+rm ~/.findora.env
