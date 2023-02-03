@@ -112,8 +112,11 @@ def load_var_file(var_file):
 
 def finish_node():
     print(
-        "* Thanks for using Easy Node Toolbox - Making everything Easy Mode!\n*\n* We serve up free tools and guides for validators every day.\n*\n* Check our guides out at https://guides.easynode.pro\n*\n"
-        + "* Please consider supporting us one time or monthly at https://github.com/sponsors/easy-node-pro today!\n*\n* Goodbye!"
+        "* Thanks for using Easy Node Toolbox - Making everything Easy Mode!"
+        + "\n*\n* We serve up free tools and guides for validators every day."
+        + "\n*\n* Check our guides out at https://guides.easynode.pro\n*\n"
+        + "* Please consider joining our discord & supporting us one time or monthly"
+        + " at https://discord.gg/Rcz5T6D9CV today!\n*\n* Goodbye!"
     )
     print_stars()
     raise SystemExit(0)
@@ -157,7 +160,8 @@ def menu_error() -> None:
         + Fore.RED
         + "WARNING"
         + Style.RESET_ALL
-        + ": Only numbers are possible, please try your selection on the main menu once again.\n* Press enter to return to the menu."
+        + ": Only numbers are possible, please try your selection on the main menu once again."
+        + "\n* Press enter to return to the menu."
     )
     print_stars()
     return
@@ -167,13 +171,17 @@ def menu_reboot_server() -> str:
     question = ask_yes_no(
         Fore.RED
         + "* WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.\n\n"
-        + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: python3 ~/findora-toolbox/start.py\n"
+        + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: "
+        + "python3 ~/findora-toolbox/start.py\n"
         + Fore.WHITE
-        + "* We will stop your container safely before restarting\n* Are you sure you would like to proceed with rebooting your server? (Y/N) "
+        + "* We will stop your container safely before restarting\n* Are you sure you would "
+        + "like to proceed with rebooting your server? (Y/N) "
     )
     if question:
         print(
-            "* Stopping docker container for safety\n* Run toolbox after you reboot to get back online or start your container manually with `docker container start findorad` when you re-login!"
+            "* Stopping docker container for safety\n* Run toolbox after you reboot to get "
+            + "back online or start your container manually with `docker container start findorad`"
+            + " when you re-login!"
         )
         subprocess.call(["docker", "container", "stop", "findorad"])
         os.system("sudo reboot")
@@ -250,25 +258,25 @@ def get_size(bytes, suffix="B"):
 
 def docker_check():
     try:
-        status = subprocess.call(
-            ["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        )
+        status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         if status == 0:
             print("* Docker ready.")
             print_stars()
             time.sleep(1)
         if status != 0:
             print(
-                "* There's a problem with your docker. Are you in the `docker` group?\n* We will halt, make sure running the command `docker` works properly or try re-installing Docker.\n*\n* See: https://guides.easynode.pro/admin#docker-installation\n*"
+                "* There's a problem with your docker. Are you in the `docker` group?\n* We will "
+                + "halt, make sure running the command `docker` works properly or try "
+                + "re-installing Docker."
+                + "\n*\n* See: https://guides.easynode.pro/admin#docker-installation\n*"
             )
             print_stars()
             finish_node()
     except FileNotFoundError:
+        print("* Docker is not installed. Please install Docker per our guide and re-launch your installer.")
         print(
-            "* Docker is not installed. Please install Docker per our guide and re-launch your installer."
-        )
-        print(
-            "\n* See: https://guides.easynode.pro/admin#docker-installation - Install docker on this server and give the user access to continue.\n*"
+            "\n* See: https://guides.easynode.pro/admin#docker-installation - Install "
+            + "docker on this server and give the user access to continue.\n*"
         )
         print_stars()
         finish_node()
@@ -391,16 +399,10 @@ def set_main_or_test() -> None:
     if not environ.get("FRA_NETWORK"):
         subprocess.run("clear")
         print_stars()
-        print(
-            "* Setup config not found, Does this run on mainnet or testnet?                              *"
-        )
+        print("* Setup config not found, Does this run on mainnet or testnet?                              *")
         print_stars()
-        print(
-            "* [0] - Mainnet                                                                             *"
-        )
-        print(
-            "* [1] - Testnet                                                                             *"
-        )
+        print("* [0] - Mainnet                                                                             *")
+        print("* [1] - Testnet                                                                             *")
         print_stars()
         menu_options = [
             "[0] Mainnet",
@@ -424,39 +426,23 @@ def menu_findora() -> None:
     update = menu_topper()
     print("* EasyNode.PRO Findora Validator Toolbox Menu Options:")
     print("*")
-    print(
-        "*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!"
-    )
+    print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
     print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
     print("*   3 -  Claim Pending FRA         - Claim all of your unclaimed FRA now")
     print("*   4 -  Transfer FRA              - Send FRA to another fra address now")
-    print(
-        "*   5 -  Set Transfer Options Menu - Configure your preferred send wallet & privacy"
-    )
-    print(
-        "*   6 -  Change Rate or Info Menu  - Change your rate. Change info coming soon."
-    )
-    print(
-        "*   7 -  Update fn Application     - Pull update for the wallet application, fn"
-    )
-    print(
-        f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}"
-    )
+    print("*   5 -  Set Transfer Options Menu - Configure your preferred send wallet & privacy")
+    print("*   6 -  Change Rate or Info Menu  - Change your rate. Change info coming soon.")
+    print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
+    print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
     findora_container_update(update)
-    print(
-        "*   9 -  Run Safety Clean          - Stop your container, reset and download database fresh"
-    )
+    print("*   9 -  Run Safety Clean          - Stop your container, reset and download database fresh")
     print("*  10 -  Update Operating System   - Update Ubuntu Operating System Files")
     print(
         f"*                                   {Fore.BLUE}{Back.YELLOW}Informational Section:{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print("*  11 -  Show system disk info     - Current drive space status")
-    print(
-        "*  12 -  TMI about your Server     - Seriously a lot of info about this server"
-    )
-    print(
-        "*  13 -  Instructions on Migrating - Run this to read info on migrating to this server."
-    )
+    print("*  12 -  TMI about your Server     - Seriously a lot of info about this server")
+    print("*  13 -  Instructions on Migrating - Run this to read info on migrating to this server.")
     print_stars()
     if migration_check():
         print_migrate()
@@ -504,7 +490,8 @@ def refresh_fn_stats() -> None:
         print(output)
     except subprocess.CalledProcessError as err:
         print(
-            f"* Error, no response from local API, try your command again or check your fn stats to see if there's an issue.\n* Error: {err}"
+            "* Error, no response from local API, try your command again or "
+            + f"check your fn stats to see if there's an issue.\n* Error: {err}"
         )
 
 
@@ -524,23 +511,21 @@ def claim_findora_rewards() -> None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        print(
-            f"* Claim all pending completed, refresh your stats after the next block."
-        )
+        print(f"* Claim all pending completed, refresh your stats after the next block.")
     except subprocess.CalledProcessError as err:
         print(
-            f"* Error, no response from local API, try your command again or check your fn stats to see if there's an issue.\n* Error: {err}"
+            "* Error, no response from local API, try your command again or "
+            + f"check your fn stats to see if there's an issue.\n* Error: {err}"
         )
 
 
 def get_total_send(our_fn_stats) -> None:
     # Get fra input and process
     total = input(
-        f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? '
+        f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}'
+        + f"{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? "
     )
-    total2 = input(
-        f"*\n* Please re-enter the amount of FRA you would like to transfer for verification: "
-    )
+    total2 = input(f"*\n* Please re-enter the amount of FRA you would like to transfer for verification: ")
     if total == total2:
         return total
     else:
@@ -556,22 +541,14 @@ def get_receiver_address() -> None:
         )
         if question:
             return environ.get("RECEIVER_WALLET")
-    address = input(
-        f"*\n* Please input the fra1 address you would like to send your FRA: "
-    )
+    address = input(f"*\n* Please input the fra1 address you would like to send your FRA: ")
     if address[:4] != "fra1" or len(address) != 62:
-        input(
-            f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again."
-        )
+        input(f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.")
         get_receiver_address()
     if address == environ.get("RECEIVER_WALLET"):
-        print(
-            "* This is already your saved wallet, try again with a new wallet to update this option."
-        )
+        print("* This is already your saved wallet, try again with a new wallet to update this option.")
         return environ.get("RECEIVER_WALLET")
-    address2 = input(
-        f"*\n* Please re-input the fra1 address you would like to send your FRA for verification: "
-    )
+    address2 = input(f"*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
     if address == address2:
         return address
     else:
@@ -596,24 +573,25 @@ def get_privacy_option() -> None:
 
 def set_privacy(receiver_address, privacy) -> None:
     # if these are already set, bypass
-    if receiver_address == environ.get("RECEIVER_WALLET") and privacy == environ.get(
-        "PRIVACY"
-    ):
+    if receiver_address == environ.get("RECEIVER_WALLET") and privacy == environ.get("PRIVACY"):
         return
     # ask and set
     print_stars()
     print(
-        f'*\n* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}'
+        f"*\n* Currently used options:\n* Address: {Fore.YELLOW}{receiver_address}"
+        + f'{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}'
     )
     question = ask_yes_no(
-        f"*\n* Would you like to save this wallet and privacy setting as default options to bypass all these questions next time? (Y/N) "
+        f"*\n* Would you like to save this wallet and privacy setting as default options to "
+        + "bypass all these questions next time? (Y/N) "
     )
     if question:
         set_var(easy_env_fra.dotenv_file, "SEND_EXPRESS", "True")
         set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", receiver_address)
         set_var(easy_env_fra.dotenv_file, "PRIVACY", f"{privacy}")
     print(
-        f'* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}'
+        f"* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}"
+        + f'\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}'
     )
     return
 
@@ -637,7 +615,9 @@ def pre_send_findora() -> None:
     if privacy == "True":
         # Send tx, with privacy
         question = ask_yes_no(
-            f"*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to True.\n*\n* Press Y to send or N to return to the main menu. (Y/N) "
+            f"*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}"
+            + f"{receiver_address}{Fore.MAGENTA} with Privacy set to True.\n*\n* "
+            + "Press Y to send or N to return to the main menu. (Y/N) "
         )
         if question:
             send_findora(convert_send_total, send_total, receiver_address, "True")
@@ -646,7 +626,9 @@ def pre_send_findora() -> None:
     else:
         # Send tx regular
         question = ask_yes_no(
-            f"*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}{receiver_address}{Fore.MAGENTA} with Privacy set to False.\n*\n* Press Y to send or N to return to the main menu. (Y/N) "
+            f"*\n* We are going to send {Fore.GREEN}{send_total}{Fore.MAGENTA} to address {Fore.YELLOW}"
+            + f"{receiver_address}{Fore.MAGENTA} with Privacy set to False."
+            + "\n*\n* Press Y to send or N to return to the main menu. (Y/N) "
         )
         send_findora(convert_send_total, send_total, receiver_address, "False")
     set_privacy(receiver_address, privacy)
@@ -677,12 +659,12 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
                 stderr=subprocess.DEVNULL,
             )
         print(
-            f"{Fore.MAGENTA}*\n* Sent {Fore.GREEN}{fra_amount}{Fore.MAGENTA} to {Fore.YELLOW}{to_address}{Fore.MAGENTA} with privacy = {privacy}\n*\n* Please note it will take at least a block to get updated stats in toolbox.\n*\n*"
+            f"{Fore.MAGENTA}*\n* Sent {Fore.GREEN}{fra_amount}{Fore.MAGENTA} to {Fore.YELLOW}"
+            + f"{to_address}{Fore.MAGENTA} with privacy = {privacy}\n*\n* "
+            + "Please note it will take at least a block to get updated stats in toolbox.\n*\n*"
         )
     except subprocess.CalledProcessError as err:
-        print(
-            f"{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later."
-        )
+        print(f"{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later.")
     return
 
 
@@ -690,13 +672,12 @@ def change_rate(our_fn_stats):
     standalone_option()
     print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
     answer = input(
-        "* What would you like the new rate to be?\n* Please use findora notation, example for 5% fees use: 0.05\n* Enter your new rate now: "
+        "* What would you like the new rate to be?\n* Please use findora notation, "
+        + "example for 5% fees use: 0.05\n* Enter your new rate now: "
     )
     answer2 = input("* Please re-enter your new rate to confirm: ")
     if answer == answer2:
-        question = ask_yes_no(
-            f"* Are you sure you want to change your rate to {float(answer)*100}%? (Y/N) "
-        )
+        question = ask_yes_no(f"* Are you sure you want to change your rate to {float(answer)*100}%? (Y/N) ")
         if question:
             subprocess.call(
                 ["fn", "staker-update", "-R", answer],
@@ -717,10 +698,10 @@ class MemoUpdater(cmd2.Cmd):
         self.our_fn_stats = our_fn_stats
 
     def do_update(self, arg):
-        memo_items = {key: value[2:-1] for key, value in self.our_fn_stats['memo'].items()}
+        memo_items = {key: value[2:-1] for key, value in self.our_fn_stats["memo"].items()}
         options = []
         for key, value in memo_items.items():
-            options.append(f'{key} - {value}')
+            options.append(f"{key} - {value}")
         options.append("Exit")
         file_updated = False
         while True:
@@ -735,25 +716,29 @@ class MemoUpdater(cmd2.Cmd):
                     return
                 else:
                     memo_items_json = json.dumps(memo_items)
-                    print('* Here is your updated staker_memo information for verifictaion before sending changes:')
+                    print("* Here is your updated staker_memo information for verifictaion before sending changes:")
                     print_stars()
                     print(memo_items)
                     print_stars()
-                    question = ask_yes_no("* Do you want to update ~/staker_memo with these changes and send on chain update now? (Y/N) ")
+                    question = ask_yes_no(
+                        "* Do you want to update ~/staker_memo with these changes and send on chain update now? (Y/N) "
+                    )
                     if question:
-                        with open(easy_env_fra.staker_memo_path, 'w') as file:
+                        with open(easy_env_fra.staker_memo_path, "w") as file:
                             file.write(memo_items_json)
-                        subprocess.call(['fn', 'staker-update', '-M', memo_items_json])
+                        subprocess.call(["fn", "staker-update", "-M", memo_items_json])
                         print(Fore.MAGENTA)
                         print_stars()
-                        print(f'* Blockchain update completed, please wait at least 1 block before checking for updated information.')
+                        print(
+                            f"* Blockchain update completed, please wait at least 1 block before checking for updated information."
+                        )
                     print_stars()
                     return
             file_updated = True
             key = choice.split(" - ")[0]
-            new_value = input('Enter the new value: ')
+            new_value = input("Enter the new value: ")
             memo_items[key] = new_value
-            options[options.index(choice)] = f'{key} - {new_value}'
+            options[options.index(choice)] = f"{key} - {new_value}"
             options[-1] = "Exit and Send Update"
 
 
@@ -763,7 +748,10 @@ def change_validator_info():
     our_fn_stats = get_fn_stats()
     if "Self Delegation" not in our_fn_stats:
         print(
-            f"* You have not created your validator yet. Please exit, stake with your validator wallet and send the create validator command.\n* See our post install guide at https://guides.easynode.pro/findora/post#validator-wallet-commands\n*\n* Press enter to return to the main menu."
+            "* You have not created your validator yet. Please exit, stake with your validator "
+            + "wallet and send the create validator command.\n* See our post install guide "
+            + "at https://guides.easynode.pro/findora/post#validator-wallet-commands"
+            + "\n*\n* Press enter to return to the main menu."
         )
         return
     # Change the rate & staker memo info
@@ -774,9 +762,7 @@ def change_validator_info():
         "[2] - Exit to Main Menu",
     ]
     print_stars()
-    terminal_menu = TerminalMenu(
-        change_info_menu, title="* What would you like to update today? "
-    )
+    terminal_menu = TerminalMenu(change_info_menu, title="* What would you like to update today? ")
     response = terminal_menu.show()
     # add logic for choices here pass our_fn_stats to #2
     if response == 0:
@@ -795,26 +781,20 @@ def change_validator_info():
 
 def check_address_input(address) -> None:
     if address[:4] != "fra1" or len(address) != 62:
-        input(
-            f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to the menu."
-        )
+        input(f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to the menu.")
         return
     if address == environ.get("RECEIVER_WALLET"):
         input(
             "* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the menu."
         )
         return
-    address2 = input(
-        f"*\n* Please re-input the fra1 address you would like to send your FRA for verification: "
-    )
+    address2 = input(f"*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
     if address == address2:
         set_var(easy_env_fra.dotenv_file, "RECEIVER_WALLET", address)
         input(f"* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}")
         return
     else:
-        input(
-            "* Address did not match, try again with matching info. Press enter to return to the menu."
-        )
+        input("* Address did not match, try again with matching info. Press enter to return to the menu.")
         return
 
 
@@ -823,7 +803,10 @@ def set_send_options() -> None:
     print(Fore.MAGENTA)
     standalone_option()
     print(
-        f"* Select a send tx option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current privacy option: {environ.get('PRIVACY')}\n* 2. Express Option - Change current express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*"
+        f"* Select a send tx option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}"
+        + f"{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current "
+        + f"privacy option: {environ.get('PRIVACY')}\n* 2. Express Option - Change current "
+        + f"express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*"
     )
     menu_options = [
         "* [0] - Set Wallet",
@@ -832,21 +815,15 @@ def set_send_options() -> None:
         "* [3] - Exit to Main Menu",
     ]
     print_stars()
-    terminal_menu = TerminalMenu(
-        menu_options, title="* Which option would you like to update?"
-    )
+    terminal_menu = TerminalMenu(menu_options, title="* Which option would you like to update?")
     menu_option = terminal_menu.show()
     if menu_option == 0:
-        address = input(
-            f"*\n* Please input the fra1 address you would like to send your FRA: "
-        )
+        address = input(f"*\n* Please input the fra1 address you would like to send your FRA: ")
         check_address_input(address)
     if menu_option == 1:
         print(f"* Select an option. Privacy enabled on transactions, True or False: ")
         menu_options = ["* [0] - True", "* [1] - False"]
-        terminal_menu = TerminalMenu(
-            menu_options, title="* Would you like private transactions? "
-        )
+        terminal_menu = TerminalMenu(menu_options, title="* Would you like private transactions? ")
         sub_menu_option = terminal_menu.show()
         if sub_menu_option == 0:
             set_var(easy_env_fra.dotenv_file, "PRIVACY", "True")
@@ -905,9 +882,7 @@ def findora_container_update(update) -> None:
         )
         return
     else:
-        print(
-            "*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora"
-        )
+        print("*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora")
         return
 
 
@@ -918,12 +893,7 @@ def findora_gwei_convert(findora):
 
 def get_fn_stats():
     output = subprocess.check_output(["fn", "show"])
-    json_string = (
-        output.decode()
-        .replace("b'", "")
-        .replace("\x1b[31;01m", "")
-        .replace("\x1b[00m", "")
-    )
+    json_string = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
 
     lines = json_string.split("\n")
 
@@ -932,9 +902,7 @@ def get_fn_stats():
     if int(lines[17].split()[1][:-1]) == 0:
         fn_info["Network"] = lines[1]
         fn_info["Current Block"] = lines[29].split()[1][:-1]
-        fn_info[
-            "Balance"
-        ] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
         fn_info["Proposed Blocks"] = "0"
     else:
         fn_info["Network"] = lines[1]
@@ -943,9 +911,7 @@ def get_fn_stats():
         fn_info[
             "Self Delegation"
         ] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[17].split()[1][:-1])), 2))} FRA"
-        fn_info[
-            "Balance"
-        ] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
+        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
         fn_info[
             "Unclaimed Rewards"
         ] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[25].split()[1][:-1])), 2))} FRA"
@@ -969,9 +935,7 @@ def menu_topper() -> None:
         Load1, Load5, Load15 = os.getloadavg()
         curl_stats = capture_stats()
         now = datetime.now(timezone.utc)
-        fra = findora_gwei_convert(
-            curl_stats["result"]["validator_info"]["voting_power"]
-        )
+        fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
         our_version = get_container_version("http://localhost:8668/version")
         our_fn_stats = get_fn_stats()
         try:
@@ -1000,17 +964,13 @@ def menu_topper() -> None:
         f"* Server Hostname & IP:      {easy_env_fra.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{easy_env_fra.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(
-        f"* Public Address:            {curl_stats['result']['validator_info']['address']}"
-    )
+    print(f"* Public Address:            {curl_stats['result']['validator_info']['address']}")
     if our_fn_stats["Network"] == "https://prod-mainnet.prod.findora.org":
         print(f"* Network:                   Mainnet")
     if our_fn_stats["Network"] == "https://prod-testnet.prod.findora.org":
         print(f"* Network:                   Testnet")
     our_fn_stats.pop("Network")
-    print(
-        f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA"
-    )
+    print(f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
     if curl_stats["result"]["sync_info"]["catching_up"] == "False":
         print(
             f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
@@ -1028,9 +988,7 @@ def menu_topper() -> None:
     for i in our_fn_stats:
         spaces = "                         "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
-    print(
-        f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}"
-    )
+    print(f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
         f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(easy_env_fra.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
@@ -1075,15 +1033,11 @@ def rescue_menu() -> None:
 
 
 def update_findora_container(skip) -> None:
-    print(
-        "* Running the update and restart may cause missed blocks, beware before proceeding!"
-    )
+    print("* Running the update and restart may cause missed blocks, beware before proceeding!")
     if skip:
         answer = True
     else:
-        answer = ask_yes_no(
-            "* Are you sure you want to check for an upgrade and restart? (Y/N) "
-        )
+        answer = ask_yes_no("* Are you sure you want to check for an upgrade and restart? (Y/N) ")
     if answer:
         subprocess.call(
             ["bash", "-x", f"{easy_env_fra.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
@@ -1091,9 +1045,7 @@ def update_findora_container(skip) -> None:
         )
         if container_running(easy_env_fra.container_name):
             print_stars()
-            print(
-                "* Your container is restarted and back online. Press enter to return to the main menu."
-            )
+            print("* Your container is restarted and back online. Press enter to return to the main menu.")
             pause_for_cause()
             run_findora_menu()
         else:
@@ -1141,9 +1093,7 @@ def run_clean_script() -> None:
         )
         if container_running(easy_env_fra.container_name):
             print_stars()
-            print(
-                "* Your container is restarted and back online. Press enter to return to the main menu."
-            )
+            print("* Your container is restarted and back online. Press enter to return to the main menu.")
             input()
             run_findora_menu()
         else:
@@ -1200,9 +1150,7 @@ def menu_install_findora(network) -> None:
 
 
 def run_ubuntu_updates() -> None:
-    question = ask_yes_no(
-        "* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) "
-    )
+    question = ask_yes_no("* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
     if question:
         subprocess.run("clear")
         print_stars()
@@ -1249,9 +1197,7 @@ def migrate_to_server() -> None:
         print("* You have a migrate folder, checking for files.")
         if (
             os.path.exists(f"{easy_env_fra.migrate_dir}/tmp.gen.keypair")
-            and os.path.exists(
-                f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
-            )
+            and os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json")
             or os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json")
         ):
             print(
@@ -1284,16 +1230,12 @@ def migrate_to_server() -> None:
                 os.remove(
                     f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json'
                 )
-                if os.path.exists(
-                    f"{easy_env_fra.migrate_dir}/priv_validator_key.json"
-                ):
+                if os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
                     shutil.move(
                         f"{easy_env_fra.migrate_dir}/priv_validator_key.json",
                         f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
                     )
-                elif os.path.exists(
-                    f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
-                ):
+                elif os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"):
                     shutil.move(
                         f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json",
                         f'{easy_env_fra.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
@@ -1307,9 +1249,7 @@ def migrate_to_server() -> None:
                     f"cat {easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/{environ.get('FRA_NETWORK')}_node.key "
                     + "| grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'"
                 )
-                os.remove(
-                    f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic"
-                )
+                os.remove(f"{easy_env_fra.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
                 subprocess.call(
                     [
                         "touch",
@@ -1324,9 +1264,7 @@ def migrate_to_server() -> None:
                 print("* File copying completed, restarting services.")
                 # Wipe backup folder and re-create
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                backup_dir = (
-                    f"{easy_env_fra.user_home_dir}/findora_backup_{format(timestamp)}"
-                )
+                backup_dir = f"{easy_env_fra.user_home_dir}/findora_backup_{format(timestamp)}"
                 shutil.copytree(easy_env_fra.findora_backup, backup_dir)
                 shutil.rmtree(easy_env_fra.findora_backup)
                 shutil.rmtree(easy_env_fra.migrate_dir)
@@ -1363,13 +1301,9 @@ def migration_check() -> None:
         # No tmp.gen.keypair, we're out.
         return False
     if os.path.exists(f"{easy_env_fra.migrate_dir}/priv_validator_key.json"):
-        file_paths[
-            "priv_validator_key.json"
-        ] = f"{easy_env_fra.migrate_dir}/priv_validator_key.json"
+        file_paths["priv_validator_key.json"] = f"{easy_env_fra.migrate_dir}/priv_validator_key.json"
     elif os.path.exists(f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"):
-        file_paths[
-            "priv_validator_key.json"
-        ] = f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
+        file_paths["priv_validator_key.json"] = f"{easy_env_fra.migrate_dir}/config/priv_validator_key.json"
     else:
         # No matches on priv_validator_key.json, we're out.
         return False
@@ -1389,9 +1323,7 @@ def migration_check() -> None:
 
 
 def print_migrate():
-    print(
-        f"{Fore.CYAN}* 888 -  Migrate To This Server    - Migrate from another server to this server.{Fore.MAGENTA}"
-    )
+    print(f"{Fore.CYAN}* 888 -  Migrate To This Server    - Migrate from another server to this server.{Fore.MAGENTA}")
 
 
 def backup_folder_check() -> None:
@@ -1507,9 +1439,7 @@ def run_findora_menu() -> None:
         except (ValueError, KeyError, TypeError) as e:
             subprocess.run("clear")
             print_stars()
-            print(
-                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
-            )
+            print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
         # clear before load
         subprocess.run("clear")
         print_stars()
@@ -1518,9 +1448,7 @@ def run_findora_menu() -> None:
         except (ValueError, KeyError, TypeError) as e:
             subprocess.run("clear")
             print_stars()
-            print(
-                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
-            )
+            print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
         pause_for_cause()
 
 
@@ -1540,13 +1468,9 @@ def parse_flags(parser):
         help="Claim all of your pending Unclaimed FRA.",
     )
 
-    parser.add_argument(
-        "--mainnet", action="store_true", help="Will run the installer set to mainnet."
-    )
+    parser.add_argument("--mainnet", action="store_true", help="Will run the installer set to mainnet.")
 
-    parser.add_argument(
-        "--testnet", action="store_true", help="Will run the installer set to testnet."
-    )
+    parser.add_argument("--testnet", action="store_true", help="Will run the installer set to testnet.")
 
     parser.add_argument(
         "--reset",
@@ -1571,25 +1495,29 @@ def parse_flags(parser):
         if environ.get("FRA_NETWORK"):
             print_stars()
             print(
-                f'* You already have {environ.get("FRA_NETWORK")} set in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.'
+                f'* You already have {environ.get("FRA_NETWORK")} set in your .easynode.env file\n'
+                + "* If this is a brand new install run --reset first to wipe then try this again."
+                + "\n*\n* Press enter to load the menu or ctrl+c to quit and restart."
             )
             print_stars()
             input()
         else:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "mainnet")
-            menu_install_findora(environ.get('FRA_NETWORK'))
+            menu_install_findora(environ.get("FRA_NETWORK"))
 
     if args.testnet:
         if environ.get("FRA_NETWORK"):
             print_stars()
             print(
-                f'* You already have {environ.get("FRA_NETWORK")} set in your .easynode.env file\n* If this is a brand new install run --reset first to wipe then try this again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.'
+                f'* You already have {environ.get("FRA_NETWORK")} set in your .easynode.env file'
+                + '\n* If this is a brand new install run --reset first to wipe then try this '
+                + 'again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.'
             )
             print_stars()
             input()
         else:
             set_var(easy_env_fra.dotenv_file, "FRA_NETWORK", "testnet")
-            menu_install_findora(environ.get('FRA_NETWORK'))
+            menu_install_findora(environ.get("FRA_NETWORK"))
 
     if args.stats:
         menu_topper()
@@ -1597,9 +1525,7 @@ def parse_flags(parser):
 
     if args.reset:
         print_stars()
-        answer = ask_yes_no(
-            f"* You've started the reset process. Press Y to reset or N ot exit: (Y/N) "
-        )
+        answer = ask_yes_no(f"* You've started the reset process. Press Y to reset or N ot exit: (Y/N) ")
         if answer:
             # wipe data here
             subprocess.call(
