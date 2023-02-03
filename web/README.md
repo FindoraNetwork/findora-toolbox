@@ -1,5 +1,7 @@
-# Findora Toolbox - Web UI by ⚡ EasyNode.PRO ⚡
-A web interface for the [findora-toolbox](https://github.com/FindoraNetwork/findora-toolbox) for Findora Validators.
+# Findora Toolbox - Web UI 
+Created by ⚡ EasyNode.PRO ⚡  
+
+A web interface for the [findora-toolbox](https://github.com/FindoraNetwork/findora-toolbox) for Findora Validators.  
 
 ## Web Stats
 Would you like to go to a web page on your validator server to get your stats? This is it! 
@@ -85,9 +87,9 @@ sudo systemctl restart fail2ban
 ```
 
 ## Update User/Password/Port
-To change your username, password or port edit ~/.easynode.env with an editor, for example:  
+To change your username, password or port edit ~/.findora.env with an editor, for example:  
 ```text copy
-nano ~/.easynode.env
+nano ~/.findora.env
 ```
 
 Edit the info you'd like to change, save and exit. Then restart your web server to begin using updated options.
@@ -96,6 +98,3 @@ Edit the info you'd like to change, save and exit. Then restart your web server 
 The issue with using HTTPS is it has to be run on a domain name and we're simply going by IP/Port here.  
 
 You can run a reverse proxy with nginx and build this into a container behind SSL/Domain if you'd like but this is for private personal usage so we're not providing instructions or support for SSL at this time. We highly suggest locking the port down to your home/work IP if you're going to have it open and running 24/7.
-
-## Contact
-Find all of our socials on [EasyNode.PRO](https://easynode.pro) if you have any questions.

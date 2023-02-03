@@ -1,4 +1,4 @@
-* EasyNode.PRO Findora Validator Toolbox Menu Options:
+* Findora Validator Toolbox - Menu Options:
 print("*")
 print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
 print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
