@@ -27,7 +27,10 @@ def main() -> None:
         subprocess.run('clear') 
         print(Fore.MAGENTA)
         print_stars()
-        print('*\n* Old folder found, Exiting\n*\n* Please rename your ~/validatortoolbox_fra folder to ~/findora-toolbox and update your command paths!\n*\n* Run: cd ~/ && mv ~/validatortoolbox_fra ~/findora-toolbox\n*\n* After you run the move command, relaunch with: python3 ~/findora-toolbox/src/app.py\n*')
+        print('*\n* Old folder found, Exiting\n*\n* Please rename your ~/validatortoolbox_fra'
+              + 'folder to ~/findora-toolbox and update your command paths!\n*\n* To rename, run:'
+              + ' cd ~/ && mv ~/validatortoolbox_fra ~/findora-toolbox\n*\n* After you run the'
+              + ' move command, relaunch with the new path: python3 ~/findora-toolbox/src/app.py\n*')
         print_stars()
         raise SystemExit(0)
     # Init parser for flags:

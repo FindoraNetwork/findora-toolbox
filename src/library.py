@@ -69,13 +69,15 @@ def loader_intro():
 
 
 def first_env_check(env_file, home_dir) -> None:
-    if os.path.exists(f"{home_dir}/.easynode.env"):
-        os.system(f"cp {home_dir}/.easynode.env {env_file}")
     if os.path.exists(env_file):
         load_var_file(env_file)
     else:
-        os.system(f"touch {home_dir}/.findora.env")
-        load_var_file(env_file)
+        if os.path.exists(f"{home_dir}/.easynode.env"):
+            os.system(f"cp {home_dir}/.easynode.env {env_file}")
+        else:
+            os.system(f"touch {home_dir}/.findora.env")
+            load_var_file(env_file)
+    return
 
 
 def set_var(env_file, key_name, update_name):
