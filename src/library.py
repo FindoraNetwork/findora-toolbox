@@ -965,7 +965,7 @@ def menu_topper() -> None:
     print_stars()
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}Findora Toolbox Management Menu"
-        + f"   v{findora_env.toolbox_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://findora.org *"
+        + f"                 v{findora_env.toolbox_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://findora.org *"
     )
     print_stars()
     print(
