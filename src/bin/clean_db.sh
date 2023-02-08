@@ -9,11 +9,12 @@ CONTAINER_NAME=findorad
 
 export ROOT_DIR=/data/findora/${NAMESPACE}
 
+# Fix permissions from possible docker changes
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 
-###################
-# Stop local node #
-###################
+##########################################
+# Check if container is running and stop #
+##########################################
 if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
   echo -e "Findorad Container found, stopping container to restart."
   docker stop findorad
@@ -28,7 +29,7 @@ fi
 ###################
 
 # download latest link and get url
-wget -O "${ROOT_DIR}/latest" "https://prod-mainnet-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/mainnet-20230207180001_latest"
+wget -O "${ROOT_DIR}/latest" "https://prod-mainnet-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/mainnet-20230208180001_latest"
 CHAINDATA_URL=$(cut -d , -f 1 "${ROOT_DIR}/latest")
 echo $CHAINDATA_URL
 
@@ -43,6 +44,9 @@ tar zxvf "${ROOT_DIR}/snapshot" -C "${ROOT_DIR}/snapshot_data"
 
 mv "${ROOT_DIR}/snapshot_data/data/ledger" "${ROOT_DIR}/findorad"
 mv "${ROOT_DIR}/snapshot_data/data/tendermint/mainnet/node0/data" "${ROOT_DIR}/tendermint/data"
+
+# Fix permissions after download to help startup
+sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 
 rm -rf ${ROOT_DIR}/snapshot_data
 rm -rf ${ROOT_DIR}/snapshot

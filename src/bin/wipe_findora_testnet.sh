@@ -8,12 +8,12 @@ FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
 export ROOT_DIR=/data/findora/${NAMESPACE}
 CONTAINER_NAME=findorad
 
-# Reset permissions to avoid problems.
+# Fix permissions from possible docker changes
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 
-###################
-# Stop local node #
-###################
+##########################################
+# Check if container is running and stop #
+##########################################
 if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
   echo -e "Findorad Container found, stopping container to restart."
   docker stop findorad
@@ -23,6 +23,9 @@ else
   echo 'Findorad container stopped or does not exist, continuing.'
 fi
 
+####################
+# Wipe Local Files #
+####################
 sudo rm -r /data/findora/${NAMESPACE}
 sudo rm /usr/local/bin/fn
 rm ~/.findora.env

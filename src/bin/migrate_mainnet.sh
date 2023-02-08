@@ -53,9 +53,9 @@ check_env() {
     fi
 }
 
-######################################
-# Check for existing files/container #
-######################################
+##########################################
+# Check if container is running and stop #
+##########################################
 if sudo docker ps -a --format '{{.Names}}' | grep -Eq "^${container_name}\$"; then
   echo -e "Findorad Container found, stopping container."
   docker stop findorad
