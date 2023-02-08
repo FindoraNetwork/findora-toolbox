@@ -10,7 +10,9 @@ keypath=${ROOT_DIR}/${NAMESPACE}_node.key
 FN=${ROOT_DIR}/bin/fn
 CONTAINER_NAME=findorad
 
-# if you're re-running this for some reason, stop and remove findorad
+##########################################
+# Check if container is running and stop #
+##########################################
 if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
   echo -e "Findorad Container found, stopping container to restart."
   docker stop findorad
