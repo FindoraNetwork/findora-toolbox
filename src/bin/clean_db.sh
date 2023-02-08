@@ -9,6 +9,7 @@ CONTAINER_NAME=findorad
 
 export ROOT_DIR=/data/findora/${NAMESPACE}
 
+# Fix permissions from possible docker changes
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 
 ###################
@@ -43,6 +44,8 @@ tar zxvf "${ROOT_DIR}/snapshot" -C "${ROOT_DIR}/snapshot_data"
 
 mv "${ROOT_DIR}/snapshot_data/data/ledger" "${ROOT_DIR}/findorad"
 mv "${ROOT_DIR}/snapshot_data/data/tendermint/mainnet/node0/data" "${ROOT_DIR}/tendermint/data"
+
+# Fix permissions after download to help startup
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 
 rm -rf ${ROOT_DIR}/snapshot_data
