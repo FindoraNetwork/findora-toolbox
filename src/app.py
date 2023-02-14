@@ -53,26 +53,26 @@ def main() -> None:
     if container_running(findora_env.container_name):
         backup_folder_check()
         run_findora_menu()
-    # Container is not running, ruh roh!
-    print(f"* The container '{findora_env.container_name}' is not running.")
-    while True:
-        answer = ask_yes_no(
-            "* Would you like to attempt to run the update version script to try to get your container back online? (Y/N)"
-        )
-        if answer:
-            update_findora_container(1)
-            print("* Uh, you said no so, we are exiting to allow manual troubleshooting, goodbye!")
-            finish_node()
-        else:
-            answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot? (Y/N) ")
-            if answer2:
-                rescue_menu()
-            else:
-                print(
-                    "* Dropping out of the application so you can troubleshoot the container, check the docker logs with: docker logs -f findorad"
-                )
-                print_stars()
+    else:
+        print(f"* The container '{findora_env.container_name}' is not running.")
+        while True:
+            answer = ask_yes_no(
+                "* Would you like to attempt to run the update version script to try to get your container back online? (Y/N)"
+            )
+            if answer:
+                update_findora_container(1)
+                print("* Uh, you said no so, we are exiting to allow manual troubleshooting, goodbye!")
                 finish_node()
+            else:
+                answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot? (Y/N) ")
+                if answer2:
+                    rescue_menu()
+                else:
+                    print(
+                        "* Dropping out of the application so you can troubleshoot the container, check the docker logs with: docker logs -f findorad"
+                    )
+                    print_stars()
+                    finish_node()
 
 
 if __name__ == "__main__":

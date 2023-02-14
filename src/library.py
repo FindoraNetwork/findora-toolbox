@@ -514,11 +514,7 @@ def standalone_option():
 def claim_findora_rewards() -> None:
     standalone_option()
     try:
-        output = subprocess.call(
-            ["fn", "claim"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+        output = subprocess.call(["fn", "claim"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,)
         print(f"* Claim all pending completed, refresh your stats after the next block.")
     except subprocess.CalledProcessError as err:
         print(
@@ -612,10 +608,7 @@ def pre_send_findora() -> None:
     convert_send_total = str(int(float(send_total) * 1000000))
     if express == "True":
         send_findora(
-            convert_send_total,
-            send_total,
-            environ.get("RECEIVER_WALLET"),
-            environ.get("PRIVACY"),
+            convert_send_total, send_total, environ.get("RECEIVER_WALLET"), environ.get("PRIVACY"),
         )
         return
     receiver_address = get_receiver_address()
@@ -688,9 +681,7 @@ def change_rate(our_fn_stats):
         question = ask_yes_no(f"* Are you sure you want to change your rate to {float(answer)*100}%? (Y/N) ")
         if question:
             subprocess.call(
-                ["fn", "staker-update", "-R", answer],
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                ["fn", "staker-update", "-R", answer], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             )
             print(f"* Your rate change to {float(answer)*100}% has been sent!")
         else:
@@ -1117,8 +1108,7 @@ def run_clean_script() -> None:
 def create_staker_memo() -> None:
     if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
         shutil.copy(
-            f"{findora_env.toolbox_location}/src/bin/staker_memo",
-            f"{findora_env.user_home_dir}",
+            f"{findora_env.toolbox_location}/src/bin/staker_memo", f"{findora_env.user_home_dir}",
         )
 
 
@@ -1259,15 +1249,9 @@ def migrate_to_server() -> None:
                 )
                 os.remove(f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
                 subprocess.call(
-                    [
-                        "touch",
-                        f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
-                    ]
+                    ["touch", f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",]
                 )
-                with open(
-                    f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
-                    "w",
-                ) as file:
+                with open(f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w",) as file:
                     file.write(node_mnemonic)
                 print("* File copying completed, restarting services.")
                 # Wipe backup folder and re-create
@@ -1442,6 +1426,8 @@ def run_findora_menu() -> None:
         # Pick an option, any option
         value = input("* Enter your option: ")
         # Try/Catch - If it's not a number, goodbye, try again
+        if value == "":
+            run_findora_menu()
         try:
             value = int(value)
         except (ValueError, KeyError, TypeError) as e:
@@ -1461,29 +1447,27 @@ def run_findora_menu() -> None:
 
 
 def parse_flags(parser):
-    # add the '--verbose' flag
+    # Add the arguments
     parser.add_argument(
-        "-s",
-        "--stats",
-        action="store_true",
-        help="Run your stats if Findora is installed and running.",
+        "-u", "--update", action="store_true", help="Will update and/or restart your Findora container."
     )
 
     parser.add_argument(
-        "-c",
-        "--claim",
-        action="store_true",
-        help="Claim all of your pending Unclaimed FRA.",
+        "-s", "--stats", action="store_true", help="Run your stats if Findora is installed and running.",
     )
 
-    parser.add_argument("--mainnet", action="store_true", help="Will run the installer set to mainnet.")
+    parser.add_argument(
+        "-c", "--claim", action="store_true", help="Claim all of your pending Unclaimed FRA.",
+    )
+    
+    parser.add_argument("--clean", action="store_true", help="Will run the clean script, removes database, reloads all data.")
 
-    parser.add_argument("--testnet", action="store_true", help="Will run the installer set to testnet.")
+    parser.add_argument("--fn", action="store_true", help="Will update your fn wallet application.")
+
+    parser.add_argument("--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet.")
 
     parser.add_argument(
-        "--reset",
-        action="store_true",
-        help="This will wipe everything to allow you to reload Findora.",
+        "--reset", action="store_true", help="This will wipe the database, fn & our env file to allow you to reload Findora.",
     )
 
     # parse the arguments
@@ -1499,33 +1483,29 @@ def parse_flags(parser):
         claim_findora_rewards()
         finish_node()
 
-    if args.mainnet:
+    if args.installer:
         if environ.get("FRA_NETWORK"):
             print_stars()
             print(
                 f'* You already have {environ.get("FRA_NETWORK")} set in your .findora.env file\n'
                 + "* If this is a brand new install run --reset first to wipe then try this again."
-                + "\n*\n* Press enter to load the menu or ctrl+c to quit and restart."
+                + "\n*\n* Press enter to exit."
             )
             print_stars()
             input()
+            finish_node()
         else:
-            set_var(findora_env.dotenv_file, "FRA_NETWORK", "mainnet")
-            menu_install_findora(environ.get("FRA_NETWORK"))
+            network = set_main_or_test()
+            menu_install_findora(network)
 
-    if args.testnet:
-        if environ.get("FRA_NETWORK"):
-            print_stars()
-            print(
-                f'* You already have {environ.get("FRA_NETWORK")} set in your .findora.env file'
-                + '\n* If this is a brand new install run --reset first to wipe then try this '
-                + 'again.\n*\n* Press enter to load the menu or ctrl+c to quit and restart.'
-            )
-            print_stars()
-            input()
-        else:
-            set_var(findora_env.dotenv_file, "FRA_NETWORK", "testnet")
-            menu_install_findora(environ.get("FRA_NETWORK"))
+    if args.fn:
+        update_fn_wallet()
+
+    if args.update:
+        run_container_update()
+
+    if args.clean:
+        run_clean_script()
 
     if args.stats:
         menu_topper()
@@ -1533,6 +1513,9 @@ def parse_flags(parser):
 
     if args.reset:
         print_stars()
+        # add network check to validate which network we are running
+        network = set_main_or_test()
+        # Are you really really sure?
         answer = ask_yes_no(f"* You've started the reset process. Press Y to reset or N ot exit: (Y/N) ")
         if answer:
             # wipe data here
@@ -1540,4 +1523,4 @@ def parse_flags(parser):
                 ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/wipe_findora_{environ.get('FRA_NETWORK')}.sh"],
                 cwd=findora_env.user_home_dir,
             )
-            finish_node()
+        finish_node()
