@@ -4,7 +4,7 @@ ENV=prod
 NAMESPACE=mainnet
 SERV_URL=https://${ENV}-${NAMESPACE}.${ENV}.findora.org
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
-FINDOR_IMG=findoranetwofindorad:${LIVE_VERSION}
+FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
 CONTAINER_NAME=findorad
 
 export ROOT_DIR=/data/findora/${NAMESPACE}
