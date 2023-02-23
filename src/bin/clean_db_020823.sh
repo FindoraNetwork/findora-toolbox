@@ -4,7 +4,7 @@ ENV=prod
 NAMESPACE=mainnet
 SERV_URL=https://${ENV}-${NAMESPACE}.${ENV}.findora.org
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
-FINDOR_IMG=findoranetwork/findorad:${LIVE_VERSION}
+FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
 CONTAINER_NAME=findorad
 
 export ROOT_DIR=/data/findora/${NAMESPACE}
@@ -15,10 +15,10 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 ##########################################
 # Check if container is running and stop #
 ##########################################
-if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
+if sudo docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
   echo -e "Findorad Container found, stopping container to restart."
-  docker stop findorad
-  docker rm findorad 
+  sudo docker stop findorad
+  sudo docker rm findorad
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
   echo 'Findorad container stopped or does not exist, continuing.'
@@ -51,7 +51,7 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 rm -rf ${ROOT_DIR}/snapshot_data
 rm -rf ${ROOT_DIR}/snapshot
 
-docker run -d \
+sudo docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
     -v ${ROOT_DIR}/findorad:/tmp/findora \
     -p 8669:8669 \

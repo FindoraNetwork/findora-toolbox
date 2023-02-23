@@ -28,7 +28,7 @@ check_env() {
 
 set_binaries() {
     # OS=$1
-    docker pull ${FINDORAD_IMG} || exit 1
+    sudo docker pull ${FINDORAD_IMG} || exit 1
     wget -T 10 https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn || exit 1
 
     new_path=${ROOT_DIR}/bin
@@ -92,7 +92,7 @@ mkdir -p ${ROOT_DIR}/${NAMESPACE} || exit 1
 
 
 # tendermint config
-docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
+sudo docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
 
 # reset permissions on tendermint folder after init
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
@@ -101,10 +101,10 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
 cp -a ${ROOT_DIR}/tendermint/config /home/${USERNAME}/findora_backup/config
 
 # if you're re-running this for some reason, stop and remove findorad
-if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
+if sudo docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
   echo -e "Findorad Container found, stopping container to restart."
-  docker stop findorad
-  docker rm findorad 
+  sudo docker stop findorad
+  sudo docker rm findorad
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
   echo 'Findorad container stopped or does not exist, continuing.'
@@ -143,7 +143,7 @@ wget -O "${ROOT_DIR}/checkpoint.toml" "${CHECKPOINT_URL}"
 #####################
 # Create local node #
 #####################
-docker run -d \
+sudo docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
     -v ${ROOT_DIR}/findorad:/tmp/findora \
     -v ${ROOT_DIR}/checkpoint.toml:/root/checkpoint.toml \

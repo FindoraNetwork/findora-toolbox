@@ -20,20 +20,21 @@ check_env() {
         fi
     done
 
-    if ! [ -f "$migratepath" ]; then
+    if [ -d "$migratepath" ]; then
         echo -e "Migrate folder found, preparing to copy files..."
     else
         echo -e "Create the folder ~/migrate with your node.mnemonic, priv_validator_key.json and tmp.gen.keypair files to continue."
+        exit 1
     fi
 
-    if ! [ -f "$migratepath/tmp.gen.keypair"]; then
+    if [ -f "$migratepath/tmp.gen.keypair" ]; then
         cp ${migratepath}/tmp.gen.keypair ${ROOT_DIR}/${NAMESPACE}_node.key
     else
         echo -e "tmp.gen.keypair file not found at ~/migrate/tmp.gen.keypair - Add this file to ~/migrate to continue."
         exit 1
     fi
 
-    if ! [ -f "$migratepath/config"]; then
+    if [ -f "$migratepath/config" ]; then
         echo -e "~/migrate/config found, copying."
         cp ${migratepath}/config/* ${ROOT_DIR}/tendermint/config/
     elif ! ["$migratepath/priv_validator_key.json"]; then
@@ -44,7 +45,7 @@ check_env() {
         exit 1
     fi
 
-    if ! [ -f "$migratepath/node.mnemonic"]; then
+    if [ -f "$migratepath/node.mnemonic" ]; then
         cp ${migratepath}/node.mnemonic ${ROOT_DIR}/node.mnemonic
     else
         echo -e "node.mnemonic not found at ~/migrate/node.mnemonic - Creating from ~/migrate/tmp.gen.keypair file."
@@ -58,8 +59,8 @@ check_env() {
 ##########################################
 if sudo docker ps -a --format '{{.Names}}' | grep -Eq "^${container_name}\$"; then
   echo -e "Findorad Container found, stopping container."
-  docker stop findorad
-  docker rm findorad 
+  sudo docker stop findorad
+  sudo docker rm findorad
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
   echo 'Findorad container stopped or does not exist, continuing.'
@@ -74,7 +75,7 @@ $FN setup -S ${SERV_URL} || exit 1
 $FN setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
 $FN setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 
-docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
+sudo docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
 
 # reset permissions on tendermint folder after init
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
@@ -82,7 +83,7 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
 #####################
 # Create local node #
 #####################
-docker run -d \
+sudo docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
     -v ${ROOT_DIR}/findorad:/tmp/findora \
     -p 8669:8669 \

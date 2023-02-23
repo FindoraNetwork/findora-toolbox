@@ -12,6 +12,7 @@ FN=${ROOT_DIR}/bin/fn
 wget https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn
 chmod +x fn
 sudo mv fn /usr/local/bin/
+cp /usr/local/bin/fn $FN
 
 $FN setup -S ${SERV_URL} || exit 1
 $FN setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
