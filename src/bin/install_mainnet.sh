@@ -116,6 +116,7 @@ fi
 # download latest link and get url
 wget -O "${ROOT_DIR}/latest" "https://${ENV}-${NAMESPACE}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
 CHAINDATA_URL=$(cut -d , -f 1 "${ROOT_DIR}/latest")
+CHECKSUM_LATEST=$(cut -d , -f 2 "${ROOT_DIR}/latest")
 echo $CHAINDATA_URL
 
 # remove old data
@@ -123,7 +124,16 @@ rm -rf "${ROOT_DIR}/findorad"
 rm -rf "${ROOT_DIR}/tendermint/data"
 rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 
-wget -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}"
+# check snapshot file md5sum
+while :
+do
+    wget -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}"
+    CHECKSUM=$(md5sum "${ROOT_DIR}/snapshot" | cut -d " " -f 1)
+    if [[ $CHECKSUM -eq $CHECKSUM_LATEST ]]; then
+        break
+    fi
+done
+
 mkdir "${ROOT_DIR}/snapshot_data"
 tar zxvf "${ROOT_DIR}/snapshot" -C "${ROOT_DIR}/snapshot_data"
 
