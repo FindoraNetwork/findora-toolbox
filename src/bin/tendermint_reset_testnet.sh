@@ -13,15 +13,15 @@ CONTAINER_NAME=findorad
 ##########################################
 # Check if container is running and stop #
 ##########################################
-if sudo docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
+if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
   echo -e "Findorad Container found, stopping container to restart."
-  sudo docker stop findorad
-  sudo docker rm findorad
+  docker stop findorad
+  docker rm findorad
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
   echo 'Findorad container stopped or does not exist, continuing.'
 fi
 
-sudo docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
+docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
 
 echo -e "* Tendermint has been reconfigured, run the update_version script or option to get back online."
