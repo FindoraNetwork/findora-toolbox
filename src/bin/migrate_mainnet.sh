@@ -57,10 +57,10 @@ check_env() {
 ##########################################
 # Check if container is running and stop #
 ##########################################
-if sudo docker ps -a --format '{{.Names}}' | grep -Eq "^${container_name}\$"; then
+if docker ps -a --format '{{.Names}}' | grep -Eq "^${container_name}\$"; then
   echo -e "Findorad Container found, stopping container."
-  sudo docker stop findorad
-  sudo docker rm findorad
+  docker stop findorad
+  docker rm findorad
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
   echo 'Findorad container stopped or does not exist, continuing.'
@@ -75,7 +75,7 @@ $FN setup -S ${SERV_URL} || exit 1
 $FN setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
 $FN setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 
-sudo docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
+docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
 
 # reset permissions on tendermint folder after init
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
@@ -83,7 +83,7 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
 #####################
 # Create local node #
 #####################
-sudo docker run -d \
+docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
     -v ${ROOT_DIR}/findorad:/tmp/findora \
     -p 8669:8669 \
