@@ -9,7 +9,9 @@ export ROOT_DIR=/data/findora/${NAMESPACE}
 CONTAINER_NAME=findorad
 
 # Fix permissions from possible docker changes
-sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
+if [ -d ${ROOT_DIR} ]; then
+  sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
+fi
 
 ##########################################
 # Check if container is running and stop #
@@ -26,6 +28,8 @@ fi
 ####################
 # Wipe Local Files #
 ####################
-sudo rm -r /data/findora/${NAMESPACE}
+if [ -d /data/findora/${NAMESPACE} ]; then
+  sudo rm -r /data/findora/${NAMESPACE}
+fi
 sudo rm /usr/local/bin/fn
 rm ~/.findora.env
