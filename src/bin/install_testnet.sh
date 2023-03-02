@@ -130,7 +130,7 @@ while :
 do
     wget -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}"
     CHECKSUM=$(md5sum "${ROOT_DIR}/snapshot" | cut -d " " -f 1)
-    if [[ $CHECKSUM -eq $CHECKSUM_LATEST ]]; then
+    if [[ ! -z "$CHECKSUM_LATEST" ]] && [[ "$CHECKSUM_LATEST" = "$CHECKSUM" ]]; then
         break
     fi
 done
