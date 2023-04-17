@@ -1467,7 +1467,7 @@ def parse_flags(parser):
     parser.add_argument("--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet.")
 
     parser.add_argument(
-        "--ultra-reset", action="store_true", help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
+        "--ultrareset", action="store_true", help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
     )
 
     # parse the arguments
@@ -1512,7 +1512,7 @@ def parse_flags(parser):
         menu_topper()
         finish_node()
 
-    if args.reset:
+    if args.ultrareset:
         print_stars()
         # add network check to validate which network we are running
         network = set_main_or_test()
