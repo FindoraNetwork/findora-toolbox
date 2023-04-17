@@ -1467,7 +1467,7 @@ def parse_flags(parser):
     parser.add_argument("--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet.")
 
     parser.add_argument(
-        "--reset", action="store_true", help="This will wipe the database, fn & our env file to allow you to reload Findora.",
+        "--ultra-reset", action="store_true", help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
     )
 
     # parse the arguments
@@ -1488,7 +1488,8 @@ def parse_flags(parser):
             print_stars()
             print(
                 f'* You already have {environ.get("FRA_NETWORK")} set in your .findora.env file\n'
-                + "* If this is a brand new install run --reset first to wipe then try this again."
+                + "* Is your Findora Validator already installed on this server? "
+                + "If so launch toolbox normally with `./findora.sh` to use your menu.\n"
                 + "\n*\n* Press enter to exit."
             )
             print_stars()
@@ -1516,7 +1517,7 @@ def parse_flags(parser):
         # add network check to validate which network we are running
         network = set_main_or_test()
         # Are you really really sure?
-        answer = ask_yes_no(f"* You've started the reset process. Press Y to reset or N ot exit: (Y/N) ")
+        answer = ask_yes_no(f"* WARNING, NUCLEAR OPTION: We will now reset your entire server to a fresh install.\nPress Y to fully wipe and reset your server or N to exit: (Y/N) ")
         if answer:
             # wipe data here
             subprocess.call(
