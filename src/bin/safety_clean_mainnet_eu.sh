@@ -29,7 +29,7 @@ fi
 ###################
 
 # download latest link and get url
-wget -O "${ROOT_DIR}/latest" "https://${ENV}-${NAMESPACE}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
+wget -O "${ROOT_DIR}/latest" "https://prod-mainnet-eu-download.s3.eu-central-1.amazonaws.com/mainnet-20230414192931_latest"
 CHAINDATA_URL=$(cut -d , -f 1 "${ROOT_DIR}/latest")
 echo $CHAINDATA_URL
 
