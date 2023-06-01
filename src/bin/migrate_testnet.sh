@@ -99,6 +99,7 @@ docker run -d \
     --checkpoint-file=/root/checkpoint.toml \
     --tendermint-host 0.0.0.0 \
     --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
+    --enable-query-service \
 
 sleep 30
 
