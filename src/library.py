@@ -948,6 +948,7 @@ def menu_topper() -> None:
     except TimeoutError as e:
         our_version = "No Response"
         online_version = "No Response"
+        external_ip = "0.0.0.0"
         print_stars()
         print(f"* Timeout error: {e}")
         print_stars()
