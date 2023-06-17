@@ -1,14 +1,14 @@
-import os, socket, urllib.request
+import os, socket, requests
 
-
-def getUrl() -> None:
+def getUrl(timeout=5) -> str:
     try:
-        result = urllib.request.urlopen("https://ident.me").read().decode("utf8")
-    except Exception as x:
+        response = requests.get("https://ident.me", timeout=timeout)
+        response.raise_for_status()  # Raises a HTTPError if the response was unsuccessful
+        result = response.text
+    except requests.exceptions.RequestException as x:
         print(type(x), x)
-        result = "0.0.0.0"
+        result = '0.0.0.0'
     return result
-
 
 class findora_env:
     toolbox_version = "1.0.7"
