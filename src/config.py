@@ -1,7 +1,7 @@
 import os, socket, urllib.request
 from concurrent.futures import ThreadPoolExecutor, TimeoutError
 
-def get_url(timeout=5) -> str:
+def getUrl(timeout=5) -> str:
     with ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(urllib.request.urlopen, "https://ident.me")
         try:
