@@ -1,18 +1,13 @@
-import os, socket, urllib.request
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
+import os, socket, requests
 
 def getUrl(timeout=5) -> str:
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        future = executor.submit(urllib.request.urlopen, "https://ident.me")
-        try:
-            response = future.result(timeout)
-            result = response.read().decode("utf8")
-        except TimeoutError:
-            print("Request timed out.")
-            result = '0.0.0.0'
-        except Exception as x:
-            print(type(x), x)
-            result = '0.0.0.0'
+    try:
+        response = requests.get("https://ident.me", timeout=timeout)
+        response.raise_for_status()  # Raises a HTTPError if the response was unsuccessful
+        result = response.text
+    except requests.exceptions.RequestException as x:
+        print(type(x), x)
+        result = '0.0.0.0'
     return result
 
 class findora_env:

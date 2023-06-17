@@ -869,7 +869,7 @@ def server_disk_check() -> None:
     )
 
 
-def get_container_version(url) -> None:
+def get_container_version(url = "http://localhost:8668/version") -> None:
     response = requests.get(url)
     return response.text
 
@@ -935,8 +935,9 @@ def menu_topper() -> None:
         curl_stats = capture_stats()
         now = datetime.now(timezone.utc)
         fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
-        our_version = get_container_version("http://localhost:8668/version")
+        our_version = get_container_version()
         our_fn_stats = get_fn_stats()
+        external_ip = findora_env.our_external_ip
         try:
             our_fn_stats.pop("memo")
         except KeyError as err:
@@ -947,6 +948,7 @@ def menu_topper() -> None:
     except TimeoutError as e:
         our_version = "No Response"
         online_version = "No Response"
+        external_ip = "0.0.0.0"
         print_stars()
         print(f"* Timeout error: {e}")
         print_stars()
@@ -961,7 +963,7 @@ def menu_topper() -> None:
     print_stars()
     print(
         f"* Server Hostname & IP:      {findora_env.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
-        + f" - {Fore.YELLOW}{findora_env.our_external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
+        + f" - {Fore.YELLOW}{external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Public Address:            {curl_stats['result']['validator_info']['address']}")
     if our_fn_stats["Network"] == "https://prod-mainnet.prod.findora.org":
