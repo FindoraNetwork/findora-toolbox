@@ -34,9 +34,6 @@ def main() -> None:
               + ' move command, relaunch with the new path: python3 ~/findora-toolbox/src/app.py\n*')
         print_stars()
         raise SystemExit(0)
-    # Init parser for flags:
-    parser = argparse.ArgumentParser(description='Findora Validator Toolbox - Help Menu')
-    parse_flags(parser)
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
@@ -47,6 +44,9 @@ def main() -> None:
     # do we know network? mainnet or testnet
     network = set_main_or_test()
     region = set_na_or_eu()
+    # Init parser for flags:
+    parser = argparse.ArgumentParser(description='Findora Validator Toolbox - Help Menu')
+    parse_flags(parser)
     # Does `fn` exist?
     if not os.path.exists("/usr/local/bin/fn"):
         # Nope, let's ask to install!
