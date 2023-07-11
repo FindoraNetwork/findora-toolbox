@@ -14,6 +14,7 @@ from library import (
     finish_node,
     ask_yes_no,
     parse_flags,
+    set_na_or_eu
 )
 from colorama import Fore
 from config import findora_env
@@ -45,10 +46,11 @@ def main() -> None:
     docker_check()
     # do we know network? mainnet or testnet
     network = set_main_or_test()
+    region = set_na_or_eu()
     # Does `fn` exist?
     if not os.path.exists("/usr/local/bin/fn"):
         # Nope, let's ask to install!
-        menu_install_findora(network)
+        menu_install_findora(network, region)
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
     if container_running(findora_env.container_name):
         backup_folder_check()

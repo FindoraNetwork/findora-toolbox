@@ -406,6 +406,33 @@ def container_running(container_name) -> None:
         # Docker error, exit
         print(f"* There was a problem accessing Docker from this account.\n* Error: {e}")
         finish_node()
+        
+
+def set_na_or_eu() -> None:
+    if not environ.get("FRA_REGION"):
+        subprocess.run("clear")
+        print_stars()
+        print("* Setup config not found\n*\n*\n* Which region should this server download from?")
+        print_stars()
+        print("* [0] - North America                                                                       *")
+        print("* [1] - Europe                                                                              *")
+        print_stars()
+        menu_options = [
+            "[0] North America",
+            "[1] Europe",
+        ]
+        terminal_menu = TerminalMenu(menu_options, title="NA or EU")
+        results = terminal_menu.show()
+        if results == 0:
+            set_var(findora_env.dotenv_file, "FRA_REGION", "na")
+            region = "na"
+        if results == 1:
+            set_var(findora_env.dotenv_file, "FRA_REGION", "eu")
+            region = "eu"
+        subprocess.run("clear")
+    else:
+        region = environ.get("FRA_REGION")
+    return region
 
 
 def set_main_or_test() -> None:
@@ -1093,10 +1120,15 @@ def run_clean_script() -> None:
     )
     answer = ask_yes_no("* Do you want to run safety clean now? (Y/N) ")
     if answer:
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=findora_env.user_home_dir,
-        )
+        if os.environ.get("FRA_REGION") == "na":
+            subprocess.call(
+                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
+                cwd=findora_env.user_home_dir,
+            )
+        if os.environ.get("FRA_REGION") == "eu":
+            subprocess.call(
+                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}_eu.sh"],
+            )
         if container_running(findora_env.container_name):
             print_stars()
             print("* Your container is restarted and back online. Press enter to return to the main menu.")
@@ -1119,7 +1151,7 @@ def create_staker_memo() -> None:
         )
 
 
-def run_findora_installer(network) -> None:
+def run_findora_installer(network, region) -> None:
     standalone_option()
     print(
         "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
@@ -1127,10 +1159,15 @@ def run_findora_installer(network) -> None:
     print_stars()
     time.sleep(1)
     print_stars()
-    subprocess.call(
-        ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}.sh"],
-        cwd=findora_env.user_home_dir,
-    )
+    if region == "na":
+        subprocess.call(
+            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}.sh"],
+            cwd=findora_env.user_home_dir,
+        )
+    if region == "eu":
+        subprocess.call(
+            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}_eu.sh"],
+        )
     print_stars()
     create_staker_memo()
     print(
@@ -1140,7 +1177,7 @@ def run_findora_installer(network) -> None:
     pause_for_cause()
 
 
-def menu_install_findora(network) -> None:
+def menu_install_findora(network, region) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
@@ -1149,7 +1186,7 @@ def menu_install_findora(network) -> None:
     )
     answer = ask_yes_no(f"* Do you want to install {network} now? (Y/N) ")
     if answer:
-        run_findora_installer(network)
+        run_findora_installer(network, region)
     else:
         raise SystemExit(0)
 
