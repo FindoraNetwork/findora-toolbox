@@ -391,20 +391,21 @@ def coming_soon():
 
 
 def container_running(container_name) -> None:
-    # create client object to connect
     try:
+        # create client object to connect to docker
         client = docker.from_env()
+        # Get a list of all containers
+        containers = client.containers.list()
+        # Search for the container by name, check if it's running
+        container = next(filter(lambda c: c.name == container_name, containers), None)
+        if container is not None and container.status == "running":
+            return True
+        else:
+            return False
     except docker.errors.DockerException as e:
+        # Docker error, exit
         print(f"* There was a problem accessing Docker from this account.\n* Error: {e}")
         finish_node()
-    # Get a list of all containers
-    containers = client.containers.list()
-    # Search for the container by name
-    container = next(filter(lambda c: c.name == container_name, containers), None)
-    if container is not None and container.status == "running":
-        return True
-    else:
-        return False
 
 
 def set_main_or_test() -> None:
