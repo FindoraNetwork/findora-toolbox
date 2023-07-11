@@ -1114,11 +1114,12 @@ def update_fn_wallet() -> None:
 
 
 def run_clean_script() -> None:
+    region = os.environ.get("FRA_REGION")
     print(
         "* Running the update and restart may cause missed blocks, beware before proceeding!"
         + "\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
     )
-    answer = ask_yes_no("* Do you want to run safety clean now? (Y/N) ")
+    answer = ask_yes_no(f"* Do you want to run safety clean from the {region} region now? (Y/N) ")
     if answer:
         if os.environ.get("FRA_REGION") == "na":
             subprocess.call(
@@ -1184,7 +1185,7 @@ def menu_install_findora(network, region) -> None:
         + f"\n* But...it doesn't look like you have Findora {network} installed."
         + "\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
     )
-    answer = ask_yes_no(f"* Do you want to install {network} now? (Y/N) ")
+    answer = ask_yes_no(f"* Do you want to install {network} from the {region} region now? (Y/N) ")
     if answer:
         run_findora_installer(network, region)
     else:
