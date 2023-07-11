@@ -392,7 +392,11 @@ def coming_soon():
 
 def container_running(container_name) -> None:
     # create client object to connect
-    client = docker.from_env()
+    try:
+        client = docker.from_env()
+    except docker.errors.DockerException as e:
+        print(f"* There was a problem accessing Docker from this account.\n* Error: {e}")
+        finish_node()
     # Get a list of all containers
     containers = client.containers.list()
     # Search for the container by name
