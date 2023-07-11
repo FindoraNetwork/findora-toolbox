@@ -73,10 +73,10 @@ def first_env_check(env_file, home_dir) -> None:
         load_var_file(env_file)
     else:
         if os.path.exists(f"{home_dir}/.easynode.env"):
-            os.system(f"cp {home_dir}/.easynode.env {env_file}")
+            os.system(f"mv {home_dir}/.easynode.env {env_file}")
         else:
             os.system(f"touch {home_dir}/.findora.env")
-            load_var_file(env_file)
+        load_var_file(env_file)
     return
 
 
@@ -1516,9 +1516,6 @@ def parse_flags(parser):
 
     # parse the arguments
     args = parser.parse_args()
-
-    # Load Vars / Set Network
-    first_env_check(findora_env.dotenv_file, findora_env.user_home_dir)
 
     subprocess.run("clear")
     print(Fore.MAGENTA)

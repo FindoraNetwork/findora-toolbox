@@ -14,7 +14,8 @@ from library import (
     finish_node,
     ask_yes_no,
     parse_flags,
-    set_na_or_eu
+    set_na_or_eu,
+    first_env_check
 )
 from colorama import Fore
 from config import findora_env
@@ -23,6 +24,8 @@ from config import findora_env
 
 
 def main() -> None:
+    # Load Vars / Set Network
+    first_env_check(findora_env.dotenv_file, findora_env.user_home_dir)
     # Preflight check:
     if os.path.exists(f'{findora_env.user_home_dir}/validatortoolbox_fra'):
         subprocess.run('clear') 
