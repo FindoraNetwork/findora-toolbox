@@ -37,7 +37,7 @@ pyhmy==0.1.0
 PyJWT==2.6.0
 pyperclip==1.8.2
 python-dotenv==0.21.0
-requests==2.31.0
+requests>=2.28.1
 rlp==3.0.0
 simple-term-menu==1.5.2
 six==1.16.0

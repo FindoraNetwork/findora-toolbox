@@ -73,10 +73,10 @@ def first_env_check(env_file, home_dir) -> None:
         load_var_file(env_file)
     else:
         if os.path.exists(f"{home_dir}/.easynode.env"):
-            os.system(f"cp {home_dir}/.easynode.env {env_file}")
+            os.system(f"mv {home_dir}/.easynode.env {env_file}")
         else:
             os.system(f"touch {home_dir}/.findora.env")
-            load_var_file(env_file)
+        load_var_file(env_file)
     return
 
 
@@ -391,16 +391,48 @@ def coming_soon():
 
 
 def container_running(container_name) -> None:
-    # create client object to connect
-    client = docker.from_env()
-    # Get a list of all containers
-    containers = client.containers.list()
-    # Search for the container by name
-    container = next(filter(lambda c: c.name == container_name, containers), None)
-    if container is not None and container.status == "running":
-        return True
+    try:
+        # create client object to connect to docker
+        client = docker.from_env()
+        # Get a list of all containers
+        containers = client.containers.list()
+        # Search for the container by name, check if it's running
+        container = next(filter(lambda c: c.name == container_name, containers), None)
+        if container is not None and container.status == "running":
+            return True
+        else:
+            return False
+    except docker.errors.DockerException as e:
+        # Docker error, exit
+        print(f"* There was a problem accessing Docker from this account.\n* Error: {e}")
+        finish_node()
+        
+
+def set_na_or_eu() -> None:
+    if not environ.get("FRA_REGION"):
+        subprocess.run("clear")
+        print_stars()
+        print("* Setup config not found\n*\n*\n* Which region should this server download from?")
+        print_stars()
+        print("* [0] - North America                                                                       *")
+        print("* [1] - Europe                                                                              *")
+        print_stars()
+        menu_options = [
+            "[0] North America",
+            "[1] Europe",
+        ]
+        terminal_menu = TerminalMenu(menu_options, title="NA or EU")
+        results = terminal_menu.show()
+        if results == 0:
+            set_var(findora_env.dotenv_file, "FRA_REGION", "na")
+            region = "na"
+        if results == 1:
+            set_var(findora_env.dotenv_file, "FRA_REGION", "eu")
+            region = "eu"
+        subprocess.run("clear")
     else:
-        return False
+        region = environ.get("FRA_REGION")
+    return region
 
 
 def set_main_or_test() -> None:
@@ -1082,16 +1114,22 @@ def update_fn_wallet() -> None:
 
 
 def run_clean_script() -> None:
+    region = os.environ.get("FRA_REGION")
     print(
         "* Running the update and restart may cause missed blocks, beware before proceeding!"
         + "\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
     )
-    answer = ask_yes_no("* Do you want to run safety clean now? (Y/N) ")
+    answer = ask_yes_no(f"* Do you want to run safety clean from the {region} region now? (Y/N) ")
     if answer:
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=findora_env.user_home_dir,
-        )
+        if os.environ.get("FRA_REGION") == "na":
+            subprocess.call(
+                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
+                cwd=findora_env.user_home_dir,
+            )
+        if os.environ.get("FRA_REGION") == "eu":
+            subprocess.call(
+                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}_eu.sh"],
+            )
         if container_running(findora_env.container_name):
             print_stars()
             print("* Your container is restarted and back online. Press enter to return to the main menu.")
@@ -1114,7 +1152,7 @@ def create_staker_memo() -> None:
         )
 
 
-def run_findora_installer(network) -> None:
+def run_findora_installer(network, region) -> None:
     standalone_option()
     print(
         "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
@@ -1122,10 +1160,15 @@ def run_findora_installer(network) -> None:
     print_stars()
     time.sleep(1)
     print_stars()
-    subprocess.call(
-        ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}.sh"],
-        cwd=findora_env.user_home_dir,
-    )
+    if region == "na":
+        subprocess.call(
+            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}.sh"],
+            cwd=findora_env.user_home_dir,
+        )
+    if region == "eu":
+        subprocess.call(
+            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}_eu.sh"],
+        )
     print_stars()
     create_staker_memo()
     print(
@@ -1135,16 +1178,16 @@ def run_findora_installer(network) -> None:
     pause_for_cause()
 
 
-def menu_install_findora(network) -> None:
+def menu_install_findora(network, region) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
         + f"\n* But...it doesn't look like you have Findora {network} installed."
         + "\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
     )
-    answer = ask_yes_no(f"* Do you want to install {network} now? (Y/N) ")
+    answer = ask_yes_no(f"* Do you want to install {network} from the {region} region now? (Y/N) ")
     if answer:
-        run_findora_installer(network)
+        run_findora_installer(network, region)
     else:
         raise SystemExit(0)
 
@@ -1474,9 +1517,6 @@ def parse_flags(parser):
 
     # parse the arguments
     args = parser.parse_args()
-
-    # Load Vars / Set Network
-    first_env_check(findora_env.dotenv_file, findora_env.user_home_dir)
 
     subprocess.run("clear")
     print(Fore.MAGENTA)

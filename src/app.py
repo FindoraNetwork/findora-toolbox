@@ -14,6 +14,8 @@ from library import (
     finish_node,
     ask_yes_no,
     parse_flags,
+    set_na_or_eu,
+    first_env_check
 )
 from colorama import Fore
 from config import findora_env
@@ -22,6 +24,8 @@ from config import findora_env
 
 
 def main() -> None:
+    # Load Vars / Set Network
+    first_env_check(findora_env.dotenv_file, findora_env.user_home_dir)
     # Preflight check:
     if os.path.exists(f'{findora_env.user_home_dir}/validatortoolbox_fra'):
         subprocess.run('clear') 
@@ -33,9 +37,6 @@ def main() -> None:
               + ' move command, relaunch with the new path: python3 ~/findora-toolbox/src/app.py\n*')
         print_stars()
         raise SystemExit(0)
-    # Init parser for flags:
-    parser = argparse.ArgumentParser(description='Findora Validator Toolbox - Help Menu')
-    parse_flags(parser)
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
@@ -45,10 +46,14 @@ def main() -> None:
     docker_check()
     # do we know network? mainnet or testnet
     network = set_main_or_test()
+    region = set_na_or_eu()
+    # Init parser for flags:
+    parser = argparse.ArgumentParser(description='Findora Validator Toolbox - Help Menu')
+    parse_flags(parser)
     # Does `fn` exist?
     if not os.path.exists("/usr/local/bin/fn"):
         # Nope, let's ask to install!
-        menu_install_findora(network)
+        menu_install_findora(network, region)
     # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
     if container_running(findora_env.container_name):
         backup_folder_check()
