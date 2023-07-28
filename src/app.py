@@ -15,7 +15,7 @@ from library import (
     ask_yes_no,
     parse_flags,
     set_na_or_eu,
-    first_env_check
+    first_env_check,
 )
 from colorama import Fore
 from config import findora_env
@@ -27,14 +27,16 @@ def main() -> None:
     # Load Vars / Set Network
     first_env_check(findora_env.dotenv_file, findora_env.user_home_dir)
     # Preflight check:
-    if os.path.exists(f'{findora_env.user_home_dir}/validatortoolbox_fra'):
-        subprocess.run('clear') 
+    if os.path.exists(f"{findora_env.user_home_dir}/validatortoolbox_fra"):
+        subprocess.run("clear")
         print(Fore.MAGENTA)
         print_stars()
-        print('*\n* Old folder found, Exiting\n*\n* Please rename your ~/validatortoolbox_fra'
-              + 'folder to ~/findora-toolbox and update your command paths!\n*\n* To rename, run:'
-              + ' cd ~/ && mv ~/validatortoolbox_fra ~/findora-toolbox\n*\n* After you run the'
-              + ' move command, relaunch with the new path: python3 ~/findora-toolbox/src/app.py\n*')
+        print(
+            "*\n* Old folder found, Exiting\n*\n* Please rename your ~/validatortoolbox_fra"
+            + "folder to ~/findora-toolbox and update your command paths!\n*\n* To rename, run:"
+            + " cd ~/ && mv ~/validatortoolbox_fra ~/findora-toolbox\n*\n* After you run the"
+            + " move command, relaunch with the new path: python3 ~/findora-toolbox/src/app.py\n*"
+        )
         print_stars()
         raise SystemExit(0)
     # Wear purple
@@ -48,8 +50,8 @@ def main() -> None:
     network = set_main_or_test()
     region = set_na_or_eu()
     # Init parser for flags:
-    parser = argparse.ArgumentParser(description='Findora Validator Toolbox - Help Menu')
-    parse_flags(parser)
+    parser = argparse.ArgumentParser(description="Findora Validator Toolbox - Help Menu")
+    parse_flags(parser, region, network)
     # Does `fn` exist?
     if not os.path.exists("/usr/local/bin/fn"):
         # Nope, let's ask to install!
@@ -81,6 +83,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-
     while True:
         main()

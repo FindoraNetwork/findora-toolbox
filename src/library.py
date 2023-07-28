@@ -406,7 +406,7 @@ def container_running(container_name) -> None:
         # Docker error, exit
         print(f"* There was a problem accessing Docker from this account.\n* Error: {e}")
         finish_node()
-        
+
 
 def set_na_or_eu() -> None:
     if not environ.get("FRA_REGION"):
@@ -546,7 +546,11 @@ def standalone_option():
 def claim_findora_rewards() -> None:
     standalone_option()
     try:
-        output = subprocess.call(["fn", "claim"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,)
+        output = subprocess.call(
+            ["fn", "claim"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         print(f"* Claim all pending completed, refresh your stats after the next block.")
     except subprocess.CalledProcessError as err:
         print(
@@ -640,7 +644,10 @@ def pre_send_findora() -> None:
     convert_send_total = str(int(float(send_total) * 1000000))
     if express == "True":
         send_findora(
-            convert_send_total, send_total, environ.get("RECEIVER_WALLET"), environ.get("PRIVACY"),
+            convert_send_total,
+            send_total,
+            environ.get("RECEIVER_WALLET"),
+            environ.get("PRIVACY"),
         )
         return
     receiver_address = get_receiver_address()
@@ -713,7 +720,9 @@ def change_rate(our_fn_stats):
         question = ask_yes_no(f"* Are you sure you want to change your rate to {float(answer)*100}%? (Y/N) ")
         if question:
             subprocess.call(
-                ["fn", "staker-update", "-R", answer], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                ["fn", "staker-update", "-R", answer],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
             )
             print(f"* Your rate change to {float(answer)*100}% has been sent!")
         else:
@@ -901,7 +910,7 @@ def server_disk_check() -> None:
     )
 
 
-def get_container_version(url = "http://localhost:8668/version") -> None:
+def get_container_version(url="http://localhost:8668/version") -> None:
     response = requests.get(url)
     return response.text
 
@@ -1128,7 +1137,11 @@ def run_clean_script() -> None:
             )
         if os.environ.get("FRA_REGION") == "eu":
             subprocess.call(
-                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}_eu.sh"],
+                [
+                    "bash",
+                    "-x",
+                    f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}_eu.sh",
+                ],
             )
         if container_running(findora_env.container_name):
             print_stars()
@@ -1148,7 +1161,8 @@ def run_clean_script() -> None:
 def create_staker_memo() -> None:
     if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
         shutil.copy(
-            f"{findora_env.toolbox_location}/src/bin/staker_memo", f"{findora_env.user_home_dir}",
+            f"{findora_env.toolbox_location}/src/bin/staker_memo",
+            f"{findora_env.user_home_dir}",
         )
 
 
@@ -1294,9 +1308,15 @@ def migrate_to_server() -> None:
                 )
                 os.remove(f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
                 subprocess.call(
-                    ["touch", f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",]
+                    [
+                        "touch",
+                        f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
+                    ]
                 )
-                with open(f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic", "w",) as file:
+                with open(
+                    f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
+                    "w",
+                ) as file:
                     file.write(node_mnemonic)
                 print("* File copying completed, restarting services.")
                 # Wipe backup folder and re-create
@@ -1491,28 +1511,40 @@ def run_findora_menu() -> None:
         pause_for_cause()
 
 
-def parse_flags(parser):
+def parse_flags(parser, region, network):
     # Add the arguments
     parser.add_argument(
         "-u", "--update", action="store_true", help="Will update and/or restart your Findora container."
     )
 
     parser.add_argument(
-        "-s", "--stats", action="store_true", help="Run your stats if Findora is installed and running.",
+        "-s",
+        "--stats",
+        action="store_true",
+        help="Run your stats if Findora is installed and running.",
     )
 
     parser.add_argument(
-        "-c", "--claim", action="store_true", help="Claim all of your pending Unclaimed FRA.",
+        "-c",
+        "--claim",
+        action="store_true",
+        help="Claim all of your pending Unclaimed FRA.",
     )
-    
-    parser.add_argument("--clean", action="store_true", help="Will run the clean script, removes database, reloads all data.")
+
+    parser.add_argument(
+        "--clean", action="store_true", help="Will run the clean script, removes database, reloads all data."
+    )
 
     parser.add_argument("--fn", action="store_true", help="Will update your fn wallet application.")
 
-    parser.add_argument("--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet.")
+    parser.add_argument(
+        "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
+    )
 
     parser.add_argument(
-        "--ultrareset", action="store_true", help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
+        "--ultrareset",
+        action="store_true",
+        help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
     )
 
     # parse the arguments
@@ -1526,20 +1558,8 @@ def parse_flags(parser):
         finish_node()
 
     if args.installer:
-        if environ.get("FRA_NETWORK"):
-            print_stars()
-            print(
-                f'* You already have {environ.get("FRA_NETWORK")} set in your .findora.env file\n'
-                + "* Is your Findora Validator already installed on this server? "
-                + "If so launch toolbox normally with `./findora.sh` to use your menu.\n"
-                + "\n*\n* Press enter to exit."
-            )
-            print_stars()
-            input()
-            finish_node()
-        else:
-            network = set_main_or_test()
-            menu_install_findora(network)
+        network = set_main_or_test()
+        menu_install_findora(network, region)
 
     if args.fn:
         update_fn_wallet()
@@ -1559,7 +1579,9 @@ def parse_flags(parser):
         # add network check to validate which network we are running
         network = set_main_or_test()
         # Are you really really sure?
-        answer = ask_yes_no(f"* WARNING, NUCLEAR OPTION: We will now reset your entire server to a fresh install.\nPress Y to fully wipe and reset your server or N to exit: (Y/N) ")
+        answer = ask_yes_no(
+            f"* WARNING, NUCLEAR OPTION: We will now reset your entire server to a fresh install.\nPress Y to fully wipe and reset your server or N to exit: (Y/N) "
+        )
         if answer:
             # wipe data here
             subprocess.call(
