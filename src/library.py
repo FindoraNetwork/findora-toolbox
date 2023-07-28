@@ -71,6 +71,8 @@ def loader_intro():
 def first_env_check(env_file, home_dir) -> None:
     if not os.path.exists(env_file):
         os.system(f"touch {home_dir}/.findora.env")
+    else:
+        load_var_file(findora_env.dotenv_file)
         return
 
 
@@ -78,7 +80,7 @@ def set_var(env_file, key_name, update_name):
     if environ.get(key_name):
         dotenv.unset_key(env_file, key_name)
     dotenv.set_key(env_file, key_name, update_name)
-    load_var_file(env_file)
+    load_var_file(findora_env.dotenv_file)
     return
 
 
