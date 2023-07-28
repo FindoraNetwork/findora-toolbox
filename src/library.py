@@ -430,7 +430,9 @@ def set_na_or_eu() -> None:
 
 
 def set_main_or_test() -> None:
-    if not environ.get("FRA_NETWORK"):
+    if environ.get("FRA_NETWORK"):
+        network = environ.get("FRA_NETWORK")
+    else:
         subprocess.run("clear")
         print_stars()
         print("* Setup config not found, Does this run on mainnet or testnet?                              *")
@@ -451,8 +453,6 @@ def set_main_or_test() -> None:
             set_var(findora_env.dotenv_file, "FRA_NETWORK", "testnet")
             network = "testnet"
         subprocess.run("clear")
-    else:
-        network = environ.get("FRA_NETWORK")
     return network
 
 
