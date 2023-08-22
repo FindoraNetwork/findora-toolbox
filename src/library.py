@@ -1,4 +1,4 @@
-import subprocess, platform, os, time, argparse, json, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil, cmd2
+import subprocess, platform, os, time, argparse, json, re, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil, cmd2
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
@@ -405,8 +405,9 @@ def container_running(container_name) -> None:
 
 
 def set_na_or_eu() -> None:
-    if not environ.get("FRA_REGION"):
-        subprocess.run("clear")
+    if environ.get("FRA_REGION"):
+        region = environ.get("FRA_REGION")
+    else:
         print_stars()
         print("* Setup config not found\n*\n*\n* Which region should this server download from?")
         print_stars()
@@ -425,9 +426,7 @@ def set_na_or_eu() -> None:
         if results == 1:
             set_var(findora_env.dotenv_file, "FRA_REGION", "eu")
             region = "eu"
-        subprocess.run("clear")
-    else:
-        region = environ.get("FRA_REGION")
+
     return region
 
 
@@ -435,7 +434,6 @@ def set_main_or_test() -> None:
     if environ.get("FRA_NETWORK"):
         network = environ.get("FRA_NETWORK")
     else:
-        subprocess.run("clear")
         print_stars()
         print("* Setup config not found, Does this run on mainnet or testnet?                              *")
         print_stars()
@@ -454,7 +452,7 @@ def set_main_or_test() -> None:
         if results == 1:
             set_var(findora_env.dotenv_file, "FRA_NETWORK", "testnet")
             network = "testnet"
-        subprocess.run("clear")
+
     return network
 
 
@@ -534,7 +532,7 @@ def refresh_fn_stats() -> None:
 def standalone_option():
     # For menu options that can run on their own, always clear and stars first.
     print(Fore.MAGENTA)
-    subprocess.run("clear")
+
     print_stars()
     return
 
@@ -634,7 +632,8 @@ def set_privacy(receiver_address, privacy) -> None:
 
 def pre_send_findora() -> None:
     # Get balance
-    our_fn_stats = get_fn_stats()
+    output = fetch_fn_show_output()
+    our_fn_stats = get_fn_stats(output)
     send_total = get_total_send(our_fn_stats)
     express = environ.get("SEND_EXPRESS")
     convert_send_total = str(int(float(send_total) * 1000000))
@@ -741,7 +740,6 @@ class MemoUpdater(cmd2.Cmd):
         options.append("Exit")
         file_updated = False
         while True:
-            subprocess.run("clear")
             print_stars()
             print("* Current Settings: ")
             print_stars()
@@ -781,7 +779,8 @@ class MemoUpdater(cmd2.Cmd):
 def change_validator_info():
     # fix this menu, it's nuts. Always does change_rate
     standalone_option()
-    our_fn_stats = get_fn_stats()
+    output = fetch_fn_show_output()
+    our_fn_stats = get_fn_stats(output)
     if "Self Delegation" not in our_fn_stats:
         print(
             "* You have not created your validator yet. Please exit, stake with your validator "
@@ -927,41 +926,137 @@ def findora_gwei_convert(findora):
     return fra_amount
 
 
-def get_fn_stats():
-    output = subprocess.check_output(["fn", "show"])
-    json_string = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
+def extract_json_section(output, section_name):
+    """
+    Further improved version to extract the JSON sections.
+    """
+    start_tag = section_name + ":"
+    
+    start_index = output.find(start_tag)
+    if start_index == -1:
+        return None
+    
+    # Move the start_index to the start of the JSON data
+    start_index += len(start_tag)
+    
+    brace_count = 0
+    for i, char in enumerate(output[start_index:]):
+        if char == '{':
+            brace_count += 1
+        elif char == '}':
+            brace_count -= 1
+            if brace_count == 0:
+                end_index = i + start_index + 1
+                break
+    
+    json_data = output[start_index:end_index].strip()
+    
+    try:
+        return json.loads(json_data)
+    except json.JSONDecodeError:
+        return None
 
-    lines = json_string.split("\n")
 
-    fn_info = {}
-    memo = {}
-    if int(lines[17].split()[1][:-1]) == 0:
-        fn_info["Network"] = lines[1]
-        fn_info["Current Block"] = lines[29].split()[1][:-1]
-        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
-        fn_info["Proposed Blocks"] = "0"
-    else:
-        fn_info["Network"] = lines[1]
-        fn_info["Current Block"] = lines[34].split()[1][:-1]
-        fn_info["Proposed Blocks"] = lines[36].split()[1]
-        fn_info[
-            "Self Delegation"
-        ] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[17].split()[1][:-1])), 2))} FRA"
-        fn_info["Balance"] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[10].split()[0])), 2))} FRA"
-        fn_info[
-            "Unclaimed Rewards"
-        ] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[25].split()[1][:-1])), 2))} FRA"
-        fn_info[
-            "Pool Unclaimed FRA"
-        ] = f"{'{:,}'.format(round(findora_gwei_convert(int(lines[51].split()[1][:-1])), 2))} FRA"
-        fn_info["Server Rank"] = lines[45].split()[1][:-1]
-        fn_info["Delegator Count"] = lines[66].split()[1]
-        fn_info["Commission Rate"] = f"{int(lines[47][:-1])/100}%"
-        memo["name"] = lines[53].partition('"name":')[2][:-1]
-        memo["desc"] = lines[54].partition('"desc":')[2][:-1]
-        memo["website"] = lines[55].partition('"website":')[2][:-1]
-        memo["logo"] = lines[56].partition('"logo":')[2]
-        fn_info["memo"] = memo
+def extract_value(output, key):
+    """
+    Refined version of extract_value to handle various cases of value placements.
+    """
+    lines = output.split("\n")
+    for i, line in enumerate(lines):
+        if key in line:
+            # If the line contains a colon, but no value after the colon
+            if ":" in line and len(line.split(":")[1].strip()) == 0:
+                # Check the next line for the value
+                if i + 1 < len(lines) and "{" not in lines[i + 1]:
+                    return lines[i + 1].strip()
+                # If the next line isn't the value, check two lines below for the value
+                elif i + 2 < len(lines):
+                    return lines[i + 2].strip()
+            # If the line contains a colon, extract the value after the colon
+            elif ":" in line:
+                return line.split(":")[1].strip()
+    return None
+
+
+def fetch_fn_show_output():
+    """
+    Executes the 'fn show' command, processes its output, and returns the cleaned up output.
+    """
+    try:
+        output = subprocess.check_output(["fn", "show"])
+        cleaned_output = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
+        return cleaned_output
+    except subprocess.CalledProcessError:
+        # Handle any errors that might occur during command execution.
+        return ""
+
+
+def get_fn_stats(output):
+    # Parse JSON sections
+    delegation_info = extract_json_section(output, "Your Delegation")
+    staking_info = extract_json_section(output, "Your Staking")
+
+    # Extract other values
+    network = extract_value(output, "Server URL")
+    balance_raw = extract_value(output, "Node Balance")
+    balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f} FRA" if balance_raw else "0 FRA"
+    
+    # Create the result dictionary with default values
+    fn_info = {
+        "Network": network,
+        "Balance": balance,
+        "Pending Rewards": "0.00 FRA",
+        "Self Delegation": "0.00 FRA",
+        "Current Block": "N/A",
+        "Proposed Blocks": "0",
+        "Pending Pool Rewards": "0.00 FRA",
+        "Server Rank": "N/A",
+        "Delegator Count": "N/A",
+        "Commission Rate": "0.00%",
+        "memo": {
+            "name": "N/A",
+            "desc": "N/A",
+            "website": "N/A",
+            "logo": "N/A"
+        }
+    }
+    
+    # Extract delegation details
+    if delegation_info:
+        bond = delegation_info.get("bond", 0)
+        fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f} FRA"
+        
+        current_block = delegation_info.get("current_height", 0)
+        fn_info["Current Block"] = str(current_block)
+        
+        your_delegation_rewards = delegation_info.get("rewards", 0)
+        fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f} FRA"
+    
+    # Extract staking details (if available)
+    if staking_info:
+        proposed_blocks = staking_info.get("block_proposed_cnt", 0)
+        fn_info["Proposed Blocks"] = str(proposed_blocks)
+        
+        unclaimed_rewards = staking_info.get("fra_rewards", 0)
+        fn_info["Pending Pool Rewards"] = f"{findora_gwei_convert(unclaimed_rewards):,.2f} FRA"
+        
+        server_rank = staking_info.get("voting_power_rank")
+        fn_info["Server Rank"] = str(server_rank) if server_rank is not None else "N/A"
+        
+        delegator_count = staking_info.get("delegator_cnt")
+        fn_info["Delegator Count"] = str(delegator_count) if delegator_count is not None else "N/A"
+        
+        commission_rate = staking_info.get("commission_rate", [0, 1])
+        commission_percentage = (commission_rate[0] / commission_rate[1]) * 100
+        fn_info["Commission Rate"] = f"{commission_percentage:.2f}%"
+        
+        memo = staking_info.get("memo", {})
+        fn_info["memo"] = {
+            "name": memo.get("name", "N/A"),
+            "desc": memo.get("desc", "N/A"),
+            "website": memo.get("website", "N/A"),
+            "logo": memo.get("logo", "N/A")
+        }
 
     return fn_info
 
@@ -973,7 +1068,8 @@ def menu_topper() -> None:
         now = datetime.now(timezone.utc)
         fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
         our_version = get_container_version()
-        our_fn_stats = get_fn_stats()
+        output = fetch_fn_show_output()
+        our_fn_stats = get_fn_stats(output)
         external_ip = findora_env.our_external_ip
         try:
             our_fn_stats.pop("memo")
@@ -990,7 +1086,7 @@ def menu_topper() -> None:
         print(f"* Timeout error: {e}")
         print_stars()
         input()
-    subprocess.run("clear")
+
     print(Fore.MAGENTA)
     print_stars()
     print(
@@ -1065,7 +1161,7 @@ def rescue_menu() -> None:
     except ValueError:
         menu_error()
         rescue_menu()
-    subprocess.run("clear")
+
     menu_options[option]()
     rescue_menu()
 
@@ -1110,7 +1206,6 @@ def update_fn_wallet() -> None:
     print("* This option upgrades the fn wallet application.")
     answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
     if answer:
-        subprocess.run("clear")
         print("* We will show the output of the upgrade now.")
         subprocess.call(
             ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
@@ -1205,7 +1300,6 @@ def menu_install_findora(network, region) -> None:
 def run_ubuntu_updates() -> None:
     question = ask_yes_no("* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
     if question:
-        subprocess.run("clear")
         print_stars()
         print("* Stopping docker container for safety")
         subprocess.call(["docker", "container", "stop", "findorad"])
@@ -1492,16 +1586,14 @@ def run_findora_menu() -> None:
         try:
             value = int(value)
         except (ValueError, KeyError, TypeError) as e:
-            subprocess.run("clear")
             print_stars()
             print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
         # clear before load
-        subprocess.run("clear")
+
         print_stars()
         try:
             menu_options[value]()
         except (ValueError, KeyError, TypeError) as e:
-            subprocess.run("clear")
             print_stars()
             print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
         pause_for_cause()
@@ -1546,7 +1638,6 @@ def parse_flags(parser, region, network):
     # parse the arguments
     args = parser.parse_args()
 
-    subprocess.run("clear")
     print(Fore.MAGENTA)
 
     if args.claim:
