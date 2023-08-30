@@ -733,7 +733,7 @@ class MemoUpdater(cmd2.Cmd):
         self.our_fn_stats = our_fn_stats
 
     def do_update(self, arg):
-        memo_items = {key: value[2:-1] for key, value in self.our_fn_stats["memo"].items()}
+        memo_items = {key: value for key, value in self.our_fn_stats["memo"].items()}
         options = []
         for key, value in memo_items.items():
             options.append(f"{key} - {value}")
