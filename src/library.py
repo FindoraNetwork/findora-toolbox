@@ -402,31 +402,33 @@ def container_running(container_name) -> None:
 
 
 def ask_question_menu(var_name, question_message, question_title, options_list) -> None:
+    menu_options = []
     if environ.get(var_name):
         result = environ.get(var_name)
     else:
         print_stars()
         print(question_message)
         print_stars()
-        for i in options_list:
-            print(f"* {i} - {options_list[i]}")
-            menu_options += "{i} - {options_list[i]}"
+        for option in options_list:
+            print(f"* {option}")
+            menu_options.append(option)
         print_stars()
         terminal_menu = TerminalMenu(menu_options, title=question_title)
-        choice = terminal_menu.show()
-        result = options_list[result]
+        choice_index = terminal_menu.show()
+        result = options_list[choice_index]
         set_var(findora_env.dotenv_file, var_name, result)
 
     return result
 
 
 def ask_question_menu_no_var(question_message, question_title, options_list) -> None:
+    menu_options = []
     print_stars()
     print(question_message)
     print_stars()
-    for i in options_list:
-        print(f"* {i} - {options_list[i]}")
-        menu_options += "{i} - {options_list[i]}"
+    for option in options_list:
+        print(f"* {option}")
+        menu_options.append(option)
     print_stars()
     terminal_menu = TerminalMenu(menu_options, title=question_title)
     result = terminal_menu.show()
