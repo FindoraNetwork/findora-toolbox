@@ -262,25 +262,29 @@ def get_size(bytes, suffix="B"):
 
 def docker_check():
     try:
-        status = subprocess.call(["docker"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        if status == 0:
-            print("* Docker ready.")
-            print_stars()
-            time.sleep(1)
-        if status != 0:
-            print(
-                "* There's a problem with your docker. Are you in the `docker` group?\n* We will "
-                + "halt, make sure running the command `docker` works properly or try "
-                + "re-installing Docker."
-                + "\n*\n* See: https://guides.easynode.pro/admin#docker-installation\n*"
-            )
-            print_stars()
-            finish_node()
+        # Create a Docker client to check if Docker is installed and running
+        client = docker.from_env()
+        client.ping()
+        print("* Docker ready.")
+        print_stars()
+        time.sleep(1)
+
+    except docker.errors.DockerException:
+        print("* There's a problem with your Docker. Are you in the `docker` group?")
+        print(
+            f"* Add your current user to the docker group with: sudo usermod -aG docker {findora_env.active_user_name}"
+        )
+        print(
+            "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
+        )
+        print("* See: https://guides.easynode.pro/admin#docker-installation")
+        print_stars()
+        finish_node()
+
     except FileNotFoundError:
         print("* Docker is not installed. Please install Docker per our guide and re-launch your installer.")
         print(
-            "\n* See: https://guides.easynode.pro/admin#docker-installation - Install "
-            + "docker on this server and give the user access to continue.\n*"
+            "* See: https://guides.easynode.pro/admin#docker-installation - Install docker on this server and give the user access to continue."
         )
         print_stars()
         finish_node()
@@ -387,72 +391,66 @@ def coming_soon():
 
 
 def container_running(container_name) -> None:
-    try:
-        # create client object to connect to docker
-        client = docker.from_env()
-        # Get a list of all containers
-        containers = client.containers.list()
-        # Search for the container by name, check if it's running
-        container = next(filter(lambda c: c.name == container_name, containers), None)
-        if container is not None and container.status == "running":
-            return True
-        else:
-            return False
-    except docker.errors.DockerException as e:
-        # Docker error, exit
-        print(f"* There was a problem accessing Docker from this account.\n* Error: {e}")
-        finish_node()
+    # Create a Docker client
+    client = docker.from_env()
+
+    # List all running containers
+    running_containers = client.containers.list()
+
+    # Check if a container with the specified name is in the list of running containers
+    return any(re.fullmatch(container_name, container.name) for container in running_containers)
+
+
+def ask_question_menu(var_name, question_message, question_title, options_list) -> None:
+    if environ.get(var_name):
+        result = environ.get(var_name)
+    else:
+        print_stars()
+        print(question_message)
+        print_stars()
+        for i in options_list:
+            print(f"* {i} - {options_list[i]}")
+            menu_options += "{i} - {options_list[i]}"
+        print_stars()
+        terminal_menu = TerminalMenu(menu_options, title=question_title)
+        choice = terminal_menu.show()
+        result = options_list[result]
+        set_var(findora_env.dotenv_file, var_name, result)
+
+    return result
+
+
+def ask_question_menu_no_var(question_message, question_title, options_list) -> None:
+    print_stars()
+    print(question_message)
+    print_stars()
+    for i in options_list:
+        print(f"* {i} - {options_list[i]}")
+        menu_options += "{i} - {options_list[i]}"
+    print_stars()
+    terminal_menu = TerminalMenu(menu_options, title=question_title)
+    result = terminal_menu.show()
+
+    return result
 
 
 def set_na_or_eu() -> None:
-    if environ.get("FRA_REGION"):
-        region = environ.get("FRA_REGION")
-    else:
-        print_stars()
-        print("* Setup config not found\n*\n*\n* Which region should this server download from?")
-        print_stars()
-        print("* [0] - North America                                                                       *")
-        print("* [1] - Europe                                                                              *")
-        print_stars()
-        menu_options = [
-            "[0] North America",
-            "[1] Europe",
-        ]
-        terminal_menu = TerminalMenu(menu_options, title="NA or EU")
-        results = terminal_menu.show()
-        if results == 0:
-            set_var(findora_env.dotenv_file, "FRA_REGION", "na")
-            region = "na"
-        if results == 1:
-            set_var(findora_env.dotenv_file, "FRA_REGION", "eu")
-            region = "eu"
-
+    region = ask_question_menu(
+        "FRA_REGION",
+        "* Setup config not found, Which region should this server download from?",
+        "North America or Europe based server?",
+        ["na", "eu"],
+    )
     return region
 
 
 def set_main_or_test() -> None:
-    if environ.get("FRA_NETWORK"):
-        network = environ.get("FRA_NETWORK")
-    else:
-        print_stars()
-        print("* Setup config not found, Does this run on mainnet or testnet?                              *")
-        print_stars()
-        print("* [0] - Mainnet                                                                             *")
-        print("* [1] - Testnet                                                                             *")
-        print_stars()
-        menu_options = [
-            "[0] Mainnet",
-            "[1] Testnet",
-        ]
-        terminal_menu = TerminalMenu(menu_options, title="Mainnet or Testnet")
-        results = terminal_menu.show()
-        if results == 0:
-            set_var(findora_env.dotenv_file, "FRA_NETWORK", "mainnet")
-            network = "mainnet"
-        if results == 1:
-            set_var(findora_env.dotenv_file, "FRA_NETWORK", "testnet")
-            network = "testnet"
-
+    network = ask_question_menu(
+        "FRA_NETWORK",
+        "* Setup config not found, Does this run on mainnet or testnet?                              *",
+        "Mainnet or Testnet",
+        ["mainnet", "testnet"],
+    )
     return network
 
 
@@ -837,47 +835,31 @@ def set_send_options() -> None:
     # Give'm some options!
     print(Fore.MAGENTA)
     standalone_option()
-    print(
+    menu_option = ask_question_menu_no_var(
         f"* Select a send tx option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}"
         + f"{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current "
         + f"privacy option: {environ.get('PRIVACY')}\n* 2. Express Option - Change current "
-        + f"express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*"
+        + f"express option: {environ.get('SEND_EXPRESS')}\n* 3. Exit - Return to Main Menu\n*",
+        "* Which option would you like to update?",
+        ["Set Wallet", "Set Privacy", "Set Express", "Exit to Main Menu"],
     )
-    menu_options = [
-        "* [0] - Set Wallet",
-        "* [1] - Set Privacy",
-        "* [2] - Set Express",
-        "* [3] - Exit to Main Menu",
-    ]
-    print_stars()
-    terminal_menu = TerminalMenu(menu_options, title="* Which option would you like to update?")
-    menu_option = terminal_menu.show()
     if menu_option == 0:
         address = input(f"*\n* Please input the fra1 address you would like to send your FRA: ")
         check_address_input(address)
     if menu_option == 1:
-        print(f"* Select an option. Privacy enabled on transactions, True or False: ")
-        menu_options = ["* [0] - True", "* [1] - False"]
-        terminal_menu = TerminalMenu(menu_options, title="* Would you like private transactions? ")
-        sub_menu_option = terminal_menu.show()
-        if sub_menu_option == 0:
-            set_var(findora_env.dotenv_file, "PRIVACY", "True")
-        if sub_menu_option == 1:
-            set_var(findora_env.dotenv_file, "PRIVACY", "False")
+        ask_question_menu(
+            "PRIVACY",
+            "* Would you like private transactions? ",
+            f'* Privacy option currently set to {environ.get("PRIVACY", "none")}. Would you like to switch this?',
+            ["True", "False"],
+        )
     if menu_option == 2:
-        print(
-            f"* Select an option. Express enabled to auto send with your saved options, would you like it enabled or disabled? "
+        ask_question_menu(
+            "SEND_EXPRESS",
+            "* Would you like private transactions? ",
+            f'* Express option currently set to {environ.get("SEND_EXPRESS", "none")}. Would you like to switch this?',
+            ["True", "False"],
         )
-        menu_options = ["* [0] - True", "* [1] - False"]
-        terminal_menu = TerminalMenu(
-            menu_options,
-            title=f'* Express option currently set to {environ.get("SEND_EXPRESS")}. Would you like to switch this?',
-        )
-        sub_menu_2_option = terminal_menu.show()
-        if sub_menu_2_option == 0:
-            set_var(findora_env.dotenv_file, "SEND_EXPRESS", "True")
-        if sub_menu_2_option == 1:
-            set_var(findora_env.dotenv_file, "SEND_EXPRESS", "False")
     if menu_option == 3:
         return
     set_send_options()
@@ -931,26 +913,26 @@ def extract_json_section(output, section_name):
     Further improved version to extract the JSON sections.
     """
     start_tag = section_name + ":"
-    
+
     start_index = output.find(start_tag)
     if start_index == -1:
         return None
-    
+
     # Move the start_index to the start of the JSON data
     start_index += len(start_tag)
-    
+
     brace_count = 0
     for i, char in enumerate(output[start_index:]):
-        if char == '{':
+        if char == "{":
             brace_count += 1
-        elif char == '}':
+        elif char == "}":
             brace_count -= 1
             if brace_count == 0:
                 end_index = i + start_index + 1
                 break
-    
+
     json_data = output[start_index:end_index].strip()
-    
+
     try:
         return json.loads(json_data)
     except json.JSONDecodeError:
@@ -1000,7 +982,7 @@ def get_fn_stats(output):
     network = extract_value(output, "Server URL")
     balance_raw = extract_value(output, "Node Balance")
     balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f} FRA" if balance_raw else "0 FRA"
-    
+
     # Create the result dictionary with default values
     fn_info = {
         "Network": network,
@@ -1013,49 +995,44 @@ def get_fn_stats(output):
         "Server Rank": "N/A",
         "Delegator Count": "N/A",
         "Commission Rate": "0.00%",
-        "memo": {
-            "name": "N/A",
-            "desc": "N/A",
-            "website": "N/A",
-            "logo": "N/A"
-        }
+        "memo": {"name": "N/A", "desc": "N/A", "website": "N/A", "logo": "N/A"},
     }
-    
+
     # Extract delegation details
     if delegation_info:
         bond = delegation_info.get("bond", 0)
         fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f} FRA"
-        
+
         current_block = delegation_info.get("current_height", 0)
         fn_info["Current Block"] = str(current_block)
-        
+
         your_delegation_rewards = delegation_info.get("rewards", 0)
         fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f} FRA"
-    
+
     # Extract staking details (if available)
     if staking_info:
         proposed_blocks = staking_info.get("block_proposed_cnt", 0)
         fn_info["Proposed Blocks"] = str(proposed_blocks)
-        
+
         unclaimed_rewards = staking_info.get("fra_rewards", 0)
         fn_info["Pending Pool Rewards"] = f"{findora_gwei_convert(unclaimed_rewards):,.2f} FRA"
-        
+
         server_rank = staking_info.get("voting_power_rank")
         fn_info["Server Rank"] = str(server_rank) if server_rank is not None else "N/A"
-        
+
         delegator_count = staking_info.get("delegator_cnt")
         fn_info["Delegator Count"] = str(delegator_count) if delegator_count is not None else "N/A"
-        
+
         commission_rate = staking_info.get("commission_rate", [0, 1])
         commission_percentage = (commission_rate[0] / commission_rate[1]) * 100
         fn_info["Commission Rate"] = f"{commission_percentage:.2f}%"
-        
+
         memo = staking_info.get("memo", {})
         fn_info["memo"] = {
             "name": memo.get("name", "N/A"),
             "desc": memo.get("desc", "N/A"),
             "website": memo.get("website", "N/A"),
-            "logo": memo.get("logo", "N/A")
+            "logo": memo.get("logo", "N/A"),
         }
 
     return fn_info
@@ -1168,9 +1145,7 @@ def rescue_menu() -> None:
 
 def update_findora_container(skip) -> None:
     print("* Running the update and restart may cause missed blocks, beware before proceeding!")
-    if skip:
-        answer = True
-    else:
+    if not skip:
         answer = ask_yes_no("* Are you sure you want to check for an upgrade and restart? (Y/N) ")
     if answer:
         subprocess.call(
@@ -1620,6 +1595,12 @@ def parse_flags(parser, region, network):
     )
 
     parser.add_argument(
+        "--rescue",
+        action="store_true",
+        help="Will run the rescue menu with full options, if your container is not running."
+    )
+
+    parser.add_argument(
         "--clean", action="store_true", help="Will run the clean script, removes database, reloads all data."
     )
 
@@ -1650,24 +1631,48 @@ def parse_flags(parser, region, network):
 
     if args.fn:
         update_fn_wallet()
+        
+    if args.rescue:
+        if container_running(findora_env.container_name):
+            print_stars()
+            question = ask_yes_no("* Your container is running. Are you sure you want to load the rescue menu? (Y/N) ")
+            if question:
+                rescue_menu()
+            else:
+                finish_node()
+        else:
+            rescue_menu()
 
     if args.update:
-        run_container_update()
+        if container_running(findora_env.container_name):
+            print_stars()
+            question = ask_yes_no("* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) ")
+            if question:
+                run_container_update(True)
+            else: 
+                finish_node()
+        else:
+            run_container_update(True)
 
     if args.clean:
-        run_clean_script()
+        if container_running(findora_env.container_name):
+            print_stars()
+            question = ask_yes_no("* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) ")
+            if question:
+                run_clean_script()
+            else:
+                finish_node()
+        else:
+            run_clean_script()
 
     if args.stats:
         menu_topper()
         finish_node()
 
     if args.ultrareset:
-        print_stars()
-        # add network check to validate which network we are running
-        network = set_main_or_test()
         # Are you really really sure?
         answer = ask_yes_no(
-            f"* WARNING, NUCLEAR OPTION: We will now reset your entire server to a fresh install.\nPress Y to fully wipe and reset your server or N to exit: (Y/N) "
+            f"* WARNING, NUCLEAR OPTION: We will now totally remove all files in /data/findora and beyond.\n* YOU WILL LOSE ALL OF YOUR KEYS AND DATA IN /data/findora\n* After this completes you will need to re-run the installer and wait for a fresh download. Then you will be able to run our migration process.\n* Press Y to fully wipe and reset your server or N to exit: (Y/N) "
         )
         if answer:
             # wipe data here
@@ -1676,3 +1681,29 @@ def parse_flags(parser, region, network):
                 cwd=findora_env.user_home_dir,
             )
         finish_node()
+
+
+def stop_and_remove_container(container_name):
+    # Create a Docker client
+    client = docker.from_env()
+
+    # List all containers
+    containers = client.containers.list(all=True)
+
+    # Check if the container with the specified name is running
+    container_found = any(re.fullmatch(container_name, container.name) for container in containers)
+
+    if container_found:
+        print(f"{container_name} Container found, stopping container to restart.")
+
+        # Stop and remove the container
+        container = client.containers.get(container_name)
+        container.stop()
+        container.remove()
+
+        # Remove the specified file
+        file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    else:
+        print(f"{container_name} container stopped or does not exist, continuing.")

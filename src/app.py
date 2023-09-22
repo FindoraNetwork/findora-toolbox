@@ -26,19 +26,6 @@ from config import findora_env
 def main() -> None:
     # Load Vars / Set Network
     first_env_check(findora_env.dotenv_file, findora_env.user_home_dir)
-    # Preflight check:
-    if os.path.exists(f"{findora_env.user_home_dir}/validatortoolbox_fra"):
-        subprocess.run("clear")
-        print(Fore.MAGENTA)
-        print_stars()
-        print(
-            "*\n* Old folder found, Exiting\n*\n* Please rename your ~/validatortoolbox_fra"
-            + "folder to ~/findora-toolbox and update your command paths!\n*\n* To rename, run:"
-            + " cd ~/ && mv ~/validatortoolbox_fra ~/findora-toolbox\n*\n* After you run the"
-            + " move command, relaunch with the new path: python3 ~/findora-toolbox/src/app.py\n*"
-        )
-        print_stars()
-        raise SystemExit(0)
     # Wear purple
     print(Fore.MAGENTA)
     # Intro w/ stars below
@@ -54,29 +41,32 @@ def main() -> None:
     parse_flags(parser, region, network)
     # Does `fn` exist?
     if not os.path.exists("/usr/local/bin/fn"):
-        # Nope, let's ask to install!
+        # It does not, let's ask to install!
         menu_install_findora(network, region)
-    # fn is found, is the container running? Run the 'docker ps' command and filter the output using 'grep'
+    # fn is found, is the findorad container running? Run the 'docker ps' command and filter the output using 'grep'
     if container_running(findora_env.container_name):
         backup_folder_check()
         run_findora_menu()
     else:
-        print(f"* The container '{findora_env.container_name}' is not running.")
+        print(f"* Docker is running and working but the container '{findora_env.container_name}' is not.")
         while True:
             answer = ask_yes_no(
-                "* Would you like to attempt to run the update version script to try to get your container back online? (Y/N)"
+                "* Would you like to attempt to run the update_version script to try to get your container back online? (Y/N)"
             )
             if answer:
-                update_findora_container(1)
-                print("* Uh, you said no so, we are exiting to allow manual troubleshooting, goodbye!")
-                finish_node()
+                update_findora_container(True)
+                break
             else:
-                answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot? (Y/N) ")
+                answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually troubleshoot)? (Y/N) ")
                 if answer2:
                     rescue_menu()
                 else:
                     print(
-                        "* Dropping out of the application so you can troubleshoot the container, check the docker logs with: docker logs -f findorad"
+                        "* Stopping toolbox so you can troubleshoot the container manually.\n"
+                        + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors with: docker logs findorad\n"
+                        + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./findora.sh -u\n"
+                        + "* If the above does not work you should be prompted to run a safety clean or you can do that manually with: ./findora.sh --clean\n"
+                        + "* If you are still having issues please reach out on our Discord: https://bit.ly/easynodediscord\n"
                     )
                     print_stars()
                     finish_node()
