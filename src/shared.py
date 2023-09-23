@@ -12,6 +12,12 @@ from colorama import Fore, Back, Style
 from config import findora_env
 
 
+def get_file_size(url):
+    response = requests.head(url)
+    file_size = int(response.headers.get("Content-Length", 0))
+    return file_size
+
+
 def get_available_space(directory):
     """Get the available disk space in bytes at the given directory."""
     stat = os.statvfs(directory)
@@ -147,6 +153,16 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     shutil.rmtree(os.path.join(ROOT_DIR, "findorad"), ignore_errors=True)
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "data"), ignore_errors=True)
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"), ignore_errors=True)
+    
+    # Get the size of snapshot first
+    snapshot_size = get_file_size(CHAINDATA_URL)
+    available_space = get_available_space(SNAPSHOT_DIR)
+    
+    if available_space < (snapshot_size * 2):
+        print(
+            f"Error: Not enough disk space available. Required: {format_size(snapshot_size * 2)}, Available: {format_size(available_space)}."
+        )
+        exit(1)
 
     # Check snapshot file md5sum
     snapshot_file = os.path.join(ROOT_DIR, "snapshot")
@@ -175,7 +191,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     available_space = get_available_space(SNAPSHOT_DIR)
     if available_space < required_space:
         print(
-            f"Error: Not enough disk space available. Required: {required_space} bytes, Available: {available_space} bytes"
+            f"Error: Not enough disk space available. Required: {format_size(required_space)}, Available: {format_size(available_space)}."
         )
         exit(1)
 
