@@ -18,13 +18,14 @@ def check_env(keypath, network, FN, USERNAME):
                 f"* \033[31;01m{tool}\033[00m has not been installed and made available to {USERNAME}!\n"
                 + f"* Run the following setup commands and try again:\n\n"
                 + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora'
-                )
+            )
             subprocess.run(["rm", f"{findora_env.user_home_dir}/.findora.env"], check=True)
             exit(1)
 
     if not os.path.isfile(keypath):
         print(f"* No tmp.gen.keypair file detected, generating file and creating to {network}_node.key")
-        subprocess.run([FN, "genkey", ">", "/tmp/tmp.gen.keypair"], stdout=subprocess.PIPE, text=True)
+        with open("/tmp/tmp.gen.keypair", "w") as file:
+            subprocess.run([FN, "genkey"], stdout=file, text=True)
 
 
 def set_binaries(FINDORAD_IMG, ROOT_DIR):
