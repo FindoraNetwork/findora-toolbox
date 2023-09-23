@@ -160,7 +160,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     
     if available_space < (snapshot_size * 2):
         print(
-            f"Error: Not enough disk space available. Required: {format_size(snapshot_size * 2)}, Available: {format_size(available_space)}."
+            f"Error: Not enough disk space available. Minimum Required: {format_size(snapshot_size * 2)}+, Available: {format_size(available_space)}."
         )
         exit(1)
 
@@ -194,7 +194,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     available_space = get_available_space(SNAPSHOT_DIR)
     if available_space < required_space:
         print(
-            f"Error: Not enough disk space available. Required: {format_size(required_space)}, Available: {format_size(available_space)}."
+            f"Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, Available: {format_size(available_space)}."
         )
         exit(1)
 
