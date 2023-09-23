@@ -32,10 +32,10 @@ def create_directory_with_permissions(path, username):
     subprocess.run(["sudo", "chown", "-R", f"{username}:{username}", path], check=True)
 
 
-def format_size(size_in_bytes):
+def format_size(size_in_bytes, is_speed=False):
     """Converts a size in bytes to a human-readable string."""
-    for unit in ["B", "KB", "MB", "GB", "TB"]:
+    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
         if size_in_bytes < 1024:
-            return f"{size_in_bytes:.2f} {unit}"
+            return f"{size_in_bytes:.2f} {unit}" + ("/s" if is_speed else "")
         size_in_bytes /= 1024
-    return f"{size_in_bytes:.2f} PB"
+    return f"{size_in_bytes:.2f} PB" + ("/s" if is_speed else "")

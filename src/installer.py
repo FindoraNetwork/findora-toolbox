@@ -20,16 +20,17 @@ def download_progress_hook(count, block_size, total_size):
         return
     duration = time.time() - start_time
     progress_size = int(count * block_size)
-    speed = int(progress_size / (1024 * duration))
+    speed = progress_size / duration
     percent = int(count * block_size * 100 / total_size)
-    time_remaining = ((total_size - progress_size) / (speed * 1024)) if speed > 0 else 0
+    time_remaining = ((total_size - progress_size) / speed) if speed > 0 else 0
     formatted_progress_size = format_size(progress_size)
     formatted_total_size = format_size(total_size)
+    formatted_speed = format_size(speed, is_speed=True)
     print(
-        f"Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). Speed: {speed} KB/s. Time remaining: {time_remaining:.2f} seconds.",
+        f"Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). Speed: {formatted_speed}. Time remaining: {time_remaining:.2f} seconds.",
         end="\r",
     )
-
+    
 
 def install_fn_app():
     subprocess.run(
