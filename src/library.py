@@ -1665,6 +1665,7 @@ def parse_flags(parser, region, network):
         if container_running(findora_env.container_name):
             print_stars()
             question = ask_yes_no("* Your container is running. Are you sure you want to load the rescue menu? (Y/N) ")
+            print_stars()
             if question:
                 rescue_menu()
             else:
@@ -1676,6 +1677,7 @@ def parse_flags(parser, region, network):
         if container_running(findora_env.container_name):
             print_stars()
             question = ask_yes_no("* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) ")
+            print_stars()
             if question:
                 run_container_update(True)
             else: 
@@ -1687,6 +1689,7 @@ def parse_flags(parser, region, network):
         if container_running(findora_env.container_name):
             print_stars()
             question = ask_yes_no("* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) ")
+            print_stars()
             if question:
                 run_clean_script()
             else:
