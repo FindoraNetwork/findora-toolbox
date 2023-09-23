@@ -45,21 +45,12 @@ def download_progress_hook(count, block_size, total_size):
     )
 
 
-def set_binaries():
-    subprocess.run(
-        ["wget", "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn"], check=True
-    )
-    subprocess.run(["chmod", "+x", "fn"], check=True)
-    subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
-
 def install_fn_app():
-    # Install fn App
     subprocess.run(
         ["wget", "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn"], check=True
     )
     subprocess.run(["chmod", "+x", "fn"], check=True)
     subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
-
 
 def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME):
     # Extract node_mnemonic and xfr_pubkey from keypath file
@@ -257,7 +248,15 @@ def run_full_installer(network, region):
     keypath = f"{ROOT_DIR}/{network}_node.key"
     CONTAINER_NAME = "findorad"
 
-    install_fn_app()
+    uname = subprocess.getoutput("uname -s")
+    if uname == "Linux":
+        install_fn_app()
+    elif uname == "Darwin":
+        # How do we do mac? Same or not sure? Same for now...
+        install_fn_app()
+    else:
+        print("Unsupported system platform!")
+        exit(1)
 
     # Make Directories & Set Permissions
     create_directory_with_permissions("/data/findora", USERNAME)
@@ -269,16 +268,6 @@ def run_full_installer(network, region):
 
     subprocess.run(["cp", "/tmp/tmp.gen.keypair", f"/home/{USERNAME}/findora_backup/tmp.gen.keypair"], check=True)
     subprocess.run(["mv", "/tmp/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"], check=True)
-
-    uname = subprocess.getoutput("uname -s")
-    if uname == "Linux":
-        set_binaries()
-    elif uname == "Darwin":
-        # How do we do mac? Same or not sure? Same for now...
-        set_binaries()
-    else:
-        print("Unsupported system platform!")
-        exit(1)
 
     # Config local node
     config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME)
