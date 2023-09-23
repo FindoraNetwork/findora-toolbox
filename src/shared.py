@@ -157,16 +157,16 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"), ignore_errors=True)
     
     # Get the size of snapshot first
-    snapshot_size = get_file_size(CHAINDATA_URL)
+    snapshot_size = get_file_size(CHAINDATA_URL) * 3
     available_space = get_available_space(ROOT_DIR)
     
-    if available_space < (snapshot_size * 2):
+    if available_space < (snapshot_size):
         print(
-            f"Error: Not enough disk space available. Minimum Required: {format_size(snapshot_size * 2)}+, Available: {format_size(available_space)}."
+            f"Error: Not enough disk space available. Minimum Required: {format_size(snapshot_size)}+, Available: {format_size(available_space)}."
         )
         exit(1)
     else:
-        print(f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(snapshot_size * 2)}")
+        print(f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(snapshot_size)}")
 
     # Check snapshot file md5sum
     snapshot_file = os.path.join(ROOT_DIR, "snapshot")
