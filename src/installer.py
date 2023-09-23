@@ -102,13 +102,10 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_I
 
 def get_snapshot(ENV, network, ROOT_DIR, region):
     # Download latest link and get url
-    if region == "na":
+    if region == "na" or network == "testnet":
         latest_url = f"https://{ENV}-{network}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
-    elif region == "eu":
+    elif region == "eu" and network == "mainnet":
         latest_url = f"https://{ENV}-{network}-eu-download.s3.eu-central-1.amazonaws.com/latest"
-    elif network == "testnet":
-        print(f"Testnet does not have an EU snapshot. Downloading NA version...")
-        latest_url = f"https://{ENV}-{network}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
     latest_file = os.path.join(ROOT_DIR, "latest")
     urllib.request.urlretrieve(latest_url, latest_file)
 
