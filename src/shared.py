@@ -173,7 +173,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     while True:
         print("Downloading snapshot...")
         urllib.request.urlretrieve(CHAINDATA_URL, snapshot_file, reporthook=download_progress_hook)
-        print("\nDownload complete!")
+        print("\nDownload complete, calculating checksum now...")
 
         # Calculate the md5 checksum of the downloaded file
         md5_hash = hashlib.md5()
@@ -184,6 +184,8 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
 
         if CHECKSUM_LATEST and CHECKSUM_LATEST == CHECKSUM:
             break
+        
+    print("Checksum matches, extracting snapshot now...")
 
     # Define the directory paths
     SNAPSHOT_DIR = os.path.join(ROOT_DIR, "snapshot_data")
