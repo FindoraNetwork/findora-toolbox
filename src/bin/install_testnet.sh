@@ -144,23 +144,10 @@ TENDERMINT_DIR="${ROOT_DIR}/tendermint/data"
 # Create the snapshot directory
 mkdir "$SNAPSHOT_DIR"
 
-# Get the available disk space before extraction
-AVAILABLE_SPACE_BEFORE=$(df --output=avail "$SNAPSHOT_DIR" | tail -n 1)
-
 # Extract the tar archive and check the exit status
 echo "Extracting snapshot and setting up the local node..."
-if ! tar zxvf "${ROOT_DIR}/snapshot" -C "$SNAPSHOT_DIR" > /dev/null 2>&1; then
+if ! pv "${ROOT_DIR}/snapshot" | tar zxvf - -C "$SNAPSHOT_DIR" > /dev/null; then
     echo "Error: Failed to extract the snapshot. Please check if there is enough disk space and permissions."
-    exit 1
-fi
-
-# Get the available disk space after extraction
-AVAILABLE_SPACE_AFTER=$(df --output=avail "$SNAPSHOT_DIR" | tail -n 1)
-
-# Check if the available disk space is less than expected
-if (( AVAILABLE_SPACE_AFTER >= AVAILABLE_SPACE_BEFORE )); then
-    echo "Error: Disk space is full. Please free up some space and try again."
-    rm -rf "$SNAPSHOT_DIR"
     exit 1
 fi
 
