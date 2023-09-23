@@ -185,6 +185,9 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     SNAPSHOT_DIR = os.path.join(ROOT_DIR, "snapshot_data")
     LEDGER_DIR = os.path.join(ROOT_DIR, "findorad")
     TENDERMINT_DIR = os.path.join(ROOT_DIR, "tendermint", "data")
+    
+    # Create the snapshot directory
+    os.makedirs(SNAPSHOT_DIR, exist_ok=True)
 
     # Check available disk space
     required_space = os.path.getsize(snapshot_file)  # Assuming the tar file is the largest item
@@ -194,9 +197,6 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
             f"Error: Not enough disk space available. Required: {format_size(required_space)}, Available: {format_size(available_space)}."
         )
         exit(1)
-
-    # Create the snapshot directory
-    os.makedirs(SNAPSHOT_DIR, exist_ok=True)
 
     # Extract the tar archive and check the exit status
     print("Extracting snapshot and setting up the local node...")
