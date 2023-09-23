@@ -24,8 +24,17 @@ def get_live_version(server_url):
             LIVE_VERSION = match.group()
             return LIVE_VERSION
     else:
-        print(f"Failed to retrieve the version from Findora's server, please try again later. HTTP Response Code: {response.status_code}")
+        print(
+            f"Failed to retrieve the version from Findora's server, please try again later. HTTP Response Code: {response.status_code}"
+        )
         exit(1)
+
+
+def format_duration(seconds):
+    """Convert duration in seconds to hms format."""
+    minutes, seconds = divmod(seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
 
 
 def download_progress_hook(count, block_size, total_size):
@@ -41,8 +50,11 @@ def download_progress_hook(count, block_size, total_size):
     formatted_progress_size = format_size(progress_size)
     formatted_total_size = format_size(total_size)
     formatted_speed = format_size(speed, is_speed=True)
+    formatted_duration = format_duration(duration)
+    formatted_time_remaining = format_duration(time_remaining)
     print(
-        f"Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). Speed: {formatted_speed}. Time remaining: {time_remaining:.2f} seconds.",
+        f"Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). "
+        f"Speed: {formatted_speed}. Elapsed Time: {formatted_duration}. Time remaining: {formatted_time_remaining}.",
         end="\r",
     )
 
