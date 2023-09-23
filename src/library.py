@@ -1225,29 +1225,19 @@ def run_findora_installer(network, region) -> None:
         "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
     )
     print_stars()
-    time.sleep(1)
-    print_stars()
-
+    
     script_path = f"{findora_env.toolbox_location}/src/bin/install_{network}"
     if region == "eu":
         script_path += "_eu.sh"
     else:
         script_path += ".sh"
-
-    with subprocess.Popen(
+        
+    subprocess.run(
         ["bash", "-x", script_path],
         cwd=findora_env.user_home_dir,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    ) as proc:
-        while True:
-            line = proc.stdout.readline()
-            if not line:
-                break  # Process has finished, and no more output.
-            if "Downloading" in line or "Extracting" in line or "Error" in line or f"/data/findora/{network}/snapshot" in line:
-                print(line.strip())
-
+        check=True,
+    )
+    
     print_stars()
     create_staker_memo()
     print(
