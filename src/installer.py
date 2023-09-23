@@ -140,7 +140,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     if region == "na":
         latest_url = f"https://{ENV}-{network}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
     elif region == "eu":
-        latest_url = f"https://${ENV}-${network}-eu-download.s3.eu-central-1.amazonaws.com/latest"
+        latest_url = f"https://{ENV}-{network}-eu-download.s3.eu-central-1.amazonaws.com/latest"
     latest_file = os.path.join(ROOT_DIR, "latest")
     urllib.request.urlretrieve(latest_url, latest_file)
 
@@ -283,6 +283,7 @@ def run_full_installer(network, region):
         exit(1)
 
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
+    CHECKPOINT_URL= f"https://{ENV}-{network}-us-west-2-ec2-instance.s3.us-west-2.amazonaws.com/{network}/checkpoint"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
     CONTAINER_NAME = "findorad"
@@ -319,7 +320,7 @@ def run_full_installer(network, region):
     # get checkpoint on testnet
     if network == "testnet":
         subprocess.run(["sudo", "rm", "-rf", f"{ROOT_DIR}/checkpoint.toml"], check=True)
-        subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml"], check=True)
+        subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], check=True)
 
     # Start findorad
     create_local_node(ROOT_DIR, FINDORAD_IMG)
