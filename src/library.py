@@ -1228,7 +1228,7 @@ def run_findora_installer(network, region) -> None:
     time.sleep(1)
     print_stars()
 
-    script_path = f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}"
+    script_path = f"{findora_env.toolbox_location}/src/bin/install_{network}"
     if region == "eu":
         script_path += "_eu.sh"
     else:
@@ -1245,7 +1245,7 @@ def run_findora_installer(network, region) -> None:
             line = proc.stdout.readline()
             if not line:
                 break  # Process has finished, and no more output.
-            if "Downloading" in line or "Extracting" in line or "Error" in line:
+            if "Downloading" in line or "Extracting" in line or "Error" in line or f"/data/findora/{network}/snapshot" in line:
                 print(line.strip())
 
     print_stars()
