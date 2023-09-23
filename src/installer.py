@@ -251,11 +251,8 @@ def run_full_installer(network, region):
     
     USERNAME = findora_env.active_user_name
     
-    if network == "mainnet":
-        ENV = "prod"
-    elif network == "testnet":
-        ENV = "test"
-    
+    ENV = "prod"
+       
     SERV_URL = f"https://{ENV}-{network}.{ENV}.findora.org"
 
     # Make a GET request to the URL
