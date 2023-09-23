@@ -37,4 +37,4 @@ def run_safety_clean(network, region):
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG)
+    create_local_node(ROOT_DIR, FINDORAD_IMG, "safety_clean")

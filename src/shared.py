@@ -265,7 +265,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     os.remove(snapshot_file)
 
 
-def create_local_node(ROOT_DIR, FINDORAD_IMG):
+def create_local_node(ROOT_DIR, FINDORAD_IMG, local_node_status):
     # Define the Docker image and container name
     client = docker.from_env()
 
@@ -324,7 +324,10 @@ def create_local_node(ROOT_DIR, FINDORAD_IMG):
     print(requests.get("http://localhost:8668/version").text)
     print(requests.get("http://localhost:8667/version").text)
 
-    print("Local node initialized! You can now run the migration process or wait for sync and create your validator.")
+    if local_node_status == "installer":
+        print("Local node initialized! You can now run the migration process or wait for sync and create your validator.")
+    else:
+        print("Local container was updated and restarted!")
 
 
 def setup_wallet_key(keypath, ROOT_DIR, network):
