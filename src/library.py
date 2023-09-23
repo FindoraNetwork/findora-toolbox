@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 from pprint import pprint
 from config import findora_env
-
+# from shared import stop_and_remove_container
+from installer import run_full_installer
 
 class print_stuff:
     def __init__(self, reset: int = 0):
@@ -1598,6 +1599,10 @@ def parse_flags(parser, region, network):
     parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
     )
+    
+    parser.add_argument(
+        "--installpy", action="store_true", help="Our new python based installer, in testing."
+    )
 
     parser.add_argument(
         "--ultrareset",
@@ -1617,6 +1622,10 @@ def parse_flags(parser, region, network):
     if args.installer:
         network = set_main_or_test()
         menu_install_findora(network, region)
+        
+    if args.installpy:
+        network = set_main_or_test()
+        run_full_installer(network, region)
 
     if args.fn:
         update_fn_wallet()
@@ -1677,32 +1686,6 @@ def parse_flags(parser, region, network):
                 cwd=findora_env.user_home_dir,
             )
         finish_node()
-
-
-def stop_and_remove_container(container_name):
-    # Create a Docker client
-    client = docker.from_env()
-
-    # List all containers
-    containers = client.containers.list(all=True)
-
-    # Check if the container with the specified name is running
-    container_found = any(re.fullmatch(container_name, container.name) for container in containers)
-
-    if container_found:
-        print(f"{container_name} Container found, stopping container to restart.")
-
-        # Stop and remove the container
-        container = client.containers.get(container_name)
-        container.stop()
-        container.remove()
-
-        # Remove the specified file
-        file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    else:
-        print(f"{container_name} container stopped or does not exist, continuing.")
 
 
 def run_troubleshooting_process():
