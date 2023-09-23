@@ -18,7 +18,7 @@ check_env() {
             exit 1
         fi
     done
-
+    
     if ! [ -f "$keypath" ]; then
         echo -e "No tmp.gen.keypair file detected, generating file and creating to ${NAMESPACE}_node.key"
         fn genkey > /tmp/tmp.gen.keypair
@@ -26,12 +26,11 @@ check_env() {
 }
 
 set_binaries() {
-    # OS=$1
-    docker pull ${FINDORAD_IMG} || exit 1
-    wget -T 10 https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn || exit 1
-
+    docker pull ${FINDORAD_IMG} > /dev/null 2>&1 || { echo "Failed to pull Docker image."; exit 1; }
+    wget -T 10 https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn -O fn -q || { echo "Failed to download fn."; exit 1; }
+    
     new_path=${ROOT_DIR}/bin
-
+    
     rm -rf $new_path 2>/dev/null
     mkdir -p $new_path || exit 1
     mv fn $new_path || exit 1
@@ -63,9 +62,9 @@ mv /tmp/tmp.gen.keypair /data/findora/${NAMESPACE}/${NAMESPACE}_node.key
 
 if [[ "Linux" == `uname -s` ]]; then
     set_binaries linux
-# elif [[ "FreeBSD" == `uname -s` ]]; then
+    # elif [[ "FreeBSD" == `uname -s` ]]; then
     # set_binaries freebsd
-elif [[ "Darwin" == `uname -s` ]]; then
+    elif [[ "Darwin" == `uname -s` ]]; then
     set_binaries macos
 else
     echo "Unsupported system platform!"
@@ -89,7 +88,6 @@ $FN setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 sudo rm -rf ${ROOT_DIR}/${NAMESPACE} || exit 1
 mkdir -p ${ROOT_DIR}/${NAMESPACE} || exit 1
 
-
 # tendermint config
 docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
 
@@ -101,12 +99,12 @@ cp -a ${ROOT_DIR}/tendermint/config /home/${USERNAME}/findora_backup/config
 
 # if you're re-running this for some reason, stop and remove findorad
 if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
-  echo -e "Findorad Container found, stopping container to restart."
-  docker stop findorad
-  docker rm findorad
-  rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
+    echo -e "Findorad Container found, stopping container to restart."
+    docker stop findorad
+    docker rm findorad
+    rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
-  echo 'Findorad container stopped or does not exist, continuing.'
+    echo 'Findorad container stopped or does not exist, continuing.'
 fi
 
 ###################
@@ -127,40 +125,68 @@ rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 # check snapshot file md5sum
 while :
 do
-    wget -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}"
+    echo "Downloading snapshot..."
+    wget --progress=bar:force -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}" || { echo "Failed to download snapshot."; exit 1; }
     CHECKSUM=$(md5sum "${ROOT_DIR}/snapshot" | cut -d " " -f 1)
     if [[ ! -z "$CHECKSUM_LATEST" ]] && [[ "$CHECKSUM_LATEST" = "$CHECKSUM" ]]; then
         break
     fi
 done
 
-mkdir "${ROOT_DIR}/snapshot_data"
-tar zxvf "${ROOT_DIR}/snapshot" -C "${ROOT_DIR}/snapshot_data"
+# Define the directory paths
+SNAPSHOT_DIR="${ROOT_DIR}/snapshot_data"
+LEDGER_DIR="${ROOT_DIR}/findorad"
+TENDERMINT_DIR="${ROOT_DIR}/tendermint/data"
 
-mv "${ROOT_DIR}/snapshot_data/data/ledger" "${ROOT_DIR}/findorad"
-mv "${ROOT_DIR}/snapshot_data/data/tendermint/mainnet/node0/data" "${ROOT_DIR}/tendermint/data"
+# Create the snapshot directory
+mkdir "$SNAPSHOT_DIR"
 
-rm -rf ${ROOT_DIR}/snapshot_data
-rm -rf ${ROOT_DIR}/snapshot
+# Get the available disk space before extraction
+AVAILABLE_SPACE_BEFORE=$(df --output=avail "$SNAPSHOT_DIR" | tail -n 1)
+
+# Extract the tar archive and check the exit status
+echo "Extracting snapshot and setting up the local node..."
+if ! tar zxvf "${ROOT_DIR}/snapshot" -C "$SNAPSHOT_DIR" > /dev/null 2>&1; then
+    echo "Error: Failed to extract the snapshot. Please check if there is enough disk space and permissions."
+    exit 1
+fi
+
+# Get the available disk space after extraction
+AVAILABLE_SPACE_AFTER=$(df --output=avail "$SNAPSHOT_DIR" | tail -n 1)
+
+# Check if the available disk space is less than expected
+if (( AVAILABLE_SPACE_AFTER >= AVAILABLE_SPACE_BEFORE )); then
+    echo "Error: Disk space is full. Please free up some space and try again."
+    rm -rf "$SNAPSHOT_DIR"
+    exit 1
+fi
+
+# Move the extracted files to the desired locations
+mv "${SNAPSHOT_DIR}/data/ledger" "$LEDGER_DIR"
+mv "${SNAPSHOT_DIR}/data/tendermint/mainnet/node0/data" "$TENDERMINT_DIR"
+
+# Remove the temporary directories and files
+rm -rf "$SNAPSHOT_DIR"
+rm -rf "${ROOT_DIR}/snapshot"
 
 #####################
 # Create local node #
 #####################
 docker run -d \
-    -v ${ROOT_DIR}/tendermint:/root/.tendermint \
-    -v ${ROOT_DIR}/findorad:/tmp/findora \
-    -p 8669:8669 \
-    -p 8668:8668 \
-    -p 8667:8667 \
-    -p 8545:8545 \
-    -p 26657:26657 \
-    -e EVM_CHAIN_ID=2152 \
-    --name findorad \
-    ${FINDORAD_IMG} node \
-    --ledger-dir /tmp/findora \
-    --tendermint-host 0.0.0.0 \
-    --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
-    --enable-query-service \
+-v ${ROOT_DIR}/tendermint:/root/.tendermint \
+-v ${ROOT_DIR}/findorad:/tmp/findora \
+-p 8669:8669 \
+-p 8668:8668 \
+-p 8667:8667 \
+-p 8545:8545 \
+-p 26657:26657 \
+-e EVM_CHAIN_ID=2152 \
+--name findorad \
+${FINDORAD_IMG} node \
+--ledger-dir /tmp/findora \
+--tendermint-host 0.0.0.0 \
+--tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
+--enable-query-service \
 
 # Wait for the container to be up and the endpoint to respond
 while true; do

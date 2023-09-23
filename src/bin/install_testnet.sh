@@ -120,7 +120,7 @@ CHAINDATA_URL=$(cut -d , -f 1 "${ROOT_DIR}/latest")
 CHECKSUM_LATEST=$(cut -d , -f 2 "${ROOT_DIR}/latest")
 echo $CHAINDATA_URL
 
-# remove old data 
+# remove old data
 rm -rf "${ROOT_DIR}/findorad"
 rm -rf "${ROOT_DIR}/tendermint/data"
 rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
@@ -128,21 +128,49 @@ rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 # check snapshot file md5sum
 while :
 do
-    wget -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}"
+    echo "Downloading snapshot..."
+    wget --progress=bar:force -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}" || { echo "Failed to download snapshot."; exit 1; }
     CHECKSUM=$(md5sum "${ROOT_DIR}/snapshot" | cut -d " " -f 1)
     if [[ ! -z "$CHECKSUM_LATEST" ]] && [[ "$CHECKSUM_LATEST" = "$CHECKSUM" ]]; then
         break
     fi
 done
 
-mkdir "${ROOT_DIR}/snapshot_data"
-tar zxvf "${ROOT_DIR}/snapshot" -C "${ROOT_DIR}/snapshot_data"
+# Define the directory paths
+SNAPSHOT_DIR="${ROOT_DIR}/snapshot_data"
+LEDGER_DIR="${ROOT_DIR}/findorad"
+TENDERMINT_DIR="${ROOT_DIR}/tendermint/data"
 
-mv "${ROOT_DIR}/snapshot_data/data/ledger" "${ROOT_DIR}/findorad"
-mv "${ROOT_DIR}/snapshot_data/data/tendermint/mainnet/node0/data" "${ROOT_DIR}/tendermint/data"
+# Create the snapshot directory
+mkdir "$SNAPSHOT_DIR"
 
-rm -rf ${ROOT_DIR}/snapshot_data
-rm -rf ${ROOT_DIR}/snapshot
+# Get the available disk space before extraction
+AVAILABLE_SPACE_BEFORE=$(df --output=avail "$SNAPSHOT_DIR" | tail -n 1)
+
+# Extract the tar archive and check the exit status
+echo "Extracting snapshot and setting up the local node..."
+if ! tar zxvf "${ROOT_DIR}/snapshot" -C "$SNAPSHOT_DIR" > /dev/null 2>&1; then
+    echo "Error: Failed to extract the snapshot. Please check if there is enough disk space and permissions."
+    exit 1
+fi
+
+# Get the available disk space after extraction
+AVAILABLE_SPACE_AFTER=$(df --output=avail "$SNAPSHOT_DIR" | tail -n 1)
+
+# Check if the available disk space is less than expected
+if (( AVAILABLE_SPACE_AFTER >= AVAILABLE_SPACE_BEFORE )); then
+    echo "Error: Disk space is full. Please free up some space and try again."
+    rm -rf "$SNAPSHOT_DIR"
+    exit 1
+fi
+
+# Move the extracted files to the desired locations
+mv "${SNAPSHOT_DIR}/data/ledger" "$LEDGER_DIR"
+mv "${SNAPSHOT_DIR}/data/tendermint/mainnet/node0/data" "$TENDERMINT_DIR"
+
+# Remove the temporary directories and files
+rm -rf "$SNAPSHOT_DIR"
+rm -rf "${ROOT_DIR}/snapshot"
 
 ###################
 # Get checkpoint  #
