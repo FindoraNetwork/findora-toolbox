@@ -12,6 +12,12 @@ from colorama import Fore, Back, Style
 from config import findora_env
 
 
+def get_available_space(directory):
+    """Get the available disk space in bytes at the given directory."""
+    stat = os.statvfs(directory)
+    return stat.f_bavail * stat.f_frsize
+
+
 def get_live_version(server_url):
     # Make a GET request to the URL
     response = requests.get(f"{server_url}:8668/version")
@@ -164,18 +170,34 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     LEDGER_DIR = os.path.join(ROOT_DIR, "findorad")
     TENDERMINT_DIR = os.path.join(ROOT_DIR, "tendermint", "data")
 
+    # Check available disk space
+    required_space = os.path.getsize(snapshot_file)  # Assuming the tar file is the largest item
+    available_space = get_available_space(SNAPSHOT_DIR)
+    if available_space < required_space:
+        print(
+            f"Error: Not enough disk space available. Required: {required_space} bytes, Available: {available_space} bytes"
+        )
+        exit(1)
+
     # Create the snapshot directory
     os.makedirs(SNAPSHOT_DIR, exist_ok=True)
 
     # Extract the tar archive and check the exit status
     print("Extracting snapshot and setting up the local node...")
-    with tarfile.open(snapshot_file, "r:gz") as tar:
-        extracted_count = 0
-        for member in tar:
-            tar.extract(member, path=SNAPSHOT_DIR)
-            extracted_count += 1
-            print(f"Extracted {extracted_count} files...", end="\r")
-    print("\nExtraction complete!")
+    try:
+        with tarfile.open(snapshot_file, "r:gz") as tar:
+            extracted_count = 0
+            for member in tar:
+                tar.extract(member, path=SNAPSHOT_DIR)
+                extracted_count += 1
+                print(f"Extracted {extracted_count} files...", end="\r")
+        print("\nExtraction complete!")
+    except OSError as e:
+        if e.errno == 28:  # No space left on device
+            print("Error: Extraction failed due to insufficient disk space.")
+        else:
+            print(f"Error: Extraction failed with error: {e}")
+        exit(1)
 
     # Move the extracted files to the desired locations
     shutil.move(os.path.join(SNAPSHOT_DIR, "data", "ledger"), LEDGER_DIR)
