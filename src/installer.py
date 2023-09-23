@@ -248,12 +248,28 @@ def create_local_node(ROOT_DIR):
 
 
 def run_full_installer(network, region):
+    
     USERNAME = findora_env.active_user_name
+    
     if network == "mainnet":
         ENV = "prod"
     elif network == "testnet":
         ENV = "test"
+    
     SERV_URL = f"https://{ENV}-{network}.{ENV}.findora.org"
+
+    # Make a GET request to the URL
+    response = requests.get(f"{SERV_URL}:8668/version")
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Extract the version using a regular expression
+        match = re.search(r"v[\d\.]+-release", response.text)
+        if match:
+            LIVE_VERSION = match.group()
+    else:
+        print(f"Failed to retrieve the version. HTTP Response Code: {response.status_code}")
+        
     LIVE_VERSION = subprocess.getoutput(f"curl -s {SERV_URL}:8668/version | awk -F\\  '{{print $2}}'")
     print(LIVE_VERSION)
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
