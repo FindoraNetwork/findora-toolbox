@@ -14,7 +14,7 @@ from installer import run_full_installer
 class print_stuff:
     def __init__(self, reset: int = 0):
         self.reset = reset
-        self.print_stars = "*" * 93
+        self.print_stars = f"{Fore.MAGENTA}*" * 93
         self.reset_stars = self.print_stars + Style.RESET_ALL
 
     def printStars(self) -> None:
@@ -438,7 +438,6 @@ def ask_question_menu_no_var(question_message, question_title, options_list) -> 
 
 
 def set_na_or_eu() -> None:
-    print(Fore.MAGENTA)
     region = ask_question_menu(
         "FRA_REGION",
         "* Setup config not found, Which region should this server download from?",
@@ -459,6 +458,7 @@ def set_main_or_test() -> None:
 
 
 def menu_findora() -> None:
+    print(Fore.MAGENTA)
     update = menu_topper()
     print("* Findora Validator Toolbox - Menu Options:")
     print("*")
@@ -1468,9 +1468,9 @@ def backup_folder_check() -> None:
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
                     f"* Your tmp.gen.keypair file in {findora_env.findora_backup} does not match "
-                    + f'your {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
+                    + f'your live {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
                     + f'\n* Do you want to copy the key from {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}'
-                    + f"_node.key to {findora_env.findora_backup}/tmp.gen.keypair as a backup? (Y/N) "
+                    + f"_node.key and OVERWRITE the {findora_env.findora_backup}/tmp.gen.keypair file as a backup of your live key? (Y/N) "
                 )
                 if question:
                     # Copy key back
