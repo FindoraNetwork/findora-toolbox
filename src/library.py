@@ -1111,8 +1111,8 @@ def rescue_menu() -> None:
     menu_options = {
         0: finish_node,
         1: get_curl_stats,
-        2: update_restart_launcher,
-        3: run_safety_clean,
+        2: run_update_launcher,
+        3: run_safety_clean_launcher,
     }
     print(
         "* We still don't detect a running container.\n* Sometimes it can take a few minutes before the api starts responding.\n* You can attempt to get stats again for a few minutes, if that doesn't work review docker logs & try the update_version.\n* Here are your options currently:"
@@ -1409,8 +1409,12 @@ def backup_folder_check() -> None:
             )
 
 
-def update_restart_launcher() -> None:
+def run_update_launcher() -> None:
     run_update_restart(os.environ.get("FRA_NETWORK"))
+    
+    
+def run_safety_clean_launcher() -> None:
+    run_safety_clean(os.environ.get("FRA_NETWORK"), os.environ.get("FRA_REGION"))
 
 def run_findora_menu() -> None:
     menu_options = {
@@ -1422,8 +1426,8 @@ def run_findora_menu() -> None:
         5: set_send_options,
         6: change_validator_info,
         7: update_fn_wallet,
-        8: update_restart_launcher,
-        9: run_safety_clean,
+        8: run_update_launcher,
+        9: run_safety_clean_launcher,
         10: run_ubuntu_updates,
         11: server_disk_check,
         12: all_sys_info,
@@ -1552,11 +1556,11 @@ def parse_flags(parser, region, network):
             )
             print_stars()
             if question:
-                run_safety_clean(network)
+                run_safety_clean_launcher()
             else:
                 finish_node()
         else:
-            run_safety_clean(network)
+            run_safety_clean_launcher()
 
     if args.stats:
         menu_topper()

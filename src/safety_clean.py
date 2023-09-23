@@ -1,4 +1,5 @@
 import subprocess
+import os
 from config import findora_env
 from shared import (
     stop_and_remove_container,
@@ -9,7 +10,7 @@ from shared import (
 )
 
 
-def run_safety_clean(network, region):
+def run_safety_clean(network = os.environ.get("FRA_NETWORK"), region = os.environ.get("FRA_REGION")):
     USERNAME = findora_env.active_user_name
 
     ENV = "prod"
