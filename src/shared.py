@@ -43,6 +43,8 @@ def get_live_version(server_url):
 
 
 def format_duration(seconds):
+    if seconds <= 0:
+        seconds = 0
     """Convert duration in seconds to hms format."""
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
