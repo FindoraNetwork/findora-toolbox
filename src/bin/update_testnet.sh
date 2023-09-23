@@ -23,9 +23,9 @@ else
   echo 'Findorad container stopped or does not exist, continuing.'
 fi
 
-###################
-# Run local node #
-###################
+######################
+# Restart local node #
+######################
 docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
     -v ${ROOT_DIR}/findorad:/tmp/findora \
@@ -44,8 +44,27 @@ docker run -d \
     --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
     --enable-query-service \
 
-sleep 30
+# Wait for the container to be up and the endpoint to respond
+while true; do
+    # Check if the container is running
+    if docker ps --format '{{.Names}}' | grep -Eq '^findorad$'; then
+        # Check the response from the curl endpoint
+        if curl -s 'http://localhost:26657/status' > /dev/null; then
+            echo "Container is up and endpoint is responding."
+            break
+        else
+            echo "Container is up, but endpoint is not responding yet. Retrying in 10 seconds..."
+            sleep 10
+        fi
+    else
+        echo "Container is not running. Exiting..."
+        exit 1
+    fi
+done
 
+#############################
+# Post Install Stats Report #
+#############################
 curl 'http://localhost:26657/status'; echo
 curl 'http://localhost:8669/version'; echo
 curl 'http://localhost:8668/version'; echo
