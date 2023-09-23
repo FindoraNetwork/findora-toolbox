@@ -8,8 +8,10 @@ from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 from pprint import pprint
 from config import findora_env
+
 # from shared import stop_and_remove_container
 from installer import run_full_installer
+
 
 class print_stuff:
     def __init__(self, reset: int = 0):
@@ -125,6 +127,27 @@ def pause_for_cause():
     print("* Press enter to return to the main menu.")
     print_stars()
     input()
+
+
+def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_name):
+    if not os.path.exists(env_file):
+        os.system(f"touch {home_dir}/.findora.env")
+    else:
+        load_var_file(findora_env.dotenv_file)
+        return
+    for tool in ["wget", "curl", "pv", "docker"]:
+        if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
+            print_stars()
+            print(
+                f"* \033[31;01m{tool}\033[00m has not been installed and made available to {USERNAME}!\n* Install {tool} by running the following command:\n* sudo apt install {tool}\n"
+            )
+            print_stars()
+            print(
+                f"* To run all the prerequistes at once, run the following setup command. If you were missing docker, reconnect in a new terminal to gain access on servicefindora:\n"
+                + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora'
+            )
+            print_stars()
+            exit(1)
 
 
 def run_ubuntu_updater() -> None:
@@ -1219,19 +1242,19 @@ def run_findora_installer(network, region) -> None:
         "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
     )
     print_stars()
-    
+
     script_path = f"{findora_env.toolbox_location}/src/bin/install_{network}"
     if region == "eu":
         script_path += "_eu.sh"
     else:
         script_path += ".sh"
-        
+
     subprocess.run(
         ["bash", "-x", script_path],
         cwd=findora_env.user_home_dir,
         check=True,
     )
-    
+
     print_stars()
     create_staker_memo()
     print(
@@ -1592,10 +1615,8 @@ def parse_flags(parser, region, network):
     parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
     )
-    
-    parser.add_argument(
-        "--installpy", action="store_true", help="Our new python based installer, in testing."
-    )
+
+    parser.add_argument("--installpy", action="store_true", help="Our new python based installer, in testing.")
 
     parser.add_argument(
         "--ultrareset",
@@ -1615,7 +1636,7 @@ def parse_flags(parser, region, network):
     if args.installer:
         network = set_main_or_test()
         menu_install_findora(network, region)
-        
+
     if args.installpy:
         network = set_main_or_test()
         run_full_installer(network, region)
@@ -1706,20 +1727,3 @@ def run_troubleshooting_process():
                 )
                 print_stars()
                 finish_node()
-
-def check_preflight_setup(env_file, home_dir, USERNAME = findora_env.active_user_name):
-    if not os.path.exists(env_file):
-        os.system(f"touch {home_dir}/.findora.env")
-    else:
-        load_var_file(findora_env.dotenv_file)
-        return
-    for tool in ["wget", "curl", "pv", "docker"]:
-        if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
-            print_stars()
-            print(
-                f"* \033[31;01m{tool}\033[00m has not been installed and made available to {USERNAME}!\n"
-                + f"* Run the following setup commands and try again:\n\n"
-                + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora'
-            )
-            print_stars()
-            exit(1)

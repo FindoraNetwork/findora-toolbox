@@ -21,11 +21,11 @@ from config import findora_env
 
 
 def main() -> None:
-    # Load Vars / Set Network
-    check_preflight_setup(findora_env.dotenv_file, findora_env.user_home_dir, findora_env.active_user_name)
     # Intro w/ stars below
     loader_intro()
     print_stars()
+    # Load Vars / Set Network
+    check_preflight_setup(findora_env.dotenv_file, findora_env.user_home_dir, findora_env.active_user_name)
     # Can we use docker on this user?
     docker_check()
     # do we know network? mainnet or testnet
