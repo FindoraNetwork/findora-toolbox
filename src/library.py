@@ -1154,49 +1154,7 @@ def update_findora_container(skip) -> None:
             ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
             cwd=findora_env.user_home_dir,
         )
-        await_container_restart()
     return
-
-
-def await_container_restart() -> None:
-    count = 0
-    while count < 10:
-        if container_running(findora_env.container_name):
-            try:
-                # Attempt to get stats
-                response = requests.get("http://localhost:26657/status")
-                response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
-                stats = response.json()
-                
-                # If successful, print message and break out of the loop
-                print_stars()
-                print("* Your container is restarted and back online. Press enter to return to the main menu.")
-                pause_for_cause()
-                run_findora_menu()
-                break
-            except requests.RequestException as e:
-                # Log the exception and retry
-                print(f"* Error getting stats: {e}")
-                count += 1
-                print(f"* Retrying in 5 seconds, try {count} of 10...")
-                time.sleep(5)
-        else:
-            # If container is not running, increment counter and retry
-            count += 1
-            print_stars()
-            print(f"* Still waiting for container to restart, checking again in 5 seconds, try {count} of 10...")
-            time.sleep(5)
-    
-    # If the loop exits without breaking, offer the rescue menu
-    if count == 10:
-        print_stars()
-        print(
-            "* Your `findorad` container was restarted but did not come back online as expected."
-            + "\n* We suggest first running the update script."
-            + "\n* We are loading the rescue menu now.\n* Press enter to load the menu or ctrl+c to quit and manually troubleshoot."
-        )
-        pause_for_cause()
-        rescue_menu()       
 
 
 def migration_update() -> None:
