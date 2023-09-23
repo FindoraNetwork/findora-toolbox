@@ -24,7 +24,7 @@ def check_env(keypath, network, FN, USERNAME):
 
     if not os.path.isfile(keypath):
         print(f"* No tmp.gen.keypair file detected, generating file and creating to {network}_node.key")
-        subprocess.run([FN, "genkey"], stdout=subprocess.PIPE, text=True)
+        subprocess.run([FN, "genkey", ">", "/tmp/tmp.gen.keypair"], stdout=subprocess.PIPE, text=True)
 
 
 def set_binaries(FINDORAD_IMG, ROOT_DIR):
