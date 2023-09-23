@@ -156,7 +156,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     
     # Get the size of snapshot first
     snapshot_size = get_file_size(CHAINDATA_URL)
-    available_space = get_available_space(SNAPSHOT_DIR)
+    available_space = get_available_space(ROOT_DIR)
     
     if available_space < (snapshot_size * 2):
         print(
