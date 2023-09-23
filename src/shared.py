@@ -163,6 +163,8 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
             f"Error: Not enough disk space available. Minimum Required: {format_size(snapshot_size * 2)}+, Available: {format_size(available_space)}."
         )
         exit(1)
+    else:
+        print(f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(snapshot_size * 2)}")
 
     # Check snapshot file md5sum
     snapshot_file = os.path.join(ROOT_DIR, "snapshot")
@@ -197,6 +199,8 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
             f"Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, Available: {format_size(available_space)}."
         )
         exit(1)
+    else:
+        print(f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)}")
 
     # Extract the tar archive and check the exit status
     print("Extracting snapshot and setting up the local node...")
