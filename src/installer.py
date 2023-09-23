@@ -8,6 +8,7 @@ import shutil
 import urllib.request
 import tarfile
 import docker
+from colorama import Fore, Back, Style
 from config import findora_env
 from shared import stop_and_remove_container, create_directory_with_permissions
 
@@ -97,6 +98,7 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_I
     subprocess.run(["cp", "-a", f"{ROOT_DIR}/tendermint/config", f"/home/{USERNAME}/findora_backup/config"], check=True)
 
     # If you're re-running this for some reason, stop and remove findorad
+    print(Fore.MAGENTA)
     stop_and_remove_container("findorad")
 
 

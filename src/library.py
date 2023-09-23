@@ -438,6 +438,7 @@ def ask_question_menu_no_var(question_message, question_title, options_list) -> 
 
 
 def set_na_or_eu() -> None:
+    print(Fore.MAGENTA)
     region = ask_question_menu(
         "FRA_REGION",
         "* Setup config not found, Which region should this server download from?",
