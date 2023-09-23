@@ -23,9 +23,9 @@ else
   echo 'Findorad container stopped or does not exist, continuing.'
 fi
 
-###################
-# Run local node #
-###################
+######################
+# Restart local node #
+######################
 docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
     -v ${ROOT_DIR}/findorad:/tmp/findora \
@@ -62,6 +62,10 @@ while true; do
     fi
 done
 
+#############################
+# Post Install Stats Report #
+#############################
+curl 'http://localhost:26657/status'; echo
 curl 'http://localhost:8669/version'; echo
 curl 'http://localhost:8668/version'; echo
 curl 'http://localhost:8667/version'; echo

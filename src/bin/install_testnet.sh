@@ -192,6 +192,7 @@ done
 #############################
 # Post Install Stats Report #
 #############################
+curl 'http://localhost:26657/status'; echo
 curl 'http://localhost:8669/version'; echo
 curl 'http://localhost:8668/version'; echo
 curl 'http://localhost:8667/version'; echo
