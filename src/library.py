@@ -69,14 +69,6 @@ def loader_intro():
     return
 
 
-def first_env_check(env_file, home_dir) -> None:
-    if not os.path.exists(env_file):
-        os.system(f"touch {home_dir}/.findora.env")
-    else:
-        load_var_file(findora_env.dotenv_file)
-        return
-
-
 def set_var(env_file, key_name, update_name):
     if environ.get(key_name):
         dotenv.unset_key(env_file, key_name)
@@ -1714,3 +1706,20 @@ def run_troubleshooting_process():
                 )
                 print_stars()
                 finish_node()
+
+def check_preflight_setup(env_file, home_dir, USERNAME = findora_env.active_user_name):
+    if not os.path.exists(env_file):
+        os.system(f"touch {home_dir}/.findora.env")
+    else:
+        load_var_file(findora_env.dotenv_file)
+        return
+    for tool in ["wget", "curl", "pv", "docker"]:
+        if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
+            print_stars()
+            print(
+                f"* \033[31;01m{tool}\033[00m has not been installed and made available to {USERNAME}!\n"
+                + f"* Run the following setup commands and try again:\n\n"
+                + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora'
+            )
+            print_stars()
+            exit(1)

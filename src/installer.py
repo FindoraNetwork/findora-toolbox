@@ -13,18 +13,6 @@ from config import findora_env
 from shared import stop_and_remove_container, create_directory_with_permissions
 
 
-def check_preflight_setup(USERNAME):
-    for tool in ["wget", "curl", "pv", "docker"]:
-        if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
-            print(
-                f"* \033[31;01m{tool}\033[00m has not been installed and made available to {USERNAME}!\n"
-                + f"* Run the following setup commands and try again:\n\n"
-                + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora'
-            )
-            subprocess.run(["rm", f"{findora_env.user_home_dir}/.findora.env"], check=True)
-            exit(1)
-
-
 def download_progress_hook(count, block_size, total_size):
     global start_time
     if count == 0:
@@ -235,9 +223,6 @@ def setup_wallet_key(keypath, ROOT_DIR, network):
 
 def run_full_installer(network, region):
     USERNAME = findora_env.active_user_name
-    
-    # Check for existing files
-    check_preflight_setup(USERNAME)
 
     ENV = "prod"
 

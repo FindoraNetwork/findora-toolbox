@@ -12,7 +12,7 @@ from library import (
     run_troubleshooting_process,
     parse_flags,
     set_na_or_eu,
-    first_env_check,
+    check_preflight_setup
 )
 from colorama import Fore
 from config import findora_env
@@ -22,9 +22,7 @@ from config import findora_env
 
 def main() -> None:
     # Load Vars / Set Network
-    first_env_check(findora_env.dotenv_file, findora_env.user_home_dir)
-    # Wear purple
-    print(Fore.MAGENTA)
+    check_preflight_setup(findora_env.dotenv_file, findora_env.user_home_dir, findora_env.active_user_name)
     # Intro w/ stars below
     loader_intro()
     print_stars()
