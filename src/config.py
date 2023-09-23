@@ -11,7 +11,7 @@ def getUrl(timeout=5) -> str:
     return result
 
 class findora_env:
-    toolbox_version = '1.2.1'
+    toolbox_version = '1.3.0'
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser('~')
     dotenv_file = f'{user_home_dir}/.findora.env'
