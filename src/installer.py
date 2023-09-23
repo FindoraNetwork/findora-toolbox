@@ -52,6 +52,7 @@ def install_fn_app():
     subprocess.run(["chmod", "+x", "fn"], check=True)
     subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
 
+
 def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME):
     # Extract node_mnemonic and xfr_pubkey from keypath file
     with open(keypath, "r") as file:
@@ -145,10 +146,11 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     # Extract the tar archive and check the exit status
     print("Extracting snapshot and setting up the local node...")
     with tarfile.open(snapshot_file, "r:gz") as tar:
-        total_members = len(tar.getmembers())
-        for i, member in enumerate(tar.getmembers(), start=1):
-            print(f"Extracting {i} of {total_members} files...", end="\r")
+        extracted_count = 0
+        for member in tar:
             tar.extract(member, path=SNAPSHOT_DIR)
+            extracted_count += 1
+            print(f"Extracted {extracted_count} files...", end="\r")
     print("\nExtraction complete!")
 
     # Move the extracted files to the desired locations
