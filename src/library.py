@@ -1131,7 +1131,7 @@ def rescue_menu() -> None:
         "* We still don't detect a running container. Here are your options currently:"
         + "\n* 1 - CURL stats - Keep checking stats"
         + "\n* 2 - update_version script - Run the update version script as a first option for recovery."
-        + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and reconfigure server."
+        + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and restart server."
         + "\n* 0 - Exit and manually troubleshoot"
     )
     print_stars()
@@ -1154,22 +1154,49 @@ def update_findora_container(skip) -> None:
             ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
             cwd=findora_env.user_home_dir,
         )
-        if container_running(findora_env.container_name):
-            print_stars()
-            print("* Your container is restarted and back online. Press enter to return to the main menu.")
-            pause_for_cause()
-            run_findora_menu()
-        else:
-            print_stars()
-            print(
-                "* Your container was restarted but there was a problem bringing it back online."
-                + "\n* We will load our rescue menu with the safety_clean script as an option."
-                + "\n* You can exit out and check your docker logs with `docker logs findorad` to see if there's a file or permissions issue."
-                + "\n* Running safety_clean can help resolve most issues since update didn't bring you back online."
-            )
-            pause_for_cause
-            rescue_menu()
+        await_container_restart()
     return
+
+
+def await_container_restart() -> None:
+    count = 0
+    while count < 10:
+        if container_running(findora_env.container_name):
+            try:
+                # Attempt to get stats
+                response = requests.get("http://localhost:26657/status")
+                response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
+                stats = response.json()
+                
+                # If successful, print message and break out of the loop
+                print_stars()
+                print("* Your container is restarted and back online. Press enter to return to the main menu.")
+                pause_for_cause()
+                run_findora_menu()
+                break
+            except requests.RequestException as e:
+                # Log the exception and retry
+                print(f"* Error getting stats: {e}")
+                count += 1
+                print(f"* Retrying in 5 seconds, try {count} of 10...")
+                time.sleep(5)
+        else:
+            # If container is not running, increment counter and retry
+            count += 1
+            print_stars()
+            print(f"* Still waiting for container to restart, checking again in 5 seconds, try {count} of 10...")
+            time.sleep(5)
+    
+    # If the loop exits without breaking, offer the rescue menu
+    if count == 10:
+        print_stars()
+        print(
+            "* Your `findorad` container was restarted but did not come back online as expected."
+            + "\n* We suggest first running the update script."
+            + "\n* We are loading the rescue menu now.\n* Press enter to load the menu or ctrl+c to quit and manually troubleshoot."
+        )
+        pause_for_cause()
+        rescue_menu()       
 
 
 def migration_update() -> None:
@@ -1709,3 +1736,28 @@ def stop_and_remove_container(container_name):
             os.remove(file_path)
     else:
         print(f"{container_name} container stopped or does not exist, continuing.")
+
+
+def run_troubleshooting_process():
+    print(f"* Docker is running and working but the container '{findora_env.container_name}' is not.")
+    while True:
+        answer = ask_yes_no(
+            "* Would you like to attempt to run the update_version script to try to get your container back online? (Y/N)"
+        )
+        if answer:
+            update_findora_container(True)
+            break
+        else:
+            answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually troubleshoot)? (Y/N) ")
+            if answer2:
+                rescue_menu()
+            else:
+                print(
+                    "* Stopping toolbox so you can troubleshoot the container manually.\n"
+                    + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors with: docker logs findorad\n"
+                    + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./findora.sh -u\n"
+                    + "* If the above does not work you should be prompted to run a safety clean or you can do that manually with: ./findora.sh --clean\n"
+                    + "* If you are still having issues please reach out on our Discord: https://bit.ly/easynodediscord\n"
+                )
+                print_stars()
+                finish_node()
