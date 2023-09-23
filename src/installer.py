@@ -29,6 +29,7 @@ def check_env(keypath, network, USERNAME):
 
 
 def set_binaries(FINDORAD_IMG, ROOT_DIR):
+    print(FINDORAD_IMG)
     if (
         subprocess.run(
             ["docker", "pull", FINDORAD_IMG], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
