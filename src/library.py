@@ -1227,15 +1227,25 @@ def run_findora_installer(network, region) -> None:
     print_stars()
     time.sleep(1)
     print_stars()
-    if region == "na":
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=findora_env.user_home_dir,
-        )
+    
+    script_path = f"{findora_env.toolbox_location}/src/bin/install_{network}"
     if region == "eu":
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}_eu.sh"],
-        )
+        script_path += "_eu.sh"
+    else:
+        script_path += ".sh"
+    
+    result = subprocess.run(
+        ["bash", "-x", script_path],
+        cwd=findora_env.user_home_dir,
+        capture_output=True,
+        text=True,
+    )
+    
+    # Process the captured output and selectively print lines
+    for line in result.stdout.splitlines():
+        if "Downloading" in line or "Extracting" in line or "Error" in line:
+            print(line)
+    
     print_stars()
     create_staker_memo()
     print(
