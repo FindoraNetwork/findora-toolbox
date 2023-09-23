@@ -1227,25 +1227,27 @@ def run_findora_installer(network, region) -> None:
     print_stars()
     time.sleep(1)
     print_stars()
-    
-    script_path = f"{findora_env.toolbox_location}/src/bin/install_{network}"
+
+    script_path = f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}"
     if region == "eu":
         script_path += "_eu.sh"
     else:
         script_path += ".sh"
-    
-    result = subprocess.run(
+
+    with subprocess.Popen(
         ["bash", "-x", script_path],
         cwd=findora_env.user_home_dir,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
-    )
-    
-    # Process the captured output and selectively print lines
-    for line in result.stdout.splitlines():
-        if "Downloading" in line or "Extracting" in line or "Error" in line:
-            print(line)
-    
+    ) as proc:
+        while True:
+            line = proc.stdout.readline()
+            if not line:
+                break  # Process has finished, and no more output.
+            if "Downloading" in line or "Extracting" in line or "Error" in line:
+                print(line.strip())
+
     print_stars()
     create_staker_memo()
     print(
@@ -1594,7 +1596,7 @@ def parse_flags(parser, region, network):
     parser.add_argument(
         "--rescue",
         action="store_true",
-        help="Will run the rescue menu with full options, if your container is not running."
+        help="Will run the rescue menu with full options, if your container is not running.",
     )
 
     parser.add_argument(
@@ -1628,7 +1630,7 @@ def parse_flags(parser, region, network):
 
     if args.fn:
         update_fn_wallet()
-        
+
     if args.rescue:
         if container_running(findora_env.container_name):
             print_stars()
@@ -1644,11 +1646,13 @@ def parse_flags(parser, region, network):
     if args.update:
         if container_running(findora_env.container_name):
             print_stars()
-            question = ask_yes_no("* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) ")
+            question = ask_yes_no(
+                "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
+            )
             print_stars()
             if question:
                 run_container_update(True)
-            else: 
+            else:
                 finish_node()
         else:
             run_container_update(True)
@@ -1656,7 +1660,9 @@ def parse_flags(parser, region, network):
     if args.clean:
         if container_running(findora_env.container_name):
             print_stars()
-            question = ask_yes_no("* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) ")
+            question = ask_yes_no(
+                "* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) "
+            )
             print_stars()
             if question:
                 run_clean_script()
@@ -1719,7 +1725,9 @@ def run_troubleshooting_process():
             update_findora_container(True)
             break
         else:
-            answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually troubleshoot)? (Y/N) ")
+            answer2 = ask_yes_no(
+                "* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually troubleshoot)? (Y/N) "
+            )
             if answer2:
                 rescue_menu()
             else:
