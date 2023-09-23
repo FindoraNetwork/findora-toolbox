@@ -76,7 +76,6 @@ fi
 # Config local node #
 #####################
 node_mnemonic=$(cat ${keypath} | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //')
-xfr_pubkey="$(cat ${keypath} | grep 'pub_key' | sed 's/[",]//g' | sed 's/ *pub_key: *//')"
 
 echo $node_mnemonic > ${ROOT_DIR}/node.mnemonic || exit 1
 cp ${ROOT_DIR}/node.mnemonic /home/${USERNAME}/findora_backup/node.mnemonic

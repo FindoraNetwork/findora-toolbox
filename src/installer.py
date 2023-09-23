@@ -77,7 +77,6 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_I
     with open(keypath, "r") as file:
         content = file.read()
         node_mnemonic = re.search(r"Mnemonic:[^ ]* (.*)", content).group(1)
-        xfr_pubkey = re.search(r'pub_key: *"([^"]*)', content).group(1)
 
     # Write node_mnemonic to node.mnemonic file
     with open(f"{ROOT_DIR}/node.mnemonic", "w") as file:
