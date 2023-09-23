@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 from pprint import pprint
 from config import findora_env
+from updater import run_update_restart
+from safety_clean import run_safety_clean
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
@@ -1141,11 +1143,11 @@ def rescue_menu() -> None:
     menu_options = {
         0: finish_node,
         1: get_curl_stats,
-        2: run_container_update,
-        3: run_clean_script,
+        2: run_update_restart,
+        3: run_safety_clean,
     }
     print(
-        "* We still don't detect a running container. Here are your options currently:"
+        "* We still don't detect a running container.\n* Sometimes it can take a few minutes before the api starts responding.\n* You can attempt to get stats again for a few minutes, if that doesn't work review docker logs & try the update_version.\n* Here are your options currently:"
         + "\n* 1 - CURL stats - Keep checking stats"
         + "\n* 2 - update_version script - Run the update version script as a first option for recovery."
         + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and restart server."
@@ -1160,18 +1162,6 @@ def rescue_menu() -> None:
 
     menu_options[option]()
     rescue_menu()
-
-
-def update_findora_container(skip) -> None:
-    print("* Running the update and restart may cause missed blocks, beware before proceeding!")
-    if not skip:
-        answer = ask_yes_no("* Are you sure you want to check for an upgrade and restart? (Y/N) ")
-    if answer:
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=findora_env.user_home_dir,
-        )
-    return
 
 
 def migration_update() -> None:
@@ -1192,76 +1182,12 @@ def update_fn_wallet() -> None:
         )
 
 
-def run_clean_script() -> None:
-    region = os.environ.get("FRA_REGION")
-    print(
-        "* Running the update and restart may cause missed blocks, beware before proceeding!"
-        + "\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
-    )
-    answer = ask_yes_no(f"* Do you want to run safety clean from the {region} region now? (Y/N) ")
-    if answer:
-        if os.environ.get("FRA_REGION") == "na":
-            subprocess.call(
-                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
-                cwd=findora_env.user_home_dir,
-            )
-        if os.environ.get("FRA_REGION") == "eu":
-            subprocess.call(
-                [
-                    "bash",
-                    "-x",
-                    f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}_eu.sh",
-                ],
-            )
-        if container_running(findora_env.container_name):
-            print_stars()
-            print("* Your container is restarted and back online. Press enter to return to the main menu.")
-            input()
-            run_findora_menu()
-        else:
-            print_stars()
-            print(
-                "* Your container was restarted but there was a problem bringing it back online.\n*"
-                + "\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot."
-            )
-            input()
-            rescue_menu()
-
-
 def create_staker_memo() -> None:
     if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
         shutil.copy(
             f"{findora_env.toolbox_location}/src/bin/staker_memo",
             f"{findora_env.user_home_dir}",
         )
-
-
-def run_findora_installer(network, region) -> None:
-    standalone_option()
-    print(
-        "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
-    )
-    print_stars()
-
-    script_path = f"{findora_env.toolbox_location}/src/bin/install_{network}"
-    if region == "eu":
-        script_path += "_eu.sh"
-    else:
-        script_path += ".sh"
-
-    subprocess.run(
-        ["bash", "-x", script_path],
-        cwd=findora_env.user_home_dir,
-        check=True,
-    )
-
-    print_stars()
-    create_staker_memo()
-    print(
-        "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your "
-        + "validator on-chain or migrate from another server onto this server."
-    )
-    pause_for_cause()
 
 
 def menu_install_findora(network, region) -> None:
@@ -1273,7 +1199,7 @@ def menu_install_findora(network, region) -> None:
     )
     answer = ask_yes_no(f"* Do you want to install {network} from the {region} region now? (Y/N) ")
     if answer:
-        run_findora_installer(network, region)
+        run_full_installer(network, region)
     else:
         raise SystemExit(0)
 
@@ -1291,21 +1217,6 @@ def run_ubuntu_updates() -> None:
         refresh_fn_stats()
     else:
         return
-
-
-def chown_dir(root_dir, user, group) -> None:
-    for root, dirs, files in os.walk(root_dir):
-        for f in files:
-            os.chown(os.path.join(root, f), user, group)
-        for d in dirs:
-            os.chown(os.path.join(root, d), user, group)
-
-
-def get_uid() -> None:
-    user_name = getpass.getuser()
-    user_info = pwd.getpwnam(user_name)
-    uid = user_info.pw_uid
-    return uid
 
 
 def migration_instructions():
@@ -1413,11 +1324,6 @@ def migrate_to_server() -> None:
 
     else:
         migration_instructions()
-    return
-
-
-def run_container_update(status=False) -> None:
-    update_findora_container(status)
     return
 
 
@@ -1543,8 +1449,8 @@ def run_findora_menu() -> None:
         5: set_send_options,
         6: change_validator_info,
         7: update_fn_wallet,
-        8: run_container_update,
-        9: run_clean_script,
+        8: run_update_restart,
+        9: run_safety_clean,
         10: run_ubuntu_updates,
         11: server_disk_check,
         12: all_sys_info,
@@ -1610,13 +1516,13 @@ def parse_flags(parser, region, network):
         "--clean", action="store_true", help="Will run the clean script, removes database, reloads all data."
     )
 
-    parser.add_argument("--fn", action="store_true", help="Will update your fn wallet application.")
+    parser.add_argument(
+        "--fn", action="store_true", help="Will reset fn to your current key files replacing the running ones."
+    )
 
     parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
     )
-
-    parser.add_argument("--installpy", action="store_true", help="Our new python based installer, in testing.")
 
     parser.add_argument(
         "--ultrareset",
@@ -1634,12 +1540,7 @@ def parse_flags(parser, region, network):
         finish_node()
 
     if args.installer:
-        network = set_main_or_test()
         menu_install_findora(network, region)
-
-    if args.installpy:
-        network = set_main_or_test()
-        run_full_installer(network, region)
 
     if args.fn:
         update_fn_wallet()
@@ -1664,11 +1565,11 @@ def parse_flags(parser, region, network):
             )
             print_stars()
             if question:
-                run_container_update(True)
+                run_update_restart(network)
             else:
                 finish_node()
         else:
-            run_container_update(True)
+            run_update_restart(network)
 
     if args.clean:
         if container_running(findora_env.container_name):
@@ -1678,11 +1579,11 @@ def parse_flags(parser, region, network):
             )
             print_stars()
             if question:
-                run_clean_script()
+                run_safety_clean(network)
             else:
                 finish_node()
         else:
-            run_clean_script()
+            run_safety_clean(network)
 
     if args.stats:
         menu_topper()
@@ -1709,7 +1610,7 @@ def run_troubleshooting_process():
             "* Would you like to attempt to run the update_version script to try to get your container back online? (Y/N)"
         )
         if answer:
-            update_findora_container(True)
+            run_update_restart()
             break
         else:
             answer2 = ask_yes_no(
