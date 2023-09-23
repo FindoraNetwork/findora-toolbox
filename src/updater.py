@@ -6,7 +6,7 @@ from config import findora_env
 from shared import chown_dir, create_local_node, stop_and_remove_container, get_live_version
 
 
-def run_update_restart(network = os.environ.get("NETWORK")):
+def run_update_restart(network = os.environ.get("FRA_NETWORK")):
     USERNAME = findora_env.active_user_name
 
     ENV = "prod"

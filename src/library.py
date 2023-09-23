@@ -737,7 +737,7 @@ class MemoUpdater(cmd2.Cmd):
                     return
                 else:
                     memo_items_json = json.dumps(memo_items)
-                    print("* Here is your updated staker_memo information for verifictaion before sending changes:")
+                    print("* Here is your updated staker_memo information for verification before sending changes:")
                     print_stars()
                     print(memo_items)
                     print_stars()
