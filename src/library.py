@@ -1195,7 +1195,9 @@ def menu_install_findora(network, region) -> None:
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
         + f"\n* But...it doesn't look like you have Findora {network} installed."
-        + "\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
+        + "\n* We will setup Findora validator software on this server with a temporary key and wallet file."
+        + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or start a migration."
+        + "\n* Read more about migrating an existing validator here: https://docs.easynode.pro/findora/moving#migrate-your-server-via-validator-toolbox"
     )
     answer = ask_yes_no(f"* Do you want to install {network} from the {region} region now? (Y/N) ")
     if answer:
