@@ -26,6 +26,7 @@ check_env() {
     fi
 }
 
+# don't think we need this...
 set_binaries() {
     # OS=$1
     docker pull ${FINDORAD_IMG} || exit 1

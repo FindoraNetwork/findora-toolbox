@@ -7,8 +7,9 @@ import hashlib
 import shutil
 import urllib.request
 import tarfile
+import docker
 from config import findora_env
-from shared import stop_and_remove_container
+from shared import stop_and_remove_container, create_directory_with_permissions
 
 
 def check_env(keypath, network, USERNAME):
@@ -44,40 +45,12 @@ def download_progress_hook(count, block_size, total_size):
     )
 
 
-def set_binaries(FINDORAD_IMG, ROOT_DIR):
-    print(FINDORAD_IMG)
-    if (
-        subprocess.run(
-            ["docker", "pull", FINDORAD_IMG], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-        ).returncode
-        != 0
-    ):
-        print("Failed to pull Docker image.")
-        exit(1)
-
-    if (
-        subprocess.run(
-            [
-                "wget",
-                "-T",
-                "10",
-                "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn",
-                "-O",
-                "fn",
-                "-q",
-            ]
-        ).returncode
-        != 0
-    ):
-        print("Failed to download fn.")
-        exit(1)
-
-    new_path = f"{ROOT_DIR}/bin"
-    subprocess.run(["rm", "-rf", new_path], stderr=subprocess.DEVNULL)
-    subprocess.run(["mkdir", "-p", new_path], check=True)
-    subprocess.run(["mv", "fn", new_path], check=True)
-    subprocess.run(["chmod", "-R", "+x", new_path], check=True)
-
+def set_binaries():
+    subprocess.run(
+        ["wget", "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn"], check=True
+    )
+    subprocess.run(["chmod", "+x", "fn"], check=True)
+    subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
 
 def install_fn_app():
     # Install fn App
@@ -183,7 +156,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     with tarfile.open(snapshot_file, "r:gz") as tar:
         total_members = len(tar.getmembers())
         for i, member in enumerate(tar.getmembers(), start=1):
-            print(f"Extracting {i} of {total_members} files...", end='\r')
+            print(f"Extracting {i} of {total_members} files...", end="\r")
             tar.extract(member, path=SNAPSHOT_DIR)
     print("\nExtraction complete!")
 
@@ -198,64 +171,56 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
 
 def create_local_node(ROOT_DIR, FINDORAD_IMG):
     # Define the Docker image and container name
+    client = docker.from_env()
+
     CONTAINER_NAME = "findorad"
 
-    # Run the Docker container
-    subprocess.run(
-        [
-            "docker",
-            "run",
-            "-d",
-            "-v",
-            f"{ROOT_DIR}/tendermint:/root/.tendermint",
-            "-v",
-            f"{ROOT_DIR}/findorad:/tmp/findora",
-            "-p",
-            "8669:8669",
-            "-p",
-            "8668:8668",
-            "-p",
-            "8667:8667",
-            "-p",
-            "8545:8545",
-            "-p",
-            "26657:26657",
-            "-e",
-            "EVM_CHAIN_ID=2152",
-            "--name",
-            CONTAINER_NAME,
-            FINDORAD_IMG,
-            "node",
-            "--ledger-dir",
-            "/tmp/findora",
-            "--tendermint-host",
-            "0.0.0.0",
-            "--tendermint-node-key-config-path",
-            "/root/.tendermint/config/priv_validator_key.json",
-            "--enable-query-service",
-        ]
-    )
+    try:
+        container = client.containers.run(
+            image=FINDORAD_IMG,
+            name=CONTAINER_NAME,
+            detach=True,
+            volumes={
+                f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
+                f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
+            },
+            ports={
+                "8669/tcp": 8669,
+                "8668/tcp": 8668,
+                "8667/tcp": 8667,
+                "8545/tcp": 8545,
+                "26657/tcp": 26657,
+            },
+            environment={"EVM_CHAIN_ID": "2152"},
+            command="node --ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service",
+        )
 
-    # Wait for the container to be up and the endpoint to respond
-    while True:
-        # Check if the container is running
-        result = subprocess.run(["docker", "ps", "--format", "{{.Names}}"], capture_output=True, text=True)
-        if CONTAINER_NAME in result.stdout:
-            # Check the response from the endpoint
-            try:
-                response = requests.get("http://localhost:26657/status")
-                if response.ok:
-                    print("Container is up and endpoint is responding.")
-                    break
-                else:
+        # Wait for the container to be up and the endpoint to respond
+        while True:
+            # Check if the container is running
+            result = subprocess.run(["docker", "ps", "--format", "{{.Names}}"], capture_output=True, text=True)
+            if CONTAINER_NAME in result.stdout:
+                # Check the response from the endpoint
+                try:
+                    response = requests.get("http://localhost:26657/status")
+                    if response.ok:
+                        print("Container is up and endpoint is responding.")
+                        break
+                    else:
+                        print("Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
+                        time.sleep(10)
+                except requests.ConnectionError:
                     print("Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
                     time.sleep(10)
-            except requests.ConnectionError:
-                print("Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
-                time.sleep(10)
-        else:
-            print("Container is not running. Exiting...")
-            exit(1)
+            else:
+                print("Container is not running. Exiting...")
+                exit(1)
+    except docker.errors.ContainerError as e:
+        print(f"Container error: {e}")
+    except docker.errors.ImageNotFound:
+        print("Docker image not found.")
+    except docker.errors.APIError as e:
+        print(f"Docker API error: {e}")
 
     # Post Install Stats Report
     print(requests.get("http://localhost:26657/status").text)
@@ -287,7 +252,7 @@ def run_full_installer(network, region):
         exit(1)
 
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
-    CHECKPOINT_URL= f"https://{ENV}-{network}-us-west-2-ec2-instance.s3.us-west-2.amazonaws.com/{network}/checkpoint"
+    CHECKPOINT_URL = f"https://{ENV}-{network}-us-west-2-ec2-instance.s3.us-west-2.amazonaws.com/{network}/checkpoint"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
     CONTAINER_NAME = "findorad"
@@ -295,22 +260,22 @@ def run_full_installer(network, region):
     install_fn_app()
 
     # Make Directories & Set Permissions
-    subprocess.run(["sudo", "mkdir", "-p", "/data/findora"], check=True)
+    create_directory_with_permissions("/data/findora", USERNAME)
     subprocess.run(["mkdir", "-p", f"/home/{USERNAME}/findora_backup"], check=True)
-    subprocess.run(["sudo", "chown", "-R", f"{USERNAME}:{USERNAME}", "/data/findora/"], check=True)
-    subprocess.run(["mkdir", "-p", f"/data/findora/{network}"], check=True)
+    subprocess.run(["mkdir", "-p", ROOT_DIR], check=True)
 
     # Check for existing files
     check_env(keypath, network, USERNAME)
 
     subprocess.run(["cp", "/tmp/tmp.gen.keypair", f"/home/{USERNAME}/findora_backup/tmp.gen.keypair"], check=True)
-    subprocess.run(["mv", "/tmp/tmp.gen.keypair", f"/data/findora/{network}/{network}_node.key"], check=True)
+    subprocess.run(["mv", "/tmp/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"], check=True)
 
     uname = subprocess.getoutput("uname -s")
     if uname == "Linux":
-        set_binaries(FINDORAD_IMG, ROOT_DIR)
+        set_binaries()
     elif uname == "Darwin":
-        set_binaries(FINDORAD_IMG, ROOT_DIR)
+        # How do we do mac? Same or not sure? Same for now...
+        set_binaries()
     else:
         print("Unsupported system platform!")
         exit(1)
