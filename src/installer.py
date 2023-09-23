@@ -192,9 +192,8 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     os.remove(snapshot_file)
 
 
-def create_local_node(ROOT_DIR):
+def create_local_node(ROOT_DIR, FINDORAD_IMG):
     # Define the Docker image and container name
-    FINDORAD_IMG = "findoranetwork/findorad:latest"  # Replace with the actual image tag
     CONTAINER_NAME = "findorad"
 
     # Run the Docker container
@@ -323,4 +322,4 @@ def run_full_installer(network, region):
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml"], check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR)
+    create_local_node(ROOT_DIR, FINDORAD_IMG)
