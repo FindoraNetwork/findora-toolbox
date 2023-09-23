@@ -11,7 +11,7 @@ from config import findora_env
 from shared import stop_and_remove_container
 
 
-def check_env(keypath, network, FN, USERNAME):
+def check_env(keypath, network, USERNAME):
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
@@ -25,7 +25,7 @@ def check_env(keypath, network, FN, USERNAME):
     if not os.path.isfile(keypath):
         print(f"* No tmp.gen.keypair file detected, generating file and creating to {network}_node.key")
         with open("/tmp/tmp.gen.keypair", "w") as file:
-            subprocess.run([FN, "genkey"], stdout=file, text=True)
+            subprocess.run(["fn", "genkey"], stdout=file, text=True)
 
 
 def set_binaries(FINDORAD_IMG, ROOT_DIR):
@@ -71,7 +71,7 @@ def install_fn_app():
     subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
 
 
-def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME, FN):
+def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME):
     # Extract node_mnemonic and xfr_pubkey from keypath file
     with open(keypath, "r") as file:
         content = file.read()
@@ -86,9 +86,9 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_I
     subprocess.run(["cp", f"{ROOT_DIR}/node.mnemonic", f"/home/{USERNAME}/findora_backup/node.mnemonic"], check=True)
 
     # Run FN setup commands
-    subprocess.run([FN, "setup", "-S", SERV_URL], check=True)
-    subprocess.run([FN, "setup", "-K", f"{ROOT_DIR}/tendermint/config/priv_validator_key.json"], check=True)
-    subprocess.run([FN, "setup", "-O", f"{ROOT_DIR}/node.mnemonic"], check=True)
+    subprocess.run(["fn", "setup", "-S", SERV_URL], check=True)
+    subprocess.run(["fn", "setup", "-K", f"{ROOT_DIR}/tendermint/config/priv_validator_key.json"], check=True)
+    subprocess.run(["fn", "setup", "-O", f"{ROOT_DIR}/node.mnemonic"], check=True)
 
     # Clean old data and config files
     subprocess.run(["sudo", "rm", "-rf", f"{ROOT_DIR}/{network}"], check=True)
@@ -257,7 +257,6 @@ def run_full_installer(network, region):
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
-    FN = f"{ROOT_DIR}/bin/fn"
     CONTAINER_NAME = "findorad"
 
     install_fn_app()
@@ -269,7 +268,7 @@ def run_full_installer(network, region):
     subprocess.run(["mkdir", "-p", f"/data/findora/{network}"], check=True)
 
     # Check for existing files
-    check_env(keypath, network, FN, USERNAME)
+    check_env(keypath, network, USERNAME)
 
     subprocess.run(["cp", "/tmp/tmp.gen.keypair", f"/home/{USERNAME}/findora_backup/tmp.gen.keypair"], check=True)
     subprocess.run(["mv", "/tmp/tmp.gen.keypair", f"/data/findora/{network}/{network}_node.key"], check=True)
@@ -284,7 +283,7 @@ def run_full_installer(network, region):
         exit(1)
 
     # Config local node
-    config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME, FN)
+    config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME)
 
     # get snapshot
     get_snapshot(ENV, network, ROOT_DIR, region)
