@@ -37,7 +37,7 @@ def run_full_installer(network, region):
     setup_wallet_key(keypath, ROOT_DIR, network)
 
     # Config local node
-    config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG, CONTAINER_NAME)
+    config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG)
 
     # get snapshot
     get_snapshot(ENV, network, ROOT_DIR, region)

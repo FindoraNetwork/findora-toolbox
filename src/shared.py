@@ -67,7 +67,7 @@ def install_fn_app():
     subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
 
 
-def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG, CONTAINER_NAME):
+def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
     # Extract node_mnemonic and xfr_pubkey from keypath file
     with open(keypath, "r") as file:
         content = file.read()
@@ -81,9 +81,19 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
     subprocess.run(["cp", f"{ROOT_DIR}/node.mnemonic", f"/home/{USERNAME}/findora_backup/node.mnemonic"], check=True)
 
     # Run FN setup commands
-    subprocess.run(["fn", "setup", "-S", server_url], check=True)
-    subprocess.run(["fn", "setup", "-K", f"{ROOT_DIR}/tendermint/config/priv_validator_key.json"], check=True)
-    subprocess.run(["fn", "setup", "-O", f"{ROOT_DIR}/node.mnemonic"], check=True)
+    subprocess.run(["fn", "setup", "-S", server_url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(
+        ["fn", "setup", "-K", f"{ROOT_DIR}/tendermint/config/priv_validator_key.json"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
+    subprocess.run(
+        ["fn", "setup", "-O", f"{ROOT_DIR}/node.mnemonic"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
 
     # Clean old data and config files
     subprocess.run(["sudo", "rm", "-rf", f"{ROOT_DIR}/{network}"], check=True)
@@ -126,7 +136,6 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
 
     with open(latest_file, "r") as file:
         CHAINDATA_URL, CHECKSUM_LATEST = file.read().strip().split(",")
-        print(CHAINDATA_URL)
 
     # Remove old data
     shutil.rmtree(os.path.join(ROOT_DIR, "findorad"), ignore_errors=True)
