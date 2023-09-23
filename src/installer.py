@@ -106,6 +106,9 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
         latest_url = f"https://{ENV}-{network}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
     elif region == "eu":
         latest_url = f"https://{ENV}-{network}-eu-download.s3.eu-central-1.amazonaws.com/latest"
+    elif network == "testnet":
+        print(f"Testnet does not have an EU snapshot. Downloading NA version...")
+        latest_url = f"https://{ENV}-{network}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
     latest_file = os.path.join(ROOT_DIR, "latest")
     urllib.request.urlretrieve(latest_url, latest_file)
 
