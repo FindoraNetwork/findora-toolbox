@@ -190,7 +190,8 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
             f"Error: Not enough disk space available. Minimum Required: {format_size(snapshot_size)}+, Available: {format_size(available_space)}."
         )
         question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
-
+        if not question:
+            exit(1)
     else:
         print(
             f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(snapshot_size)}"
@@ -230,7 +231,9 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
         print(
             f"Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, Available: {format_size(available_space)}."
         )
-        exit(1)
+        question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
+        if not question:
+            exit(1)
     else:
         print(
             f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)}"
