@@ -8,8 +8,6 @@ import shutil
 import urllib.request
 import tarfile
 import docker
-import pwd
-import grp
 from colorama import Fore, Back, Style
 from config import findora_env
 
@@ -298,30 +296,5 @@ def format_size(size_in_bytes, is_speed=False):
     return f"{size_in_bytes:.2f} PB" + ("/s" if is_speed else "")
 
 
-def chown_dir(root_dir, user, group) -> None:
-    try:
-        # Convert user and group to UID and GID
-        uid = pwd.getpwnam(user).pw_uid
-        gid = grp.getgrnam(group).gr_gid
-        
-        # Walk through the directory and change owner and group for each file and directory
-        for root, dirs, files in os.walk(root_dir):
-            for f in files:
-                os.chown(os.path.join(root, f), uid, gid)
-            for d in dirs:
-                os.chown(os.path.join(root, d), uid, gid)
-                
-    except KeyError as e:
-        print(f"Error: User or group not found - {e}")
-    except PermissionError:
-        print(f"Error: Permission denied to change owner/group for {root_dir}")
-    except Exception as e:
-        print(f"Error: Unable to change owner/group for {root_dir} - {e}")
-
-
-
-def get_uid() -> None:
-    user_name = getpass.getuser()
-    user_info = pwd.getpwnam(user_name)
-    uid = user_info.pw_uid
-    return uid
+def chown_dir(chown_dir, user, group) -> None:
+    subprocess.run(["sudo", "chown", "-R", f"{user}:{group}", chown_dir], check=True)
