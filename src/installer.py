@@ -266,9 +266,8 @@ def run_full_installer(network, region):
             LIVE_VERSION = match.group()
     else:
         print(f"Failed to retrieve the version. HTTP Response Code: {response.status_code}")
+        exit(1)
         
-    LIVE_VERSION = subprocess.getoutput(f"curl -s {SERV_URL}:8668/version | awk -F\\  '{{print $2}}'")
-    print(LIVE_VERSION)
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
