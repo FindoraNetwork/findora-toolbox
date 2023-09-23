@@ -10,7 +10,7 @@ import tarfile
 import docker
 from colorama import Fore, Back, Style
 from config import findora_env
-from shared import stop_and_remove_container, create_directory_with_permissions
+from shared import stop_and_remove_container, create_directory_with_permissions, format_size
 
 
 def download_progress_hook(count, block_size, total_size):
@@ -23,8 +23,10 @@ def download_progress_hook(count, block_size, total_size):
     speed = int(progress_size / (1024 * duration))
     percent = int(count * block_size * 100 / total_size)
     time_remaining = ((total_size - progress_size) / (speed * 1024)) if speed > 0 else 0
+    formatted_progress_size = format_size(progress_size)
+    formatted_total_size = format_size(total_size)
     print(
-        f"Downloaded {progress_size} of {total_size} bytes ({percent}%). Speed: {speed} KB/s. Time remaining: {time_remaining:.2f} seconds.",
+        f"Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). Speed: {speed} KB/s. Time remaining: {time_remaining:.2f} seconds.",
         end="\r",
     )
 
