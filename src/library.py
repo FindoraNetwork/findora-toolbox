@@ -121,7 +121,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
             )
             print_stars()
             print(
-                f"* To run all the prerequistes at once, run the following setup command. If you were missing docker, reconnect in a new terminal to gain access on servicefindora:\n"
+                f"* To run all the prerequisites at once, run the following setup command. If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`:\n"
                 + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora'
             )
             print_stars()
@@ -1111,7 +1111,7 @@ def rescue_menu() -> None:
     menu_options = {
         0: finish_node,
         1: get_curl_stats,
-        2: run_update_restart,
+        2: update_restart_launcher,
         3: run_safety_clean,
     }
     print(
@@ -1409,6 +1409,9 @@ def backup_folder_check() -> None:
             )
 
 
+def update_restart_launcher() -> None:
+    run_update_restart(os.environ.get("FRA_NETWORK"))
+
 def run_findora_menu() -> None:
     menu_options = {
         0: finish_node,
@@ -1419,7 +1422,7 @@ def run_findora_menu() -> None:
         5: set_send_options,
         6: change_validator_info,
         7: update_fn_wallet,
-        8: run_update_restart,
+        8: update_restart_launcher,
         9: run_safety_clean,
         10: run_ubuntu_updates,
         11: server_disk_check,
@@ -1535,11 +1538,11 @@ def parse_flags(parser, region, network):
             )
             print_stars()
             if question:
-                run_update_restart(network)
+                run_update_restart(os.environ.get("FRA_NETWORK"))
             else:
                 finish_node()
         else:
-            run_update_restart(network)
+            run_update_restart(os.environ.get("FRA_NETWORK"))
 
     if args.clean:
         if container_running(findora_env.container_name):
@@ -1580,7 +1583,7 @@ def run_troubleshooting_process():
             "* Would you like to attempt to run the update_version script to try to get your container back online? (Y/N)"
         )
         if answer:
-            run_update_restart()
+            run_update_restart(os.environ.get("FRA_NETWORK"))
             break
         else:
             answer2 = ask_yes_no(
