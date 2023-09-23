@@ -12,6 +12,31 @@ from colorama import Fore, Back, Style
 from config import findora_env
 
 
+def ask_yes_no(question: str) -> bool:
+    yes_no_answer = ""
+    while not yes_no_answer.startswith(("Y", "N")):
+        yes_no_answer = input(f"{question}: ").upper()
+    if yes_no_answer.startswith("Y"):
+        return True
+    return False
+
+
+def compare_two_files(input1, input2) -> None:
+    # open the files
+    file1 = open(input1, "rb")
+    file2 = open(input2, "rb")
+
+    # generate their hashes
+    hash1 = hashlib.md5(file1.read()).hexdigest()
+    hash2 = hashlib.md5(file2.read()).hexdigest()
+
+    # compare the hashes
+    if hash1 == hash2:
+        return True
+    else:
+        return False
+
+
 def get_file_size(url):
     response = requests.head(url)
     file_size = int(response.headers.get("Content-Length", 0))
@@ -155,18 +180,21 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     shutil.rmtree(os.path.join(ROOT_DIR, "findorad"), ignore_errors=True)
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "data"), ignore_errors=True)
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"), ignore_errors=True)
-    
+
     # Get the size of snapshot first
     snapshot_size = get_file_size(CHAINDATA_URL) * 3
     available_space = get_available_space(ROOT_DIR)
-    
+
     if available_space < (snapshot_size):
         print(
             f"Error: Not enough disk space available. Minimum Required: {format_size(snapshot_size)}+, Available: {format_size(available_space)}."
         )
-        exit(1)
+        question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
+
     else:
-        print(f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(snapshot_size)}")
+        print(
+            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(snapshot_size)}"
+        )
 
     # Check snapshot file md5sum
     snapshot_file = os.path.join(ROOT_DIR, "snapshot")
@@ -184,14 +212,14 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
 
         if CHECKSUM_LATEST and CHECKSUM_LATEST == CHECKSUM:
             break
-        
+
     print("Checksum matches, extracting snapshot now...")
 
     # Define the directory paths
     SNAPSHOT_DIR = os.path.join(ROOT_DIR, "snapshot_data")
     LEDGER_DIR = os.path.join(ROOT_DIR, "findorad")
     TENDERMINT_DIR = os.path.join(ROOT_DIR, "tendermint", "data")
-    
+
     # Create the snapshot directory
     os.makedirs(SNAPSHOT_DIR, exist_ok=True)
 
@@ -204,7 +232,9 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
         )
         exit(1)
     else:
-        print(f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)}")
+        print(
+            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)}"
+        )
 
     # Extract the tar archive and check the exit status
     print("Extracting snapshot and setting up the local node...")

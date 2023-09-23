@@ -10,6 +10,7 @@ from pprint import pprint
 from config import findora_env
 from updater import run_update_restart
 from safety_clean import run_safety_clean
+from shared import ask_yes_no, compare_two_files
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
@@ -47,7 +48,7 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 # loader intro splash screen
 def loader_intro():
-    standalone_option()
+    print_stars()
     p = f"""
 
 
@@ -79,31 +80,6 @@ def set_var(env_file, key_name, update_name):
     dotenv.set_key(env_file, key_name, update_name)
     load_var_file(findora_env.dotenv_file)
     return
-
-
-def compare_two_files(input1, input2) -> None:
-    # open the files
-    file1 = open(input1, "rb")
-    file2 = open(input2, "rb")
-
-    # generate their hashes
-    hash1 = hashlib.md5(file1.read()).hexdigest()
-    hash2 = hashlib.md5(file2.read()).hexdigest()
-
-    # compare the hashes
-    if hash1 == hash2:
-        return True
-    else:
-        return False
-
-
-def ask_yes_no(question: str) -> bool:
-    yes_no_answer = ""
-    while not yes_no_answer.startswith(("Y", "N")):
-        yes_no_answer = input(f"{question}: ").upper()
-    if yes_no_answer.startswith("Y"):
-        return True
-    return False
 
 
 def load_var_file(var_file):
@@ -176,7 +152,7 @@ def os_upgrades() -> None:
 
 
 def menu_error() -> None:
-    standalone_option()
+    print_stars()
     print(
         "* "
         + Fore.RED
@@ -513,7 +489,7 @@ def menu_findora() -> None:
 
 
 def get_curl_stats() -> None:
-    standalone_option()
+    print_stars()
     print(Fore.GREEN)
     try:
         response = requests.get("http://localhost:26657/status")
@@ -536,7 +512,7 @@ def capture_stats() -> None:
 
 
 def refresh_fn_stats() -> None:
-    standalone_option()
+    print_stars()
     try:
         output = subprocess.check_output(["fn", "show"])
         output = output.decode().replace("b'", "")
@@ -548,16 +524,8 @@ def refresh_fn_stats() -> None:
         )
 
 
-def standalone_option():
-    # For menu options that can run on their own, always clear and stars first.
-    print(Fore.MAGENTA)
-
-    print_stars()
-    return
-
-
 def claim_findora_rewards() -> None:
-    standalone_option()
+    print_stars()
     try:
         output = subprocess.call(
             ["fn", "claim"],
@@ -723,7 +691,7 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
 
 
 def change_rate(our_fn_stats):
-    standalone_option()
+    print_stars()
     print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
     answer = input(
         "* What would you like the new rate to be?\n* Please use findora notation, "
@@ -797,7 +765,7 @@ class MemoUpdater(cmd2.Cmd):
 
 def change_validator_info():
     # fix this menu, it's nuts. Always does change_rate
-    standalone_option()
+    print_stars()
     output = fetch_fn_show_output()
     our_fn_stats = get_fn_stats(output)
     if "Self Delegation" not in our_fn_stats:
@@ -855,7 +823,7 @@ def check_address_input(address) -> None:
 def set_send_options() -> None:
     # Give'm some options!
     print(Fore.MAGENTA)
-    standalone_option()
+    print_stars()
     menu_option = ask_question_menu_no_var(
         f"* Select a send tx option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}"
         + f"{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current "
