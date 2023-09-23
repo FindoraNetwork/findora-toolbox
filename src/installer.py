@@ -13,7 +13,7 @@ from config import findora_env
 from shared import stop_and_remove_container, create_directory_with_permissions
 
 
-def check_env(keypath, network, USERNAME):
+def check_preflight_setup(USERNAME):
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
@@ -23,11 +23,6 @@ def check_env(keypath, network, USERNAME):
             )
             subprocess.run(["rm", f"{findora_env.user_home_dir}/.findora.env"], check=True)
             exit(1)
-
-    if not os.path.isfile(keypath):
-        print(f"* No tmp.gen.keypair file detected, generating file and creating to {network}_node.key")
-        with open("/tmp/tmp.gen.keypair", "w") as file:
-            subprocess.run(["fn", "genkey"], stdout=file, text=True)
 
 
 def download_progress_hook(count, block_size, total_size):
@@ -226,8 +221,23 @@ def create_local_node(ROOT_DIR, FINDORAD_IMG):
     print("Local node initialized! You can now run the migration process or wait for sync and create your validator.")
 
 
+def setup_wallet_key(keypath, ROOT_DIR, network):
+    if not os.path.isfile(keypath):
+        if os.path.isfile(f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair"):
+            subprocess.run(["cp", f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"], check=True)
+        elif os.path.isfile(f"{findora_env.user_home_dir}/tmp.gen.keypair"):
+            subprocess.run(["cp", f"{findora_env.user_home_dir}/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"], check=True)
+        else:
+            print(f"* No tmp.gen.keypair file detected, generating file and creating to {network}_node.key")
+            with open(f"{ROOT_DIR}/{network}_node.key", "w") as file:
+                subprocess.run(["fn", "genkey"], stdout=file, text=True)
+
+
 def run_full_installer(network, region):
     USERNAME = findora_env.active_user_name
+    
+    # Check for existing files
+    check_preflight_setup(USERNAME)
 
     ENV = "prod"
 
@@ -267,12 +277,9 @@ def run_full_installer(network, region):
     subprocess.run(["mkdir", "-p", f"/home/{USERNAME}/findora_backup"], check=True)
     subprocess.run(["mkdir", "-p", ROOT_DIR], check=True)
 
-    # Check for existing files
-    check_env(keypath, network, USERNAME)
-
-    subprocess.run(["cp", "/tmp/tmp.gen.keypair", f"/home/{USERNAME}/findora_backup/tmp.gen.keypair"], check=True)
-    subprocess.run(["mv", "/tmp/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"], check=True)
-
+    # Setup wallet key
+    setup_wallet_key(keypath, ROOT_DIR, network)
+    
     # Config local node
     config_local_node(keypath, ROOT_DIR, USERNAME, SERV_URL, network, FINDORAD_IMG, CONTAINER_NAME)
 
