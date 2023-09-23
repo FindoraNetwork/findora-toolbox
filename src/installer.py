@@ -28,6 +28,22 @@ def check_env(keypath, network, USERNAME):
             subprocess.run(["fn", "genkey"], stdout=file, text=True)
 
 
+def download_progress_hook(count, block_size, total_size):
+    global start_time
+    if count == 0:
+        start_time = time.time()
+        return
+    duration = time.time() - start_time
+    progress_size = int(count * block_size)
+    speed = int(progress_size / (1024 * duration))
+    percent = int(count * block_size * 100 / total_size)
+    time_remaining = ((total_size - progress_size) / (speed * 1024)) if speed > 0 else 0
+    print(
+        f"Downloaded {progress_size} of {total_size} bytes ({percent}%). Speed: {speed} KB/s. Time remaining: {time_remaining:.2f} seconds.",
+        end="\r",
+    )
+
+
 def set_binaries(FINDORAD_IMG, ROOT_DIR):
     print(FINDORAD_IMG)
     if (
@@ -141,7 +157,8 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     snapshot_file = os.path.join(ROOT_DIR, "snapshot")
     while True:
         print("Downloading snapshot...")
-        urllib.request.urlretrieve(CHAINDATA_URL, snapshot_file)
+        urllib.request.urlretrieve(CHAINDATA_URL, snapshot_file, reporthook=download_progress_hook)
+        print("\nDownload complete!")
 
         # Calculate the md5 checksum of the downloaded file
         md5_hash = hashlib.md5()
@@ -247,11 +264,10 @@ def create_local_node(ROOT_DIR):
 
 
 def run_full_installer(network, region):
-    
     USERNAME = findora_env.active_user_name
-    
+
     ENV = "prod"
-       
+
     SERV_URL = f"https://{ENV}-{network}.{ENV}.findora.org"
 
     # Make a GET request to the URL
@@ -266,7 +282,7 @@ def run_full_installer(network, region):
     else:
         print(f"Failed to retrieve the version. HTTP Response Code: {response.status_code}")
         exit(1)
-        
+
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
