@@ -111,12 +111,12 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
-                f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n* Has not been installed on this system for {USERNAME}!\n* Install {tool} by running the following command:\n*\n* {Fore.CYAN}sudo apt install {tool}{Fore.MAGENTA}\n*\n* Then re-start the toolbox."
+                f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n* Has not been installed on this system for the user {USERNAME}!\n* Install {tool} by running the following command:\n*\n* {Fore.CYAN}sudo apt install {tool}{Fore.MAGENTA}\n*\n* Then re-start the toolbox."
             )
             print_stars()
             print(
                 f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
-                + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora\n'
+                + '* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n'
                 + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run the toolbox again."
             )
             print_stars()
