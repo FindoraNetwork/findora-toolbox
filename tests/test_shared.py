@@ -6,6 +6,7 @@ import time
 sys.path.insert(0, os.path.abspath("."))
 
 import pytest
+from unittest import mock
 from unittest.mock import patch
 from src.shared import compare_two_files, ask_yes_no, get_file_size, format_size, download_progress_hook
 
@@ -79,14 +80,17 @@ start_time = time.time()
 
 
 def test_download_progress_hook(capfd):
-    # Initialize start_time by calling the function with count equal to 0
-    download_progress_hook(0, 1024, 4096)
-
-    # Call the function again with the desired count value
-    download_progress_hook(1, 1024, 4096)
-
+    # Mock time.time to return a fixed value
+    with mock.patch('src.shared.time.time', return_value=1234567890):
+        # Initialize start_time by calling the function with count equal to 0
+        download_progress_hook(0, 1024, 4096)
+    
+        # Call the function again with the desired count value
+        download_progress_hook(1, 1024, 4096)
+    
     # Capture the output
     out, err = capfd.readouterr()
-
+    
     # Assert the printed output is as expected
     assert "Downloaded 1.00 KB of 4.00 KB (25%). Speed: 1.33 GB/s. Elapsed Time: 0h 0m 0s. Time remaining: 0h 0m 0s.                    \r" in out
+
