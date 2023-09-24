@@ -100,10 +100,16 @@ def download_progress_hook(count, block_size, total_size):
 
 def install_fn_app():
     subprocess.run(
-        ["wget", "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn"], check=True
+        ["wget", "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
     )
-    subprocess.run(["chmod", "+x", "fn"], check=True)
-    subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
+    subprocess.run(["chmod", "+x", "fn"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(
+        ["sudo", "mv", "fn", "/usr/local/bin/"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+    )
+    print("fn app installed.")
 
 
 def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
@@ -117,7 +123,12 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
         file.write(node_mnemonic)
 
     # Copy node.mnemonic to backup directory
-    subprocess.run(["cp", f"{ROOT_DIR}/node.mnemonic", f"/home/{USERNAME}/findora_backup/node.mnemonic"], check=True)
+    subprocess.run(
+        ["cp", f"{ROOT_DIR}/node.mnemonic", f"/home/{USERNAME}/findora_backup/node.mnemonic"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
 
     # Run FN setup commands
     subprocess.run(["fn", "setup", "-S", server_url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
@@ -413,7 +424,12 @@ def stop_and_remove_container(container_name):
 
 def create_directory_with_permissions(path, username):
     subprocess.run(["sudo", "mkdir", "-p", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    subprocess.run(["sudo", "chown", "-R", f"{username}:{username}", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(
+        ["sudo", "chown", "-R", f"{username}:{username}", path],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
 
 
 def format_size(size_in_bytes, is_speed=False):
@@ -426,4 +442,9 @@ def format_size(size_in_bytes, is_speed=False):
 
 
 def chown_dir(chown_dir, user, group) -> None:
-    subprocess.run(["sudo", "chown", "-R", f"{user}:{group}", chown_dir], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(
+        ["sudo", "chown", "-R", f"{user}:{group}", chown_dir],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
