@@ -107,6 +107,7 @@ def pause_for_cause():
 
 
 def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_name):
+    # Check for missing commands we use in the toolbox
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
@@ -120,11 +121,16 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
             )
             print_stars()
             exit(1)
+    # Check if we have a .env file, if not, create it.
     if not os.path.exists(env_file):
         os.system(f"touch {home_dir}/.findora.env")
     else:
         load_var_file(findora_env.dotenv_file)
-        return
+        
+    # Check if we have a network/region set, if not, ask for it.
+    network = set_main_or_test()
+    region = set_na_or_eu()
+    return network, region
 
 
 def run_ubuntu_updater() -> None:
