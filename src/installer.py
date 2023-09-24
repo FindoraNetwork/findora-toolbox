@@ -62,8 +62,6 @@ def run_full_installer(network, region):
         )
         subprocess.run(
             ["sudo", "rm", "-rf", f"{ROOT_DIR}/checkpoint.toml"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
             check=True,
         )
         subprocess.run(

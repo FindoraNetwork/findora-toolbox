@@ -110,9 +110,7 @@ def install_fn_app():
         check=True,
     )
     subprocess.run(["chmod", "+x", "fn"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    subprocess.run(
-        ["sudo", "mv", "fn", "/usr/local/bin/"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
-    )
+    subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
     print("* fn app installed.")
 
 
@@ -285,8 +283,10 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     # Remove the temporary directories and files
     shutil.rmtree(SNAPSHOT_DIR)
     os.remove(snapshot_file)
-    
-    print(f"* Snapshot extracted and download removed, current disk space free space: {format_size(get_available_space(ROOT_DIR))}")
+
+    print(
+        f"* Snapshot extracted and download removed, current disk space free space: {format_size(get_available_space(ROOT_DIR))}"
+    )
 
 
 def start_local_validator(
@@ -307,7 +307,7 @@ def start_local_validator(
 
         # Set the chain_id based on the network
         chain_id = "2153" if network == "testnet" else "2152"
-        
+
         # Define the base volumes
         volumes = {
             f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
@@ -320,7 +320,7 @@ def start_local_validator(
 
         # Create the container
         print(f"* Starting {CONTAINER_NAME} container on {network} chain id {chain_id} now...")
-      
+
         container = client.containers.run(
             image=FINDORAD_IMG,
             name=CONTAINER_NAME,
@@ -336,7 +336,7 @@ def start_local_validator(
             environment={"EVM_CHAIN_ID": chain_id},
             command=command,
         )
-        
+
         # Pause for container to initialize
         time.sleep(3)
 
@@ -431,7 +431,7 @@ def stop_and_remove_container(container_name):
     finally:
         # Close the Docker client
         client.close()
-    
+
     # Remove the specified file
     file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
     if os.path.exists(file_path):
@@ -440,11 +440,9 @@ def stop_and_remove_container(container_name):
 
 
 def create_directory_with_permissions(path, username):
-    subprocess.run(["sudo", "mkdir", "-p", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(["sudo", "mkdir", "-p", path], check=True)
     subprocess.run(
         ["sudo", "chown", "-R", f"{username}:{username}", path],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
         check=True,
     )
 
@@ -460,12 +458,7 @@ def format_size(size_in_bytes, is_speed=False):
 
 def chown_dir(chown_dir, user, group) -> None:
     try:
-        subprocess.run(
-            ["sudo", "chown", "-R", f"{user}:{group}", chown_dir],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,  # Capture stderr
-            check=True,
-        )
+        subprocess.run(["sudo", "chown", "-R", f"{user}:{group}", chown_dir], check=True)
     except subprocess.CalledProcessError as e:
         # Output a custom error message along with the stderr of the command
         print(f"Failed to change ownership of {chown_dir} to {user}:{group}. Error: {e.stderr.decode()}")
