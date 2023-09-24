@@ -1172,7 +1172,7 @@ def menu_install_findora(network, region) -> None:
         + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or start a migration."
         + "\n* Read more about migrating an existing validator here: https://docs.easynode.pro/findora/moving#migrate-your-server-via-validator-toolbox"
     )
-    answer = ask_yes_no(f"* Do you want to install {network} from the {region} region now? (Y/N) ")
+    answer = ask_yes_no(f"* {Fore.RED}Do you want to install {Fore.YELLOW}{network}{Fore.RED} from the {Fore.YELLOW}{region}{Fore.RED} region now? (Y/N){Fore.MAGENTA} ")
     if answer:
         run_full_installer(network, region)
     else:
@@ -1180,7 +1180,7 @@ def menu_install_findora(network, region) -> None:
 
 
 def run_ubuntu_updates() -> None:
-    question = ask_yes_no("* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
+    question = ask_yes_no(f"* {Fore.RED}You will miss blocks while upgrades run.\n{Fore.MAGENTA}*{Fore.RED} Are you sure you want to run updates? (Y/N){Fore.MAGENTA} ")
     if question:
         print_stars()
         print("* Stopping docker container for safety")
