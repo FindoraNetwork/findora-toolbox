@@ -53,7 +53,6 @@ mv /tmp/tmp.gen.keypair /data/findora/${NAMESPACE}/${NAMESPACE}_node.key
 # Config local node #
 #####################
 node_mnemonic=$(cat ${keypath} | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //')
-xfr_pubkey="$(cat ${keypath} | grep 'pub_key' | sed 's/[",]//g' | sed 's/ *pub_key: *//')"
 
 echo $node_mnemonic > ${ROOT_DIR}/node.mnemonic || exit 1
 cp ${ROOT_DIR}/node.mnemonic /home/${USERNAME}/findora_backup/node.mnemonic
@@ -65,7 +64,6 @@ fn setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 # clean old data and config files
 sudo rm -rf ${ROOT_DIR}/${NAMESPACE} || exit 1
 mkdir -p ${ROOT_DIR}/${NAMESPACE} || exit 1
-
 
 # tendermint config
 docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1

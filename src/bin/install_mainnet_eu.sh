@@ -63,7 +63,6 @@ fn setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 sudo rm -rf ${ROOT_DIR}/${NAMESPACE} || exit 1
 mkdir -p ${ROOT_DIR}/${NAMESPACE} || exit 1
 
-
 # tendermint config
 docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
 
@@ -101,21 +100,36 @@ rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 # check snapshot file md5sum
 while :
 do
-    wget -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}"
+    echo "Downloading snapshot..."
+    wget --progress=bar:force -O "${ROOT_DIR}/snapshot" "${CHAINDATA_URL}" || { echo "Failed to download snapshot."; exit 1; }
     CHECKSUM=$(md5sum "${ROOT_DIR}/snapshot" | cut -d " " -f 1)
     if [[ ! -z "$CHECKSUM_LATEST" ]] && [[ "$CHECKSUM_LATEST" = "$CHECKSUM" ]]; then
         break
     fi
 done
 
-mkdir "${ROOT_DIR}/snapshot_data"
-tar zxvf "${ROOT_DIR}/snapshot" -C "${ROOT_DIR}/snapshot_data"
+# Define the directory paths
+SNAPSHOT_DIR="${ROOT_DIR}/snapshot_data"
+LEDGER_DIR="${ROOT_DIR}/findorad"
+TENDERMINT_DIR="${ROOT_DIR}/tendermint/data"
 
-mv "${ROOT_DIR}/snapshot_data/data/ledger" "${ROOT_DIR}/findorad"
-mv "${ROOT_DIR}/snapshot_data/data/tendermint/mainnet/node0/data" "${ROOT_DIR}/tendermint/data"
+# Create the snapshot directory
+mkdir "$SNAPSHOT_DIR"
 
-rm -rf ${ROOT_DIR}/snapshot_data
-rm -rf ${ROOT_DIR}/snapshot
+# Extract the tar archive and check the exit status
+echo "Extracting snapshot and setting up the local node..."
+if ! pv "${ROOT_DIR}/snapshot" | tar zxvf - -C "$SNAPSHOT_DIR" > /dev/null; then
+    echo "Error: Failed to extract the snapshot. Please check if there is enough disk space and permissions."
+    exit 1
+fi
+
+# Move the extracted files to the desired locations
+mv "${SNAPSHOT_DIR}/data/ledger" "$LEDGER_DIR"
+mv "${SNAPSHOT_DIR}/data/tendermint/mainnet/node0/data" "$TENDERMINT_DIR"
+
+# Remove the temporary directories and files
+rm -rf "$SNAPSHOT_DIR"
+rm -rf "${ROOT_DIR}/snapshot"
 
 #####################
 # Create local node #
@@ -136,7 +150,23 @@ docker run -d \
     --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
     --enable-query-service \
 
-sleep 10
+# Wait for the container to be up and the endpoint to respond
+while true; do
+    # Check if the container is running
+    if docker ps --format '{{.Names}}' | grep -Eq '^findorad$'; then
+        # Check the response from the curl endpoint
+        if curl -s 'http://localhost:26657/status' > /dev/null; then
+            echo "Container is up and endpoint is responding."
+            break
+        else
+            echo "Container is up, but endpoint is not responding yet. Retrying in 10 seconds..."
+            sleep 10
+        fi
+    else
+        echo "Container is not running. Exiting..."
+        exit 1
+    fi
+done
 
 #############################
 # Post Install Stats Report #
@@ -146,4 +176,4 @@ curl 'http://localhost:8669/version'; echo
 curl 'http://localhost:8668/version'; echo
 curl 'http://localhost:8667/version'; echo
 
-echo "Local node initialized, please stake your FRA tokens after syncing is completed."
+echo "Local node initialized! You can now run the migration process or wait for sync and create your validator."
