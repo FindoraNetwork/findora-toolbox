@@ -41,7 +41,7 @@ class findora_env:
     findora_root_testnet = f"{findora_root}/testnet"
     toolbox_location = os.path.join(user_home_dir, "findora-toolbox")
     staker_memo_path = os.path.join(user_home_dir, "staker_memo")
-    our_external_ip = getUrl()
+    our_external_ip = get_url()
     container_name = "findorad"
     migrate_dir = os.path.join(user_home_dir, "migrate")
     fra_env = "prod"
