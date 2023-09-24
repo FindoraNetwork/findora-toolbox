@@ -307,6 +307,16 @@ def start_local_validator(
 
         # Set the chain_id based on the network
         chain_id = "2153" if network == "testnet" else "2152"
+        
+        # Define the base volumes
+        volumes = {
+            f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
+            f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
+        }
+
+        # Add additional volume for testnet
+        if network == "testnet":
+            volumes[f"{ROOT_DIR}/checkpoint.toml"] = {"bind": "/root/checkpoint.toml", "mode": "rw"}
 
         # Create the container
         print(f"* Starting {CONTAINER_NAME} container on {network} chain id {chain_id} now...")
@@ -315,10 +325,7 @@ def start_local_validator(
             image=FINDORAD_IMG,
             name=CONTAINER_NAME,
             detach=True,
-            volumes={
-                f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
-                f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
-            },
+            volumes=volumes,
             ports={
                 "8669/tcp": 8669,
                 "8668/tcp": 8668,
