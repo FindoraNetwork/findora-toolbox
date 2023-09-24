@@ -1,6 +1,6 @@
 import os
 import argparse
-from src.toolbox import (
+from toolbox import (
     run_findora_menu,
     menu_install_findora,
     backup_folder_check,
@@ -12,7 +12,7 @@ from src.toolbox import (
     parse_flags,
     check_preflight_setup,
 )
-from src.shared import findora_env
+from shared import findora_env
 
 
 def main() -> None:
