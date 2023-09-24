@@ -56,7 +56,7 @@ def test_ask_yes_no():
 def test_get_file_size():
     # Mocking a URL and its corresponding file size
     url = "https://easynode.pro/robots.txt"
-    file_size = 1024
+    file_size = 67
     with patch("src.shared.urllib.request.urlopen") as mock_urlopen:
         mock_urlopen.return_value.info.return_value.__getitem__.return_value = str(file_size)
         assert get_file_size(url) == file_size
