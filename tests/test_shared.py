@@ -79,11 +79,14 @@ start_time = time.time()
 
 
 def test_download_progress_hook(capfd):
-    # Call the function with some sample values
+    # Initialize start_time by calling the function with count equal to 0
+    download_progress_hook(0, 1024, 4096)
+
+    # Call the function again with the desired count value
     download_progress_hook(1, 1024, 4096)
 
     # Capture the output
     out, err = capfd.readouterr()
 
     # Assert the printed output is as expected
-    assert out == "Downloaded 1.0KB of 4.0KB (25.0%)\n"
+    assert "Downloaded 1.0KB of 4.0KB (25.0%)" in out
