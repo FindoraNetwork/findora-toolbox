@@ -304,6 +304,7 @@ def create_local_node(
             command = f"node --checkpoint-file=/root/checkpoint.toml {command_suffix}"
 
         # Create the container
+        print(f"* Starting {CONTAINER_NAME} container...")
         container = client.containers.run(
             image=FINDORAD_IMG,
             name=CONTAINER_NAME,
