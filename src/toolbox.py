@@ -191,7 +191,7 @@ def menu_error() -> None:
 def menu_reboot_server() -> str:
     question = ask_yes_no(
         Fore.RED
-        + "* WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.\n\n"
+        + f"* {Fore.RED}WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.{Fore.MAGENTA}\n\n"
         + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: "
         + "python3 ~/findora-toolbox/start.py\n"
         + Fore.WHITE
@@ -1473,7 +1473,8 @@ def run_update_launcher() -> None:
 
 def run_safety_clean_launcher() -> None:
     question = ask_yes_no(
-        "* You will miss blocks while downloading the new database, this can take awhile depending on location and connection.\n* Are you sure you want to run a safety_clean? (Y/N) "
+        f"* {Fore.RED}You will miss blocks while downloading the new database, this can take awhile depending on location "
+        + f"and connection.{Fore.MAGENTA}\n* Are you sure you want to run a safety_clean? (Y/N) "
     )
     print_stars()
     if question:
