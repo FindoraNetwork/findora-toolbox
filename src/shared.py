@@ -160,11 +160,7 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
             command=["init", f"--{network}"],
             volumes=volumes,
             remove=True,  # Equivalent to --rm
-            detach=True,  # Run in the background
         )
-        
-        # Reset permissions on tendermint folder after init
-        chown_dir(os.path.join(ROOT_DIR, "tendermint"), USERNAME, USERNAME)
 
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
@@ -174,6 +170,9 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
             client.close()
         except UnboundLocalError:
             pass  # client was not successfully initialized
+
+    # Reset permissions on tendermint folder after init
+    chown_dir(os.path.join(ROOT_DIR, "tendermint"), USERNAME, USERNAME)
 
     # Backup priv_validator_key.json
     shutil.copytree(os.path.join(ROOT_DIR, "tendermint/config"), f"/home/{USERNAME}/findora_backup/config")
