@@ -286,7 +286,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     shutil.rmtree(SNAPSHOT_DIR)
     os.remove(snapshot_file)
     
-    print(f"* Snapshot extracted and removed, current disk space free space: {format_size(get_available_space(ROOT_DIR))}")
+    print(f"* Snapshot extracted and download removed, current disk space free space: {format_size(get_available_space(ROOT_DIR))}")
 
 
 def create_local_node(
