@@ -34,7 +34,6 @@ class findora_env:
     toolbox_location = os.path.join(user_home_dir, "findora-toolbox")
     staker_memo_path = os.path.join(user_home_dir, "staker_memo")
     our_external_ip = getUrl()
-    findora_menu = os.path.join(toolbox_location, "src", "messages", "framenu.txt")
     container_name = "findorad"
     migrate_dir = os.path.join(user_home_dir, "migrate")
     fra_env = "prod"
