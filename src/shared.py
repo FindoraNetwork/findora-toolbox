@@ -247,7 +247,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     os.makedirs(SNAPSHOT_DIR, exist_ok=True)
 
     # Check available disk space
-    required_space = os.path.getsize(snapshot_file)  # Assuming the tar file is the largest item
+    required_space = os.path.getsize(snapshot_file) * 2
     available_space = get_available_space(SNAPSHOT_DIR)
     if available_space < required_space:
         print(
