@@ -1,7 +1,10 @@
-import pytest
-import tempfile
+import sys
 import os
-from src.shared import compare_two_files
+import tempfile
+sys.path.append(os.path.abspath('src'))
+
+import pytest
+from shared import compare_two_files
 
 def test_compare_two_files():
     # Create two temporary files
