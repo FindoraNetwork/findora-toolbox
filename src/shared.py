@@ -178,10 +178,7 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
     if os.path.exists(f"/home/{USERNAME}/findora_backup/config"):
         shutil.rmtree(f"/home/{USERNAME}/findora_backup/config")
     shutil.copytree(os.path.join(ROOT_DIR, "tendermint/config"), f"/home/{USERNAME}/findora_backup/config")
-
-    # If you're re-running this for some reason, stop and remove findorad
-    print(Fore.MAGENTA)
-    stop_and_remove_container("findorad")
+    print(f"* Copied new priv_validator_key.json to ~/findora_backup/config")
 
 
 def get_snapshot(ENV, network, ROOT_DIR, region):
