@@ -7,7 +7,6 @@ LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/versi
 FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
 export ROOT_DIR=/data/findora/${NAMESPACE}
 keypath=${ROOT_DIR}/${NAMESPACE}_node.key
-FN=${ROOT_DIR}/bin/fn
 CONTAINER_NAME=findorad
 
 check_env() {
@@ -56,9 +55,9 @@ node_mnemonic=$(cat ${keypath} | grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //')
 echo $node_mnemonic > ${ROOT_DIR}/node.mnemonic || exit 1
 cp ${ROOT_DIR}/node.mnemonic /home/${USERNAME}/findora_backup/node.mnemonic
 
-$FN setup -S ${SERV_URL} || exit 1
-$FN setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
-$FN setup -O ${ROOT_DIR}/node.mnemonic || exit 1
+fn setup -S ${SERV_URL} || exit 1
+fn setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
+fn setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 
 # clean old data and config files
 sudo rm -rf ${ROOT_DIR}/${NAMESPACE} || exit 1

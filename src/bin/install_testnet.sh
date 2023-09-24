@@ -8,7 +8,6 @@ FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
 CHECKPOINT_URL=https://${ENV}-${NAMESPACE}-us-west-2-ec2-instance.s3.us-west-2.amazonaws.com/${NAMESPACE}/checkpoint
 export ROOT_DIR=/data/findora/${NAMESPACE}
 keypath=${ROOT_DIR}/${NAMESPACE}_node.key
-FN=${ROOT_DIR}/bin/fn
 CONTAINER_NAME=findorad
 
 check_env() {
@@ -58,9 +57,9 @@ xfr_pubkey="$(cat ${keypath} | grep 'pub_key' | sed 's/[",]//g' | sed 's/ *pub_k
 echo $node_mnemonic > ${ROOT_DIR}/node.mnemonic || exit 1
 cp ${ROOT_DIR}/node.mnemonic /home/${USERNAME}/findora_backup/node.mnemonic
 
-$FN setup -S ${SERV_URL} || exit 1
-$FN setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
-$FN setup -O ${ROOT_DIR}/node.mnemonic || exit 1
+fn setup -S ${SERV_URL} || exit 1
+fn setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
+fn setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 
 # clean old data and config files
 sudo rm -rf ${ROOT_DIR}/${NAMESPACE} || exit 1
