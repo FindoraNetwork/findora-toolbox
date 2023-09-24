@@ -1545,8 +1545,6 @@ def parse_flags(parser, region, network):
     # parse the arguments
     args = parser.parse_args()
 
-    print(Fore.MAGENTA)
-
     if args.claim:
         claim_findora_rewards()
         finish_node()
