@@ -1,5 +1,4 @@
 import subprocess
-from config import findora_env
 from shared import (
     create_directory_with_permissions,
     install_fn_app,
@@ -8,6 +7,7 @@ from shared import (
     load_server_data,
     start_local_validator,
     get_live_version,
+    findora_env
 )
 
 

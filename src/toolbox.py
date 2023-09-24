@@ -17,10 +17,9 @@ from os import environ
 from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 from pprint import pprint
-from config import findora_env
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files
+from shared import ask_yes_no, compare_two_files, findora_env
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer

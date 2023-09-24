@@ -1,7 +1,6 @@
 import os
 import subprocess
-from config import findora_env
-from shared import chown_dir, start_local_validator, stop_and_remove_container, get_live_version
+from shared import chown_dir, start_local_validator, stop_and_remove_container, get_live_version, findora_env
 
 
 def run_update_restart(network=os.environ.get("FRA_NETWORK")):

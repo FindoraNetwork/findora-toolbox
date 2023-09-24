@@ -12,7 +12,7 @@ from toolbox import (
     parse_flags,
     check_preflight_setup,
 )
-from config import findora_env
+from shared import findora_env
 
 
 def main() -> None:

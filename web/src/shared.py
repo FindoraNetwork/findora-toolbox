@@ -1,4 +1,6 @@
-import os, socket, requests
+import os
+import socket
+import requests
 
 def getUrl(timeout=5) -> str:
     try:

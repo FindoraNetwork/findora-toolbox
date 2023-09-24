@@ -1,12 +1,12 @@
 import subprocess
 import os
-from config import findora_env
 from shared import (
     stop_and_remove_container,
     chown_dir,
     get_live_version,
     start_local_validator,
     load_server_data,
+    findora_env,
 )
 
 
