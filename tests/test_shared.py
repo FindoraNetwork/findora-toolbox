@@ -93,6 +93,6 @@ def test_download_progress_hook(capfd):
 
     # Assert the printed output is as expected
     assert (
-        "Downloaded 1.00 KB of 4.00 KB (25%). Speed: 1.00 MB/s. Elapsed Time: 0h 0m 1s. Time remaining: 0h 0m 3s.                    \r"
+        "Downloaded 1.00 KB of 4.00 KB (25%). Speed: 1.00 KB/s. Elapsed Time: 0h 0m 1s. Time remaining: 0h 0m 3s.                    \r"
         in out
     )
