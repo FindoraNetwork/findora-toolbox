@@ -154,7 +154,7 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
             }
         }
 
-        # Run the Docker container
+        # Run the Docker container in blocking mode to await finish
         client.containers.run(
             image=FINDORAD_IMG,
             command=["init", f"--{network}"],
@@ -229,9 +229,14 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
         CHECKSUM = md5_hash.hexdigest()
 
         if CHECKSUM_LATEST and CHECKSUM_LATEST == CHECKSUM:
+            print("Checksum matches, extracting snapshot now...")
             break
-
-    print("Checksum matches, extracting snapshot now...")
+        else:
+            print("Checksum does not match.")
+            retry = ask_yes_no("Checksum verification failed. Would you like to try downloading again? (y/n): ")
+            if not retry:
+                print("Exiting due to checksum verification failure.")
+                exit(1)
 
     # Define the directory paths
     SNAPSHOT_DIR = os.path.join(ROOT_DIR, "snapshot_data")
@@ -290,11 +295,7 @@ def create_local_node(
 
     try:
         # Check if a container with the same name already exists and remove it if it does
-        existing_containers = client.containers.list(all=True, filters={"name": CONTAINER_NAME})
-        if existing_containers:
-            existing_container = existing_containers[0]
-            existing_container.stop()
-            existing_container.remove()
+        stop_and_remove_container(CONTAINER_NAME)
 
         # Set the command string based on the network
         command_suffix = "--ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service"
@@ -399,7 +400,7 @@ def stop_and_remove_container(container_name):
     try:
         # Try to get the container by name
         container = client.containers.get(container_name)
-        print(f"* {container_name} Container found, stopping container to restart.")
+        print(f"* {container_name} Container found, stopping container.")
 
         # Stop and remove the container
         container.stop()
