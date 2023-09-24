@@ -108,11 +108,6 @@ def pause_for_cause():
 
 
 def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_name):
-    if not os.path.exists(env_file):
-        os.system(f"touch {home_dir}/.findora.env")
-    else:
-        load_var_file(findora_env.dotenv_file)
-        return
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
@@ -123,10 +118,14 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
                 f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
                 + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora\n'
                 + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run the toolbox again."
-                
             )
             print_stars()
             exit(1)
+    if not os.path.exists(env_file):
+        os.system(f"touch {home_dir}/.findora.env")
+    else:
+        load_var_file(findora_env.dotenv_file)
+        return
 
 
 def run_ubuntu_updater() -> None:
@@ -1412,20 +1411,21 @@ def backup_folder_check() -> None:
 
 def run_update_launcher() -> None:
     question = ask_yes_no(
-    "* You may miss blocks while restarting the container.\n* Are you sure you want to run the upgrade/restart script? (Y/N) "
+        "* You may miss blocks while restarting the container.\n* Are you sure you want to run the upgrade/restart script? (Y/N) "
     )
     print_stars()
     if question:
         run_update_restart(os.environ.get("FRA_NETWORK"))
-    
-    
+
+
 def run_safety_clean_launcher() -> None:
     question = ask_yes_no(
-    "* You will miss blocks while downloading the new database, this can take awhile depending on location and connection.\n* Are you sure you want to run a safety_clean? (Y/N) "
+        "* You will miss blocks while downloading the new database, this can take awhile depending on location and connection.\n* Are you sure you want to run a safety_clean? (Y/N) "
     )
     print_stars()
     if question:
         run_safety_clean(os.environ.get("FRA_NETWORK"), os.environ.get("FRA_REGION"))
+
 
 def run_findora_menu() -> None:
     menu_options = {
