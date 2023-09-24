@@ -80,17 +80,19 @@ start_time = time.time()
 
 
 def test_download_progress_hook(capfd):
-    # Mock time.time to return a fixed value
-    with mock.patch('src.shared.time.time', return_value=1234567890):
+    # Mock time.time to return different values on subsequent calls
+    with mock.patch("src.shared.time.time", side_effect=[1234567890, 1234567891]):
         # Initialize start_time by calling the function with count equal to 0
         download_progress_hook(0, 1024, 4096)
-    
+
         # Call the function again with the desired count value
         download_progress_hook(1, 1024, 4096)
-    
+
     # Capture the output
     out, err = capfd.readouterr()
-    
-    # Assert the printed output is as expected
-    assert "Downloaded 1.00 KB of 4.00 KB (25%). Speed: 1.33 GB/s. Elapsed Time: 0h 0m 0s. Time remaining: 0h 0m 0s.                    \r" in out
 
+    # Assert the printed output is as expected
+    assert (
+        "Downloaded 1.00 KB of 4.00 KB (25%). Speed: 1.00 MB/s. Elapsed Time: 0h 0m 1s. Time remaining: 0h 0m 3s.                    \r"
+        in out
+    )
