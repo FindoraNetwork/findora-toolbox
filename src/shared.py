@@ -442,9 +442,13 @@ def format_size(size_in_bytes, is_speed=False):
 
 
 def chown_dir(chown_dir, user, group) -> None:
-    subprocess.run(
-        ["sudo", "chown", "-R", f"{user}:{group}", chown_dir],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=True,
-    )
+    try:
+        subprocess.run(
+            ["sudo", "chown", "-R", f"{user}:{group}", chown_dir],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,  # Capture stderr
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        # Output a custom error message along with the stderr of the command
+        print(f"Failed to change ownership of {chown_dir} to {user}:{group}. Error: {e.stderr.decode()}")
