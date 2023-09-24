@@ -107,7 +107,7 @@ def install_fn_app():
 
 
 def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
-    # Extract node_mnemonic and xfr_pubkey from keypath file
+    # Extract node_mnemonic from keypath file
     with open(keypath, "r") as file:
         content = file.read()
         node_mnemonic = re.search(r"Mnemonic:[^ ]* (.*)", content).group(1)
@@ -135,8 +135,12 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
     )
 
     # Clean old data and config files
-    subprocess.run(["sudo", "rm", "-rf", f"{ROOT_DIR}/{network}"], check=True)
-    subprocess.run(["mkdir", "-p", f"{ROOT_DIR}/{network}"], check=True)
+    subprocess.run(
+        ["sudo", "rm", "-rf", f"{ROOT_DIR}/{network}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+    )
+    subprocess.run(
+        ["mkdir", "-p", f"{ROOT_DIR}/{network}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+    )
 
     # Tendermint config
     subprocess.run(
@@ -150,6 +154,8 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
             "init",
             f"--{network}",
         ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
         check=True,
     )
 
@@ -157,7 +163,12 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
     chown_dir(f"{ROOT_DIR}/tendermint", USERNAME, USERNAME)
 
     # Backup priv_validator_key.json
-    subprocess.run(["cp", "-a", f"{ROOT_DIR}/tendermint/config", f"/home/{USERNAME}/findora_backup/config"], check=True)
+    subprocess.run(
+        ["cp", "-a", f"{ROOT_DIR}/tendermint/config", f"/home/{USERNAME}/findora_backup/config"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
 
     # If you're re-running this for some reason, stop and remove findorad
     print(Fore.MAGENTA)
@@ -345,7 +356,9 @@ def create_local_node(ROOT_DIR, FINDORAD_IMG, local_node_status, network):
     print(requests.get("http://localhost:8667/version").text)
 
     if local_node_status == "installer":
-        print("Local node initialized! You can now run the migration process or wait for sync and create your validator.")
+        print(
+            "Local node initialized! You can now run the migration process or wait for sync and create your validator."
+        )
     else:
         print("Local container was updated and restarted!")
 
@@ -355,11 +368,16 @@ def setup_wallet_key(keypath, ROOT_DIR, network):
         if os.path.isfile(f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair"):
             subprocess.run(
                 ["cp", f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
                 check=True,
             )
         elif os.path.isfile(f"{findora_env.user_home_dir}/tmp.gen.keypair"):
             subprocess.run(
-                ["cp", f"{findora_env.user_home_dir}/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"], check=True
+                ["cp", f"{findora_env.user_home_dir}/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=True,
             )
         else:
             print(f"* No tmp.gen.keypair file detected, generating file and creating to {network}_node.key")
@@ -394,8 +412,8 @@ def stop_and_remove_container(container_name):
 
 
 def create_directory_with_permissions(path, username):
-    subprocess.run(["sudo", "mkdir", "-p", path], check=True)
-    subprocess.run(["sudo", "chown", "-R", f"{username}:{username}", path], check=True)
+    subprocess.run(["sudo", "mkdir", "-p", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(["sudo", "chown", "-R", f"{username}:{username}", path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
 
 def format_size(size_in_bytes, is_speed=False):
@@ -408,4 +426,4 @@ def format_size(size_in_bytes, is_speed=False):
 
 
 def chown_dir(chown_dir, user, group) -> None:
-    subprocess.run(["sudo", "chown", "-R", f"{user}:{group}", chown_dir], check=True)
+    subprocess.run(["sudo", "chown", "-R", f"{user}:{group}", chown_dir], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)

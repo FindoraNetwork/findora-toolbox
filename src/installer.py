@@ -1,20 +1,25 @@
 import subprocess
 from config import findora_env
-from shared import create_directory_with_permissions, install_fn_app, setup_wallet_key, config_local_node, get_snapshot, create_local_node, get_live_version
+from shared import (
+    create_directory_with_permissions,
+    install_fn_app,
+    setup_wallet_key,
+    config_local_node,
+    get_snapshot,
+    create_local_node,
+    get_live_version,
+)
 
 
 def run_full_installer(network, region):
     USERNAME = findora_env.active_user_name
+    # Testnet and mainnet are both prod, can update for mocknet in the future
     ENV = "prod"
     server_url = f"https://{ENV}-{network}.{ENV}.findora.org"
-
     LIVE_VERSION = get_live_version(server_url)
-
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
-    CHECKPOINT_URL = f"https://{ENV}-{network}-us-west-2-ec2-instance.s3.us-west-2.amazonaws.com/{network}/checkpoint"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
-    CONTAINER_NAME = "findorad"
 
     uname = subprocess.getoutput("uname -s")
     if uname == "Linux":
@@ -28,8 +33,13 @@ def run_full_installer(network, region):
 
     # Make Directories & Set Permissions
     create_directory_with_permissions("/data/findora", USERNAME)
-    subprocess.run(["mkdir", "-p", f"/home/{USERNAME}/findora_backup"], check=True)
-    subprocess.run(["mkdir", "-p", ROOT_DIR], check=True)
+    subprocess.run(
+        ["mkdir", "-p", f"/home/{USERNAME}/findora_backup"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
+    subprocess.run(["mkdir", "-p", ROOT_DIR], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
     # Setup wallet key
     setup_wallet_key(keypath, ROOT_DIR, network)
@@ -42,8 +52,21 @@ def run_full_installer(network, region):
 
     # get checkpoint on testnet
     if network == "testnet":
-        subprocess.run(["sudo", "rm", "-rf", f"{ROOT_DIR}/checkpoint.toml"], check=True)
-        subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], check=True)
+        CHECKPOINT_URL = (
+            f"https://{ENV}-{network}-us-west-2-ec2-instance.s3.us-west-2.amazonaws.com/{network}/checkpoint"
+        )
+        subprocess.run(
+            ["sudo", "rm", "-rf", f"{ROOT_DIR}/checkpoint.toml"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+        subprocess.run(
+            ["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
 
     # Start findorad
     create_local_node(ROOT_DIR, FINDORAD_IMG, "installer", network)
