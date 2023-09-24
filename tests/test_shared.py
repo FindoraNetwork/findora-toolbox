@@ -55,7 +55,7 @@ def test_ask_yes_no():
 
 def test_get_file_size():
     # Mocking a URL and its corresponding file size
-    url = "http://example.com/file.txt"
+    url = "https://easynode.pro/robots.txt"
     file_size = 1024
     with patch("src.shared.urllib.request.urlopen") as mock_urlopen:
         mock_urlopen.return_value.info.return_value.__getitem__.return_value = str(file_size)
@@ -67,10 +67,10 @@ def test_get_file_size():
 
 
 def test_format_size():
-    assert format_size(1023) == "1023B"
-    assert format_size(1024) == "1.0KB"
-    assert format_size(1048576) == "1.0MB"
-    assert format_size(1073741824) == "1.0GB"
+    assert format_size(1023) == "1023.00 B"
+    assert format_size(1024) == "1.00 KB"
+    assert format_size(1048576) == "1.00 MB"
+    assert format_size(1073741824) == "1.00 GB"
 
 
 def test_download_progress_hook(capfd):
