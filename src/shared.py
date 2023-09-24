@@ -403,25 +403,26 @@ def stop_and_remove_container(container_name):
     try:
         # Try to get the container by name
         container = client.containers.get(container_name)
-        print(f"* {container_name} Container found, stopping container.")
+        print(f"* {container_name} container found, stopping & removing container...")
 
         # Stop and remove the container
         container.stop()
         container.remove()
 
-        # Remove the specified file
-        file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            print(f"* Removed file: {file_path}")
     except docker.errors.NotFound:
-        print(f"* {container_name} container not found.")
+        print(f"* {container_name} container removed.")
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
         exit(1)
     finally:
         # Close the Docker client
         client.close()
+    
+    # Remove the specified file
+    file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"* Removed file: {file_path}")
 
 
 def create_directory_with_permissions(path, username):
