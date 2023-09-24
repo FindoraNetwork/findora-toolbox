@@ -120,8 +120,10 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
             )
             print_stars()
             print(
-                f"* To run all the prerequisites at once, run the following setup command. If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`:\n"
-                + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora'
+                f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
+                + 'apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora\n'
+                + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run the toolbox again."
+                
             )
             print_stars()
             exit(1)
