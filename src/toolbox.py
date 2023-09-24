@@ -1,4 +1,14 @@
-import subprocess, platform, os, time, json, re, shutil, requests, docker, dotenv, psutil, cmd2
+import subprocess
+import platform
+import os
+import time
+import json
+import shutil
+import requests
+import docker
+import dotenv
+import psutil
+import cmd2
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
@@ -7,10 +17,9 @@ from os import environ
 from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 from pprint import pprint
-from config import findora_env
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files
+from shared import ask_yes_no, compare_two_files, findora_env
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
@@ -50,25 +59,25 @@ string_stars_reset = print_stuff(reset=1).stringStars
 def loader_intro():
     print_stars()
     p = f"""*
-* 
-* ███████╗██╗███╗   ██╗██████╗  ██████╗ ██████╗  █████╗       
-* ██╔════╝██║████╗  ██║██╔══██╗██╔═══██╗██╔══██╗██╔══██╗      
-* █████╗  ██║██╔██╗ ██║██║  ██║██║   ██║██████╔╝███████║      
-* ██╔══╝  ██║██║╚██╗██║██║  ██║██║   ██║██╔══██╗██╔══██║      
-* ██║     ██║██║ ╚████║██████╔╝╚██████╔╝██║  ██║██║  ██║      
-* ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝      
-*                                                             
+*
+* ███████╗██╗███╗   ██╗██████╗  ██████╗ ██████╗  █████╗
+* ██╔════╝██║████╗  ██║██╔══██╗██╔═══██╗██╔══██╗██╔══██╗
+* █████╗  ██║██╔██╗ ██║██║  ██║██║   ██║██████╔╝███████║
+* ██╔══╝  ██║██║╚██╗██║██║  ██║██║   ██║██╔══██╗██╔══██║
+* ██║     ██║██║ ╚████║██████╔╝╚██████╔╝██║  ██║██║  ██║
+* ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+*
 * ████████╗ ██████╗  ██████╗ ██╗     ██████╗  ██████╗ ██╗  ██╗
 * ╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔══██╗██╔═══██╗╚██╗██╔╝
-*    ██║   ██║   ██║██║   ██║██║     ██████╔╝██║   ██║ ╚███╔╝ 
-*    ██║   ██║   ██║██║   ██║██║     ██╔══██╗██║   ██║ ██╔██╗ 
+*    ██║   ██║   ██║██║   ██║██║     ██████╔╝██║   ██║ ╚███╔╝
+*    ██║   ██║   ██║██║   ██║██║     ██╔══██╗██║   ██║ ██╔██╗
 *    ██║   ╚██████╔╝╚██████╔╝███████╗██████╔╝╚██████╔╝██╔╝ ██╗
 *    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝
-* 
+*
 *     Findora Validator Management
 *     created by Patrick @ https://EasyNode.pro
-* 
-*   """
+*
+*"""
     print(p)
     return
 
@@ -111,13 +120,22 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
-                f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n* Has not been installed on this system for the user {USERNAME}!\n* Install {tool} by running the following command:\n*\n* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n* Then re-start the toolbox."
+                f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n"
+                + "* Has not been installed on this system for the user {USERNAME}!\n"
+                + "* Install {tool} by running the following command:\n*\n"
+                + "* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n"
+                + "* Then re-start the toolbox."
             )
             print_stars()
             print(
                 f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
-                + '* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n'
-                + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run the toolbox again."
+                + '* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg '
+                + '| apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal '
+                + 'stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce '
+                + 'docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip '
+                + '-y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n'
+                + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run "
+                + "the toolbox again."
             )
             print_stars()
             exit(1)
@@ -173,7 +191,7 @@ def menu_error() -> None:
 def menu_reboot_server() -> str:
     question = ask_yes_no(
         Fore.RED
-        + "* WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.\n\n"
+        + f"* {Fore.RED}WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.{Fore.MAGENTA}\n\n"
         + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: "
         + "python3 ~/findora-toolbox/start.py\n"
         + Fore.WHITE
@@ -578,7 +596,8 @@ def get_receiver_address() -> None:
     # IF we've already got it, check it or ask
     if environ.get("RECEIVER_WALLET"):
         question = ask_yes_no(
-            f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")}{Fore.MAGENTA} on file. Would you like to send to this address? (Y/N)'
+            f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")}{Fore.MAGENTA} on file. Would you like to send to '
+            + 'this address? (Y/N)'
         )
         if question:
             return environ.get("RECEIVER_WALLET")
@@ -601,7 +620,8 @@ def get_privacy_option() -> None:
     # IF we've already got it, check it or ask
     if environ.get("PRIVACY"):
         question = ask_yes_no(
-            f'* We have Privacy = {environ.get("PRIVACY")} on file, Would you like to use this option for this transaction as well? (Y/N) '
+            f'* We have Privacy = {environ.get("PRIVACY")} on file, Would you like to use this option for this transaction '
+            + 'as well? (Y/N) '
         )
         if question:
             return environ.get("PRIVACY")
@@ -771,7 +791,8 @@ class MemoUpdater(cmd2.Cmd):
                         print(Fore.MAGENTA)
                         print_stars()
                         print(
-                            f"* Blockchain update completed, please wait at least 1 block before checking for updated information."
+                            f"* Blockchain update completed, please wait at least 1 block before checking for updated "
+                            + "information."
                         )
                     print_stars()
                     return
@@ -827,7 +848,8 @@ def check_address_input(address) -> None:
         return
     if address == environ.get("RECEIVER_WALLET"):
         input(
-            "* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return to the menu."
+            "* This is already your saved wallet, try again with a new wallet to update this option. Press enter to return "
+            + "to the menu."
         )
         return
     address2 = input(f"*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
@@ -1100,7 +1122,8 @@ def menu_topper() -> None:
             f"* Catching Up:               {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
         )
     print(
-        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  * Remote Latest Block:        {our_fn_stats['Current Block']}"
+        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  * Remote Latest Block:        "
+        + f"{our_fn_stats['Current Block']}"
     )
     our_fn_stats.pop("Current Block")
     print(f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}")
@@ -1135,7 +1158,9 @@ def rescue_menu() -> None:
         3: run_safety_clean_launcher,
     }
     print(
-        "* We still don't detect a running container.\n* Sometimes it can take a few minutes before the api starts responding.\n* You can attempt to get stats again for a few minutes, if that doesn't work review docker logs & try the update_version.\n* Here are your options currently:"
+        "* We still don't detect a running container.\n* Sometimes it can take a few minutes before the api starts responding.\n"
+        + "* You can attempt to get stats again for a few minutes, if that doesn't work review docker logs & try the "
+        + "update_version.\n* Here are your options currently:"
         + "\n* 1 - CURL stats - Keep checking stats"
         + "\n* 2 - update_version script - Run the update version script as a first option for recovery."
         + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and restart server."
@@ -1185,10 +1210,12 @@ def menu_install_findora(network, region) -> None:
         + f"\n* But...it doesn't look like you have Findora {network} installed."
         + "\n* We will setup Findora validator software on this server with a temporary key and wallet file."
         + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or start a migration."
-        + "\n* Read more about migrating an existing validator here: https://docs.easynode.pro/findora/moving#migrate-your-server-via-validator-toolbox"
+        + "\n* Read more about migrating an existing validator here: "
+        + "https://docs.easynode.pro/findora/moving#migrate-your-server-via-validator-toolbox"
     )
     answer = ask_yes_no(
-        f"* {Fore.RED}Do you want to install {Fore.YELLOW}{network}{Fore.RED} from the {Fore.YELLOW}{region}{Fore.RED} region now? (Y/N){Fore.MAGENTA} "
+        f"* {Fore.RED}Do you want to install {Fore.YELLOW}{network}{Fore.RED} from the {Fore.YELLOW}{region}{Fore.RED} "
+        + f"region now? (Y/N){Fore.MAGENTA} "
     )
     if answer:
         run_full_installer(network, region)
@@ -1198,7 +1225,8 @@ def menu_install_findora(network, region) -> None:
 
 def run_ubuntu_updates() -> None:
     question = ask_yes_no(
-        f"* {Fore.RED}You will miss blocks while upgrades run.\n{Fore.MAGENTA}*{Fore.RED} Are you sure you want to run updates? (Y/N){Fore.MAGENTA} "
+        f"* {Fore.RED}You will miss blocks while upgrades run.\n{Fore.MAGENTA}*{Fore.RED} Are you sure you want to run "
+        + f"updates? (Y/N){Fore.MAGENTA} "
     )
     if question:
         print_stars()
@@ -1220,7 +1248,8 @@ def migration_instructions():
         + f"\n* 1. Make a folder named {findora_env.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder"
         + "\n* 3. Add your config folder containing your priv_validator_key.json file into ~/migrate"
         + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
-        + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this option again!"
+        + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this "
+        + "option again!"
     )
 
 
@@ -1234,7 +1263,8 @@ def migrate_to_server() -> None:
             or os.path.exists(f"{findora_env.migrate_dir}/priv_validator_key.json")
         ):
             print(
-                f"* {findora_env.migrate_dir}/tmp.gen.keypair found!\n* {findora_env.migrate_dir}/config/priv_validator_key.json found!"
+                f"* {findora_env.migrate_dir}/tmp.gen.keypair found!\n"
+                + f"* {findora_env.migrate_dir}/config/priv_validator_key.json found!"
                 + "\n* All required files in place, ready for upgrade!"
             )
             # Ask to start migration, warn about double sign again, again
@@ -1382,10 +1412,9 @@ def backup_folder_check() -> None:
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your tmp.gen.keypair file in {findora_env.findora_backup} does not match "
-                    + f'your live {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
-                    + f'\n* Do you want to copy the key from {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}'
-                    + f"_node.key and OVERWRITE the {findora_env.findora_backup}/tmp.gen.keypair file as a backup of your live key? (Y/N) "
+                    f"* Your file {findora_env.findora_backup}/tmp.gen.keypair does not match "
+                    + f'your live {environ.get("FRA_NETWORK")}_node.key.'
+                    + f'\n* Do you want to copy the live key into the {findora_env.findora_backup} folder now? (Y/N) '
                 )
                 if question:
                     # Copy key back
@@ -1444,7 +1473,8 @@ def run_update_launcher() -> None:
 
 def run_safety_clean_launcher() -> None:
     question = ask_yes_no(
-        "* You will miss blocks while downloading the new database, this can take awhile depending on location and connection.\n* Are you sure you want to run a safety_clean? (Y/N) "
+        f"* {Fore.RED}You will miss blocks while downloading the new database, this can take awhile depending on location "
+        + f"and connection.{Fore.MAGENTA}\n* Are you sure you want to run a safety_clean? (Y/N) "
     )
     print_stars()
     if question:

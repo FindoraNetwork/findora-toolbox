@@ -1,7 +1,7 @@
 import subprocess, re, bleach, secrets, time, jwt
 from os import environ
 from werkzeug.exceptions import HTTPException
-from config import findora_env
+from web.src.shared import findora_env
 from findora_toolbox import load_var_file, set_var, ask_yes_no
 from flask import (
     Flask,

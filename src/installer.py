@@ -1,5 +1,4 @@
 import subprocess
-from config import findora_env
 from shared import (
     create_directory_with_permissions,
     install_fn_app,
@@ -8,6 +7,7 @@ from shared import (
     load_server_data,
     start_local_validator,
     get_live_version,
+    findora_env
 )
 
 
@@ -36,7 +36,7 @@ def run_full_installer(network, region):
 
     # Make Directories & Set Permissions
     create_directory_with_permissions("/data/findora", USERNAME)
-    
+
     # Create backup directory
     subprocess.run(
         ["mkdir", "-p", f"/home/{USERNAME}/findora_backup"],
@@ -72,4 +72,6 @@ def run_full_installer(network, region):
         )
 
     # Start findorad
-    start_local_validator(ROOT_DIR, FINDORAD_IMG, "installer", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)
+    start_local_validator(
+        ROOT_DIR, FINDORAD_IMG, "installer", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
+    )
