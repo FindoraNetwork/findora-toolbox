@@ -8,7 +8,6 @@ import shutil
 import urllib.request
 import tarfile
 import docker
-from colorama import Fore
 from config import findora_env
 
 

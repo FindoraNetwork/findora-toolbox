@@ -1,4 +1,14 @@
-import subprocess, platform, os, time, json, re, shutil, requests, docker, dotenv, psutil, cmd2
+import subprocess
+import platform
+import os
+import time
+import json
+import shutil
+import requests
+import docker
+import dotenv
+import psutil
+import cmd2
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
