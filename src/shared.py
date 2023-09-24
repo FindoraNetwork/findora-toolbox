@@ -197,19 +197,20 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"), ignore_errors=True)
 
     # Get the size of snapshot first
-    snapshot_size = get_file_size(CHAINDATA_URL) * 3
+    snapshot_size = get_file_size(CHAINDATA_URL)
+    initial_required_size = snapshot_size * 3.5
     available_space = get_available_space(ROOT_DIR)
 
-    if available_space < (snapshot_size):
+    if available_space < (initial_required_size):
         print(
-            f"Error: Not enough disk space available. Minimum Required: {format_size(snapshot_size)}+, Available: {format_size(available_space)}."
+            f"Error: Not enough disk space available. Minimum Required: {format_size(initial_required_size)}+, Available: {format_size(available_space)}."
         )
         question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
         if not question:
             exit(1)
     else:
         print(
-            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(snapshot_size)}"
+            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(initial_required_size)}"
         )
 
     # Check snapshot file md5sum
@@ -245,7 +246,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     os.makedirs(SNAPSHOT_DIR, exist_ok=True)
 
     # Check available disk space
-    required_space = os.path.getsize(snapshot_file) * 2
+    required_space = snapshot_size * 2.5
     available_space = get_available_space(SNAPSHOT_DIR)
     if available_space < required_space:
         print(
@@ -256,7 +257,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
             exit(1)
     else:
         print(
-            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)}"
+            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)} - Estimated available space after unpacking: {format_size(available_space - required_space - snapshot_size)} "
         )
 
     # Extract the tar archive and check the exit status
