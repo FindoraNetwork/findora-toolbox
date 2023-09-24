@@ -283,7 +283,8 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
     # Check available disk space
     required_space = snapshot_size * 2.5
-    available_space = get_available_space(SNAPSHOT_DIR)
+    available_space = get_available_space(ROOT_DIR)
+    final_size = available_space - required_space + snapshot_size
     if available_space < required_space:
         print(
             f"Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, Available: {format_size(available_space)}."
@@ -293,7 +294,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
             exit(1)
     else:
         print(
-            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)} - Estimated available space after unpacking: {format_size(available_space - required_space - snapshot_size)} "
+            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)} - Estimated available space after unpacking: {format_size(final_size)} "
         )
 
     # Extract the tar archive and check the exit status
