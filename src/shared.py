@@ -298,13 +298,17 @@ def create_local_node(
         stop_and_remove_container(CONTAINER_NAME)
 
         # Set the command string based on the network
-        command_suffix = "--ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service"
+        command_suffix = "--ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path='/root/.tendermint/config/priv_validator_key.json' --enable-query-service"
         command = f"node {command_suffix}"
         if network == "testnet":
             command = f"node --checkpoint-file=/root/checkpoint.toml {command_suffix}"
 
         # Create the container
         print(f"* Starting {CONTAINER_NAME} container...")
+        
+        # Set the chain_id based on the network
+        chain_id = "2153" if network == "testnet" else "2152"
+      
         container = client.containers.run(
             image=FINDORAD_IMG,
             name=CONTAINER_NAME,
@@ -320,7 +324,7 @@ def create_local_node(
                 "8545/tcp": 8545,
                 "26657/tcp": 26657,
             },
-            environment={"EVM_CHAIN_ID": "2152"},
+            environment={"EVM_CHAIN_ID": chain_id},
             command=command,
         )
         
