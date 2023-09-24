@@ -1604,7 +1604,7 @@ def parse_flags(parser, region, network):
     if args.ultrareset:
         # Are you really really sure?
         answer = ask_yes_no(
-            f"* WARNING, NUCLEAR OPTION: We will now totally remove all files in /data/findora and beyond.\n* YOU WILL LOSE ALL OF YOUR KEYS AND DATA IN /data/findora\n* After this completes you will need to re-run the installer and wait for a fresh download. Then you will be able to run our migration process.\n* Press Y to fully wipe and reset your server or N to exit: (Y/N) "
+            f"* WARNING, NUCLEAR OPTION: We will now totally remove all files in /data/findora and beyond.\n* YOU WILL LOSE ALL OF YOUR KEYS AND DATA IN /data/findora\n* After this completes you will need to re-run the installer and wait for a fresh download. Then you will be able to run our migration process.\n* {Fore.RED}Press Y to fully wipe and reset your server or N to exit: (Y/N){Fore.MAGENTA} "
         )
         if answer:
             # wipe data here
