@@ -26,20 +26,6 @@ check_env() {
     fi
 }
 
-# don't think we need this...
-set_binaries() {
-    # OS=$1
-    docker pull ${FINDORAD_IMG} || exit 1
-    wget -T 10 https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn || exit 1
-
-    new_path=${ROOT_DIR}/bin
-
-    rm -rf $new_path 2>/dev/null
-    mkdir -p $new_path || exit 1
-    mv fn $new_path || exit 1
-    chmod -R +x ${new_path} || exit 1
-}
-
 ##################
 # Install fn App #
 ##################
@@ -62,17 +48,6 @@ check_env
 
 cp /tmp/tmp.gen.keypair /home/${USERNAME}/findora_backup/tmp.gen.keypair
 mv /tmp/tmp.gen.keypair /data/findora/${NAMESPACE}/${NAMESPACE}_node.key
-
-if [[ "Linux" == `uname -s` ]]; then
-    set_binaries linux
-# elif [[ "FreeBSD" == `uname -s` ]]; then
-    # set_binaries freebsd
-elif [[ "Darwin" == `uname -s` ]]; then
-    set_binaries macos
-else
-    echo "Unsupported system platform!"
-    exit 1
-fi
 
 #####################
 # Config local node #
