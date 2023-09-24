@@ -126,7 +126,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
         os.system(f"touch {home_dir}/.findora.env")
     else:
         load_var_file(findora_env.dotenv_file)
-        
+
     # Check if we have a network/region set, if not, ask for it.
     network = set_main_or_test()
     region = set_na_or_eu()
@@ -267,7 +267,9 @@ def docker_check():
         print("* Docker ready.")
         print_stars()
         time.sleep(1)
-
+    except docker.errors.APIError as e:
+        print(f"* Docker API error: {e}")
+        exit(2)
     except docker.errors.DockerException:
         print("* There's a problem with your Docker. Are you in the `docker` group?")
         print(
@@ -279,14 +281,13 @@ def docker_check():
         print("* See: https://guides.easynode.pro/admin#docker-installation")
         print_stars()
         finish_node()
-
-    except FileNotFoundError:
-        print("* Docker is not installed. Please install Docker per our guide and re-launch your installer.")
-        print(
-            "* See: https://guides.easynode.pro/admin#docker-installation - Install docker on this server and give the user access to continue."
-        )
-        print_stars()
-        finish_node()
+        exit(3)
+    finally:
+        # Close the Docker client
+        try:
+            client.close()
+        except UnboundLocalError:
+            pass  # client was not successfully initialized
 
 
 def all_sys_info():
@@ -389,15 +390,29 @@ def coming_soon():
     print_stars()
 
 
-def container_running(container_name) -> None:
-    # Create a Docker client
-    client = docker.from_env()
+def container_running(container_name: str) -> bool:
+    try:
+        # Create a Docker client
+        client = docker.from_env()
 
-    # List all running containers
-    running_containers = client.containers.list()
+        # List all running containers
+        running_containers = client.containers.list()
 
-    # Check if a container with the specified name is in the list of running containers
-    return any(re.fullmatch(container_name, container.name) for container in running_containers)
+        # Check if a container with the specified name is in the list of running containers
+        return any(container.name == container_name for container in running_containers)
+    except docker.errors.APIError as e:
+        print(f"* Docker API error: {e}")
+        exit(2)
+    except docker.errors.DockerException:
+        print("* There's a problem with your Docker.")
+        print_stars()
+        exit(3)
+    finally:
+        # Close the Docker client
+        try:
+            client.close()
+        except UnboundLocalError:
+            pass  # client was not successfully initialized
 
 
 def ask_question_menu(var_name, question_message, question_title, options_list) -> None:
@@ -1172,7 +1187,9 @@ def menu_install_findora(network, region) -> None:
         + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or start a migration."
         + "\n* Read more about migrating an existing validator here: https://docs.easynode.pro/findora/moving#migrate-your-server-via-validator-toolbox"
     )
-    answer = ask_yes_no(f"* {Fore.RED}Do you want to install {Fore.YELLOW}{network}{Fore.RED} from the {Fore.YELLOW}{region}{Fore.RED} region now? (Y/N){Fore.MAGENTA} ")
+    answer = ask_yes_no(
+        f"* {Fore.RED}Do you want to install {Fore.YELLOW}{network}{Fore.RED} from the {Fore.YELLOW}{region}{Fore.RED} region now? (Y/N){Fore.MAGENTA} "
+    )
     if answer:
         run_full_installer(network, region)
     else:
@@ -1180,7 +1197,9 @@ def menu_install_findora(network, region) -> None:
 
 
 def run_ubuntu_updates() -> None:
-    question = ask_yes_no(f"* {Fore.RED}You will miss blocks while upgrades run.\n{Fore.MAGENTA}*{Fore.RED} Are you sure you want to run updates? (Y/N){Fore.MAGENTA} ")
+    question = ask_yes_no(
+        f"* {Fore.RED}You will miss blocks while upgrades run.\n{Fore.MAGENTA}*{Fore.RED} Are you sure you want to run updates? (Y/N){Fore.MAGENTA} "
+    )
     if question:
         print_stars()
         print("* Stopping docker container for safety")

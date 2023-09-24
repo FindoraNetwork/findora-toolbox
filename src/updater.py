@@ -12,6 +12,8 @@ def run_update_restart(network = os.environ.get("FRA_NETWORK")):
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     CONTAINER_NAME = "findorad"
+    ENDPOINT_STATUS_URL = "http://localhost:26657/status"
+    RETRY_INTERVAL = 10
 
     chown_dir(ROOT_DIR, USERNAME, USERNAME)
 
@@ -24,4 +26,4 @@ def run_update_restart(network = os.environ.get("FRA_NETWORK")):
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "updater", network)
+    create_local_node(ROOT_DIR, FINDORAD_IMG, "updater", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)

@@ -17,8 +17,9 @@ def run_safety_clean(network = os.environ.get("FRA_NETWORK"), region = os.enviro
     LIVE_VERSION = get_live_version(server_url)
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
-    keypath = f"{ROOT_DIR}/{network}_node.key"
     CONTAINER_NAME = "findorad"
+    ENDPOINT_STATUS_URL = "http://localhost:26657/status"
+    RETRY_INTERVAL = 10
 
     chown_dir(ROOT_DIR, USERNAME, USERNAME)
 
@@ -34,4 +35,4 @@ def run_safety_clean(network = os.environ.get("FRA_NETWORK"), region = os.enviro
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "safety_clean", network)
+    create_local_node(ROOT_DIR, FINDORAD_IMG, "safety_clean", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)

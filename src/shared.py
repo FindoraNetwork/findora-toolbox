@@ -12,6 +12,10 @@ from colorama import Fore
 from config import findora_env
 
 
+def execute_command(command):
+    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+
+
 def ask_yes_no(question: str) -> bool:
     yes_no_answer = ""
     while not yes_no_answer.startswith(("Y", "N")):
@@ -109,7 +113,7 @@ def install_fn_app():
     subprocess.run(
         ["sudo", "mv", "fn", "/usr/local/bin/"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
     )
-    print("fn app installed.")
+    print("* fn app installed.")
 
 
 def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
@@ -119,67 +123,60 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
         node_mnemonic = re.search(r"Mnemonic:[^ ]* (.*)", content).group(1)
 
     # Write node_mnemonic to node.mnemonic file
-    with open(f"{ROOT_DIR}/node.mnemonic", "w") as file:
+    node_mnemonic_path = os.path.join(ROOT_DIR, "node.mnemonic")
+    with open(node_mnemonic_path, "w") as file:
         file.write(node_mnemonic)
 
     # Copy node.mnemonic to backup directory
-    subprocess.run(
-        ["cp", f"{ROOT_DIR}/node.mnemonic", f"/home/{USERNAME}/findora_backup/node.mnemonic"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=True,
-    )
+    shutil.copy(node_mnemonic_path, f"/home/{USERNAME}/findora_backup/node.mnemonic")
+    print(f"* Setup {node_mnemonic_path}, copied to ~/findora_backup/node.mnemonic")
 
     # Run FN setup commands
-    subprocess.run(["fn", "setup", "-S", server_url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    subprocess.run(
-        ["fn", "setup", "-K", f"{ROOT_DIR}/tendermint/config/priv_validator_key.json"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=True,
-    )
-    subprocess.run(
-        ["fn", "setup", "-O", f"{ROOT_DIR}/node.mnemonic"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=True,
-    )
+    execute_command(["fn", "setup", "-S", server_url])
+    execute_command(["fn", "setup", "-K", os.path.join(ROOT_DIR, "tendermint/config/priv_validator_key.json")])
+    execute_command(["fn", "setup", "-O", node_mnemonic_path])
+    print("* fn application has been configured.")
 
     # Clean old data and config files
-    subprocess.run(
-        ["sudo", "rm", "-rf", f"{ROOT_DIR}/{network}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
-    )
-    subprocess.run(
-        ["mkdir", "-p", f"{ROOT_DIR}/{network}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
-    )
+    network_dir = os.path.join(ROOT_DIR, network)
+    shutil.rmtree(network_dir, ignore_errors=True)
+    os.makedirs(network_dir)
 
-    # Tendermint config
-    subprocess.run(
-        [
-            "docker",
-            "run",
-            "--rm",
-            "-v",
-            f"{ROOT_DIR}/tendermint:/root/.tendermint",
-            FINDORAD_IMG,
-            "init",
-            f"--{network}",
-        ],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=True,
-    )
+    try:
+        # Create a Docker client
+        client = docker.from_env()
+
+        # Define the volume mapping
+        volumes = {
+            os.path.join(ROOT_DIR, "tendermint"): {
+                "bind": "/root/.tendermint",
+                "mode": "rw",
+            }
+        }
+
+        # Run the Docker container
+        client.containers.run(
+            image=FINDORAD_IMG,
+            command=["init", f"--{network}"],
+            volumes=volumes,
+            remove=True,  # Equivalent to --rm
+            detach=True,  # Run in the background
+        )
+
+    except docker.errors.APIError as e:
+        print(f"* Docker API error: {e}")
+    finally:
+        # Close the Docker client
+        try:
+            client.close()
+        except UnboundLocalError:
+            pass  # client was not successfully initialized
 
     # Reset permissions on tendermint folder after init
-    chown_dir(f"{ROOT_DIR}/tendermint", USERNAME, USERNAME)
+    chown_dir(os.path.join(ROOT_DIR, "tendermint"), USERNAME, USERNAME)
 
     # Backup priv_validator_key.json
-    subprocess.run(
-        ["cp", "-a", f"{ROOT_DIR}/tendermint/config", f"/home/{USERNAME}/findora_backup/config"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        check=True,
-    )
+    shutil.copytree(os.path.join(ROOT_DIR, "tendermint/config"), f"/home/{USERNAME}/findora_backup/config")
 
     # If you're re-running this for some reason, stop and remove findorad
     print(Fore.MAGENTA)
@@ -287,81 +284,75 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     os.remove(snapshot_file)
 
 
-def create_local_node(ROOT_DIR, FINDORAD_IMG, local_node_status, network):
-    # Define the Docker image and container name
+def create_local_node(
+    ROOT_DIR, FINDORAD_IMG, local_node_status, network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
+):
+    # Create a Docker client
     client = docker.from_env()
 
-    CONTAINER_NAME = "findorad"
-
     try:
-        if network == "mainnet":
-            container = client.containers.run(
-                image=FINDORAD_IMG,
-                name=CONTAINER_NAME,
-                detach=True,
-                volumes={
-                    f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
-                    f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
-                },
-                ports={
-                    "8669/tcp": 8669,
-                    "8668/tcp": 8668,
-                    "8667/tcp": 8667,
-                    "8545/tcp": 8545,
-                    "26657/tcp": 26657,
-                },
-                environment={"EVM_CHAIN_ID": "2152"},
-                command="node --ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service",
-            )
-        elif network == "testnet":
-            container = client.containers.run(
-                image=FINDORAD_IMG,
-                name=CONTAINER_NAME,
-                detach=True,
-                volumes={
-                    f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
-                    f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
-                },
-                ports={
-                    "8669/tcp": 8669,
-                    "8668/tcp": 8668,
-                    "8667/tcp": 8667,
-                    "8545/tcp": 8545,
-                    "26657/tcp": 26657,
-                },
-                environment={"EVM_CHAIN_ID": "2152"},
-                command="node --ledger-dir /tmp/findora --checkpoint-file=/root/checkpoint.toml --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service",
-            )
+        # Check if a container with the same name already exists and remove it if it does
+        existing_containers = client.containers.list(all=True, filters={"name": CONTAINER_NAME})
+        if existing_containers:
+            existing_container = existing_containers[0]
+            existing_container.stop()
+            existing_container.remove()
+
+        # Set the command string based on the network
+        command_suffix = "--ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service"
+        command = f"node {command_suffix}"
+        if network == "testnet":
+            command = f"node --checkpoint-file=/root/checkpoint.toml {command_suffix}"
+
+        # Create the container
+        container = client.containers.run(
+            image=FINDORAD_IMG,
+            name=CONTAINER_NAME,
+            detach=True,
+            volumes={
+                f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
+                f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
+            },
+            ports={
+                "8669/tcp": 8669,
+                "8668/tcp": 8668,
+                "8667/tcp": 8667,
+                "8545/tcp": 8545,
+                "26657/tcp": 26657,
+            },
+            environment={"EVM_CHAIN_ID": "2152"},
+            command=command,
+        )
 
         # Wait for the container to be up and the endpoint to respond
         while True:
-            # Check if the container is running
-            result = subprocess.run(["docker", "ps", "--format", "{{.Names}}"], capture_output=True, text=True)
-            if CONTAINER_NAME in result.stdout:
-                # Check the response from the endpoint
+            container = client.containers.get(CONTAINER_NAME)
+            if container.status == "running":
+                print(f"* {CONTAINER_NAME} is running.")
                 try:
-                    response = requests.get("http://localhost:26657/status")
+                    response = requests.get(ENDPOINT_STATUS_URL)
                     if response.ok:
-                        print("Container is up and endpoint is responding.")
+                        print("* Container is up and endpoint is responding.")
                         break
                     else:
-                        print("Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
-                        time.sleep(10)
+                        print("* Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
+                        time.sleep(RETRY_INTERVAL)
                 except requests.ConnectionError:
-                    print("Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
-                    time.sleep(10)
+                    print("* Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
+                    time.sleep(RETRY_INTERVAL)
             else:
-                print("Container is not running. Exiting...")
+                print("* Container is not running. Exiting...")
                 exit(1)
-    except docker.errors.ContainerError as e:
-        print(f"Container error: {e}")
-    except docker.errors.ImageNotFound:
-        print("Docker image not found.")
+
     except docker.errors.APIError as e:
-        print(f"Docker API error: {e}")
+        print(f"* Docker API error: {e}")
+        exit(1)
+    finally:
+        # Close the Docker client
+        client.close()
 
     # Post Install Stats Report
-    print(requests.get("http://localhost:26657/status").text)
+    print(requests.get(ENDPOINT_STATUS_URL).text)
     print(requests.get("http://localhost:8669/version").text)
     print(requests.get("http://localhost:8668/version").text)
     print(requests.get("http://localhost:8667/version").text)
@@ -383,6 +374,7 @@ def setup_wallet_key(keypath, ROOT_DIR, network):
                 stderr=subprocess.DEVNULL,
                 check=True,
             )
+            print(f"* tmp.gen.keypair file detected, copying to {network}_node.key")
         elif os.path.isfile(f"{findora_env.user_home_dir}/tmp.gen.keypair"):
             subprocess.run(
                 ["cp", f"{findora_env.user_home_dir}/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
@@ -390,27 +382,28 @@ def setup_wallet_key(keypath, ROOT_DIR, network):
                 stderr=subprocess.DEVNULL,
                 check=True,
             )
+            print(f"* tmp.gen.keypair file detected, copying to {network}_node.key")
         else:
-            print(f"* No tmp.gen.keypair file detected, generating file and creating to {network}_node.key")
             with open(f"{ROOT_DIR}/{network}_node.key", "w") as file:
                 subprocess.run(["fn", "genkey"], stdout=file, text=True)
+            shutil.copyfile(
+                f"{ROOT_DIR}/{network}_node.key", f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair"
+            )
+            print(
+                f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and copied to ~/findora_backup/tmp.gen.keypair"
+            )
 
 
 def stop_and_remove_container(container_name):
     # Create a Docker client
     client = docker.from_env()
 
-    # List all containers
-    containers = client.containers.list(all=True)
-
-    # Check if the container with the specified name is running
-    container_found = any(re.fullmatch(container_name, container.name) for container in containers)
-
-    if container_found:
-        print(f"{container_name} Container found, stopping container to restart.")
+    try:
+        # Try to get the container by name
+        container = client.containers.get(container_name)
+        print(f"* {container_name} Container found, stopping container to restart.")
 
         # Stop and remove the container
-        container = client.containers.get(container_name)
         container.stop()
         container.remove()
 
@@ -418,8 +411,15 @@ def stop_and_remove_container(container_name):
         file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
         if os.path.exists(file_path):
             os.remove(file_path)
-    else:
-        print(f"{container_name} container stopped or does not exist, continuing.")
+            print(f"* Removed file: {file_path}")
+    except docker.errors.NotFound:
+        print(f"* {container_name} container stopped or does not exist, continuing.")
+    except docker.errors.APIError as e:
+        print(f"* Docker API error: {e}")
+        exit(1)
+    finally:
+        # Close the Docker client
+        client.close()
 
 
 def create_directory_with_permissions(path, username):

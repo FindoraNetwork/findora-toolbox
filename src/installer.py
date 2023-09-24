@@ -20,6 +20,9 @@ def run_full_installer(network, region):
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
+    CONTAINER_NAME = "findorad"
+    ENDPOINT_STATUS_URL = "http://localhost:26657/status"
+    RETRY_INTERVAL = 10
 
     uname = subprocess.getoutput("uname -s")
     if uname == "Linux":
@@ -69,4 +72,4 @@ def run_full_installer(network, region):
         )
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "installer", network)
+    create_local_node(ROOT_DIR, FINDORAD_IMG, "installer", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)
