@@ -115,9 +115,8 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
         return
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
-            print_stars()
             print(
-                f"* \033[31;01m{tool}\033[00m has not been installed and made available to {USERNAME}!\n* Install {tool} by running the following command:\n* sudo apt install {tool}\n"
+                f"* The package: \033[31;01m{tool}\033[00m\n* Has not been installed on this system for {USERNAME}!\n* Install {tool} by running the following command:\n*\n* sudo apt install {tool}\n*\n* Then re-start the toolbox."
             )
             print_stars()
             print(
