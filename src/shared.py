@@ -270,7 +270,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
                 tar.extract(member, path=SNAPSHOT_DIR)
                 extracted_count += 1
                 print(f"Extracted {extracted_count} files...", end="\r")
-        print("\nExtraction complete!")
+        print("\nSnapshot extraction completed.")
     except OSError as e:
         if e.errno == 28:  # No space left on device
             print("Error: Extraction failed due to insufficient disk space.")
@@ -322,6 +322,9 @@ def create_local_node(
             environment={"EVM_CHAIN_ID": "2152"},
             command=command,
         )
+        
+        # Pause for container to initialize
+        time.sleep(3)
 
         # Wait for the container to be up and the endpoint to respond
         while True:
@@ -412,7 +415,7 @@ def stop_and_remove_container(container_name):
             os.remove(file_path)
             print(f"* Removed file: {file_path}")
     except docker.errors.NotFound:
-        print(f"* {container_name} container stopped or does not exist, continuing.")
+        print(f"* {container_name} container not found.")
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
         exit(1)
