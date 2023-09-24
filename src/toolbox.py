@@ -1,4 +1,4 @@
-import subprocess, platform, os, time, argparse, json, re, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil, cmd2
+import subprocess, platform, os, time, json, re, shutil, requests, docker, dotenv, psutil, cmd2
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
@@ -8,12 +8,18 @@ from dotenv import load_dotenv
 from colorama import Fore, Back, Style
 from pprint import pprint
 from config import findora_env
+from updater import run_update_restart
+from safety_clean import run_safety_clean
+from shared import ask_yes_no, compare_two_files
+
+# from shared import stop_and_remove_container
+from installer import run_full_installer
 
 
 class print_stuff:
     def __init__(self, reset: int = 0):
         self.reset = reset
-        self.print_stars = "*" * 93
+        self.print_stars = f"{Fore.MAGENTA}*" * 93
         self.reset_stars = self.print_stars + Style.RESET_ALL
 
     def printStars(self) -> None:
@@ -42,38 +48,29 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 # loader intro splash screen
 def loader_intro():
-    standalone_option()
-    p = f"""
-
-
-███████╗██╗███╗   ██╗██████╗  ██████╗ ██████╗  █████╗       
-██╔════╝██║████╗  ██║██╔══██╗██╔═══██╗██╔══██╗██╔══██╗      
-█████╗  ██║██╔██╗ ██║██║  ██║██║   ██║██████╔╝███████║      
-██╔══╝  ██║██║╚██╗██║██║  ██║██║   ██║██╔══██╗██╔══██║      
-██║     ██║██║ ╚████║██████╔╝╚██████╔╝██║  ██║██║  ██║      
-╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝      
-                                                            
-████████╗ ██████╗  ██████╗ ██╗     ██████╗  ██████╗ ██╗  ██╗
-╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔══██╗██╔═══██╗╚██╗██╔╝
-   ██║   ██║   ██║██║   ██║██║     ██████╔╝██║   ██║ ╚███╔╝ 
-   ██║   ██║   ██║██║   ██║██║     ██╔══██╗██║   ██║ ██╔██╗ 
-   ██║   ╚██████╔╝╚██████╔╝███████╗██████╔╝╚██████╔╝██╔╝ ██╗
-   ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝
-
-    Findora Validator Management
-    created by Patrick @ https://EasyNode.pro
-
-    """
+    print_stars()
+    p = f"""*
+* 
+* ███████╗██╗███╗   ██╗██████╗  ██████╗ ██████╗  █████╗       
+* ██╔════╝██║████╗  ██║██╔══██╗██╔═══██╗██╔══██╗██╔══██╗      
+* █████╗  ██║██╔██╗ ██║██║  ██║██║   ██║██████╔╝███████║      
+* ██╔══╝  ██║██║╚██╗██║██║  ██║██║   ██║██╔══██╗██╔══██║      
+* ██║     ██║██║ ╚████║██████╔╝╚██████╔╝██║  ██║██║  ██║      
+* ╚═╝     ╚═╝╚═╝  ╚═══╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝      
+*                                                             
+* ████████╗ ██████╗  ██████╗ ██╗     ██████╗  ██████╗ ██╗  ██╗
+* ╚══██╔══╝██╔═══██╗██╔═══██╗██║     ██╔══██╗██╔═══██╗╚██╗██╔╝
+*    ██║   ██║   ██║██║   ██║██║     ██████╔╝██║   ██║ ╚███╔╝ 
+*    ██║   ██║   ██║██║   ██║██║     ██╔══██╗██║   ██║ ██╔██╗ 
+*    ██║   ╚██████╔╝╚██████╔╝███████╗██████╔╝╚██████╔╝██╔╝ ██╗
+*    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝
+* 
+*     Findora Validator Management
+*     created by Patrick @ https://EasyNode.pro
+* 
+*   """
     print(p)
     return
-
-
-def first_env_check(env_file, home_dir) -> None:
-    if not os.path.exists(env_file):
-        os.system(f"touch {home_dir}/.findora.env")
-    else:
-        load_var_file(findora_env.dotenv_file)
-        return
 
 
 def set_var(env_file, key_name, update_name):
@@ -82,31 +79,6 @@ def set_var(env_file, key_name, update_name):
     dotenv.set_key(env_file, key_name, update_name)
     load_var_file(findora_env.dotenv_file)
     return
-
-
-def compare_two_files(input1, input2) -> None:
-    # open the files
-    file1 = open(input1, "rb")
-    file2 = open(input2, "rb")
-
-    # generate their hashes
-    hash1 = hashlib.md5(file1.read()).hexdigest()
-    hash2 = hashlib.md5(file2.read()).hexdigest()
-
-    # compare the hashes
-    if hash1 == hash2:
-        return True
-    else:
-        return False
-
-
-def ask_yes_no(question: str) -> bool:
-    yes_no_answer = ""
-    while not yes_no_answer.startswith(("Y", "N")):
-        yes_no_answer = input(f"{question}: ").upper()
-    if yes_no_answer.startswith("Y"):
-        return True
-    return False
 
 
 def load_var_file(var_file):
@@ -134,6 +106,33 @@ def pause_for_cause():
     input()
 
 
+def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_name):
+    # Check for missing commands we use in the toolbox
+    for tool in ["wget", "curl", "pv", "docker"]:
+        if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
+            print(
+                f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n* Has not been installed on this system for the user {USERNAME}!\n* Install {tool} by running the following command:\n*\n* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n* Then re-start the toolbox."
+            )
+            print_stars()
+            print(
+                f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
+                + '* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip -y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n'
+                + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run the toolbox again."
+            )
+            print_stars()
+            exit(1)
+    # Check if we have a .env file, if not, create it.
+    if not os.path.exists(env_file):
+        os.system(f"touch {home_dir}/.findora.env")
+    else:
+        load_var_file(findora_env.dotenv_file)
+
+    # Check if we have a network/region set, if not, ask for it.
+    network = set_main_or_test()
+    region = set_na_or_eu()
+    return network, region
+
+
 def run_ubuntu_updater() -> None:
     os_upgrades()
     print()
@@ -158,7 +157,7 @@ def os_upgrades() -> None:
 
 
 def menu_error() -> None:
-    standalone_option()
+    print_stars()
     print(
         "* "
         + Fore.RED
@@ -268,7 +267,9 @@ def docker_check():
         print("* Docker ready.")
         print_stars()
         time.sleep(1)
-
+    except docker.errors.APIError as e:
+        print(f"* Docker API error: {e}")
+        exit(2)
     except docker.errors.DockerException:
         print("* There's a problem with your Docker. Are you in the `docker` group?")
         print(
@@ -280,14 +281,13 @@ def docker_check():
         print("* See: https://guides.easynode.pro/admin#docker-installation")
         print_stars()
         finish_node()
-
-    except FileNotFoundError:
-        print("* Docker is not installed. Please install Docker per our guide and re-launch your installer.")
-        print(
-            "* See: https://guides.easynode.pro/admin#docker-installation - Install docker on this server and give the user access to continue."
-        )
-        print_stars()
-        finish_node()
+        exit(3)
+    finally:
+        # Close the Docker client
+        try:
+            client.close()
+        except UnboundLocalError:
+            pass  # client was not successfully initialized
 
 
 def all_sys_info():
@@ -390,15 +390,29 @@ def coming_soon():
     print_stars()
 
 
-def container_running(container_name) -> None:
-    # Create a Docker client
-    client = docker.from_env()
+def container_running(container_name: str) -> bool:
+    try:
+        # Create a Docker client
+        client = docker.from_env()
 
-    # List all running containers
-    running_containers = client.containers.list()
+        # List all running containers
+        running_containers = client.containers.list()
 
-    # Check if a container with the specified name is in the list of running containers
-    return any(re.fullmatch(container_name, container.name) for container in running_containers)
+        # Check if a container with the specified name is in the list of running containers
+        return any(container.name == container_name for container in running_containers)
+    except docker.errors.APIError as e:
+        print(f"* Docker API error: {e}")
+        exit(2)
+    except docker.errors.DockerException:
+        print("* There's a problem with your Docker.")
+        print_stars()
+        exit(3)
+    finally:
+        # Close the Docker client
+        try:
+            client.close()
+        except UnboundLocalError:
+            pass  # client was not successfully initialized
 
 
 def ask_question_menu(var_name, question_message, question_title, options_list) -> None:
@@ -457,6 +471,7 @@ def set_main_or_test() -> None:
 
 
 def menu_findora() -> None:
+    print(Fore.MAGENTA)
     update = menu_topper()
     print("* Findora Validator Toolbox - Menu Options:")
     print("*")
@@ -494,7 +509,7 @@ def menu_findora() -> None:
 
 
 def get_curl_stats() -> None:
-    standalone_option()
+    print_stars()
     print(Fore.GREEN)
     try:
         response = requests.get("http://localhost:26657/status")
@@ -517,7 +532,7 @@ def capture_stats() -> None:
 
 
 def refresh_fn_stats() -> None:
-    standalone_option()
+    print_stars()
     try:
         output = subprocess.check_output(["fn", "show"])
         output = output.decode().replace("b'", "")
@@ -529,16 +544,8 @@ def refresh_fn_stats() -> None:
         )
 
 
-def standalone_option():
-    # For menu options that can run on their own, always clear and stars first.
-    print(Fore.MAGENTA)
-
-    print_stars()
-    return
-
-
 def claim_findora_rewards() -> None:
-    standalone_option()
+    print_stars()
     try:
         output = subprocess.call(
             ["fn", "claim"],
@@ -704,7 +711,7 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
 
 
 def change_rate(our_fn_stats):
-    standalone_option()
+    print_stars()
     print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
     answer = input(
         "* What would you like the new rate to be?\n* Please use findora notation, "
@@ -750,7 +757,7 @@ class MemoUpdater(cmd2.Cmd):
                     return
                 else:
                     memo_items_json = json.dumps(memo_items)
-                    print("* Here is your updated staker_memo information for verifictaion before sending changes:")
+                    print("* Here is your updated staker_memo information for verification before sending changes:")
                     print_stars()
                     print(memo_items)
                     print_stars()
@@ -778,7 +785,7 @@ class MemoUpdater(cmd2.Cmd):
 
 def change_validator_info():
     # fix this menu, it's nuts. Always does change_rate
-    standalone_option()
+    print_stars()
     output = fetch_fn_show_output()
     our_fn_stats = get_fn_stats(output)
     if "Self Delegation" not in our_fn_stats:
@@ -836,7 +843,7 @@ def check_address_input(address) -> None:
 def set_send_options() -> None:
     # Give'm some options!
     print(Fore.MAGENTA)
-    standalone_option()
+    print_stars()
     menu_option = ask_question_menu_no_var(
         f"* Select a send tx option to change: \n*\n* 0. Express Wallet - Currently {Fore.YELLOW}"
         + f"{environ.get('RECEIVER_WALLET')}{Fore.MAGENTA}\n* 1. Privacy Option - Change current "
@@ -1124,11 +1131,11 @@ def rescue_menu() -> None:
     menu_options = {
         0: finish_node,
         1: get_curl_stats,
-        2: run_container_update,
-        3: run_clean_script,
+        2: run_update_launcher,
+        3: run_safety_clean_launcher,
     }
     print(
-        "* We still don't detect a running container. Here are your options currently:"
+        "* We still don't detect a running container.\n* Sometimes it can take a few minutes before the api starts responding.\n* You can attempt to get stats again for a few minutes, if that doesn't work review docker logs & try the update_version.\n* Here are your options currently:"
         + "\n* 1 - CURL stats - Keep checking stats"
         + "\n* 2 - update_version script - Run the update version script as a first option for recovery."
         + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and restart server."
@@ -1143,18 +1150,6 @@ def rescue_menu() -> None:
 
     menu_options[option]()
     rescue_menu()
-
-
-def update_findora_container(skip) -> None:
-    print("* Running the update and restart may cause missed blocks, beware before proceeding!")
-    if not skip:
-        answer = ask_yes_no("* Are you sure you want to check for an upgrade and restart? (Y/N) ")
-    if answer:
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=findora_env.user_home_dir,
-        )
-    return
 
 
 def migration_update() -> None:
@@ -1175,42 +1170,6 @@ def update_fn_wallet() -> None:
         )
 
 
-def run_clean_script() -> None:
-    region = os.environ.get("FRA_REGION")
-    print(
-        "* Running the update and restart may cause missed blocks, beware before proceeding!"
-        + "\n* This option runs Safety Clean stopping your container and reloading all data.\n* Run as a last resort in troubleshooting."
-    )
-    answer = ask_yes_no(f"* Do you want to run safety clean from the {region} region now? (Y/N) ")
-    if answer:
-        if os.environ.get("FRA_REGION") == "na":
-            subprocess.call(
-                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}.sh"],
-                cwd=findora_env.user_home_dir,
-            )
-        if os.environ.get("FRA_REGION") == "eu":
-            subprocess.call(
-                [
-                    "bash",
-                    "-x",
-                    f"{findora_env.toolbox_location}/src/bin/safety_clean_{environ.get('FRA_NETWORK')}_eu.sh",
-                ],
-            )
-        if container_running(findora_env.container_name):
-            print_stars()
-            print("* Your container is restarted and back online. Press enter to return to the main menu.")
-            input()
-            run_findora_menu()
-        else:
-            print_stars()
-            print(
-                "* Your container was restarted but there was a problem bringing it back online.\n*"
-                + "\n* Starting the rescue menu now. Press enter to load the menu or ctrl+c to quit and manually troubleshoot."
-            )
-            input()
-            rescue_menu()
-
-
 def create_staker_memo() -> None:
     if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
         shutil.copy(
@@ -1219,48 +1178,28 @@ def create_staker_memo() -> None:
         )
 
 
-def run_findora_installer(network, region) -> None:
-    standalone_option()
-    print(
-        "* We will show the output of the installation, this will take some time to download and unpack.\n* Starting Findora installation now."
-    )
-    print_stars()
-    time.sleep(1)
-    print_stars()
-    if region == "na":
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=findora_env.user_home_dir,
-        )
-    if region == "eu":
-        subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/install_{environ.get('FRA_NETWORK')}_eu.sh"],
-        )
-    print_stars()
-    create_staker_memo()
-    print(
-        "* Setup has completed. Once you are synced up (catching_up=False) you are ready to create your "
-        + "validator on-chain or migrate from another server onto this server."
-    )
-    pause_for_cause()
-
-
 def menu_install_findora(network, region) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
         + f"\n* But...it doesn't look like you have Findora {network} installed."
-        + "\n* We will setup Findora validator on this server with a brand new wallet and start syncing with the blockchain."
+        + "\n* We will setup Findora validator software on this server with a temporary key and wallet file."
+        + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or start a migration."
+        + "\n* Read more about migrating an existing validator here: https://docs.easynode.pro/findora/moving#migrate-your-server-via-validator-toolbox"
     )
-    answer = ask_yes_no(f"* Do you want to install {network} from the {region} region now? (Y/N) ")
+    answer = ask_yes_no(
+        f"* {Fore.RED}Do you want to install {Fore.YELLOW}{network}{Fore.RED} from the {Fore.YELLOW}{region}{Fore.RED} region now? (Y/N){Fore.MAGENTA} "
+    )
     if answer:
-        run_findora_installer(network, region)
+        run_full_installer(network, region)
     else:
         raise SystemExit(0)
 
 
 def run_ubuntu_updates() -> None:
-    question = ask_yes_no("* You will miss blocks while upgrades run.\n* Are you sure you want to run updates? (Y/N) ")
+    question = ask_yes_no(
+        f"* {Fore.RED}You will miss blocks while upgrades run.\n{Fore.MAGENTA}*{Fore.RED} Are you sure you want to run updates? (Y/N){Fore.MAGENTA} "
+    )
     if question:
         print_stars()
         print("* Stopping docker container for safety")
@@ -1272,21 +1211,6 @@ def run_ubuntu_updates() -> None:
         refresh_fn_stats()
     else:
         return
-
-
-def chown_dir(root_dir, user, group) -> None:
-    for root, dirs, files in os.walk(root_dir):
-        for f in files:
-            os.chown(os.path.join(root, f), user, group)
-        for d in dirs:
-            os.chown(os.path.join(root, d), user, group)
-
-
-def get_uid() -> None:
-    user_name = getpass.getuser()
-    user_info = pwd.getpwnam(user_name)
-    uid = user_info.pw_uid
-    return uid
 
 
 def migration_instructions():
@@ -1397,11 +1321,6 @@ def migrate_to_server() -> None:
     return
 
 
-def run_container_update(status=False) -> None:
-    update_findora_container(status)
-    return
-
-
 def migration_check() -> None:
     file_paths = {}
     if os.path.exists(f"{findora_env.migrate_dir}/tmp.gen.keypair"):
@@ -1464,9 +1383,9 @@ def backup_folder_check() -> None:
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
                     f"* Your tmp.gen.keypair file in {findora_env.findora_backup} does not match "
-                    + f'your {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
+                    + f'your live {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key.'
                     + f'\n* Do you want to copy the key from {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}'
-                    + f"_node.key to {findora_env.findora_backup}/tmp.gen.keypair as a backup? (Y/N) "
+                    + f"_node.key and OVERWRITE the {findora_env.findora_backup}/tmp.gen.keypair file as a backup of your live key? (Y/N) "
                 )
                 if question:
                     # Copy key back
@@ -1514,6 +1433,24 @@ def backup_folder_check() -> None:
             )
 
 
+def run_update_launcher() -> None:
+    question = ask_yes_no(
+        "* You may miss blocks while restarting the container.\n* Are you sure you want to run the upgrade/restart script? (Y/N) "
+    )
+    print_stars()
+    if question:
+        run_update_restart(os.environ.get("FRA_NETWORK"))
+
+
+def run_safety_clean_launcher() -> None:
+    question = ask_yes_no(
+        "* You will miss blocks while downloading the new database, this can take awhile depending on location and connection.\n* Are you sure you want to run a safety_clean? (Y/N) "
+    )
+    print_stars()
+    if question:
+        run_safety_clean(os.environ.get("FRA_NETWORK"), os.environ.get("FRA_REGION"))
+
+
 def run_findora_menu() -> None:
     menu_options = {
         0: finish_node,
@@ -1524,8 +1461,8 @@ def run_findora_menu() -> None:
         5: set_send_options,
         6: change_validator_info,
         7: update_fn_wallet,
-        8: run_container_update,
-        9: run_clean_script,
+        8: run_update_launcher,
+        9: run_safety_clean_launcher,
         10: run_ubuntu_updates,
         11: server_disk_check,
         12: all_sys_info,
@@ -1584,14 +1521,16 @@ def parse_flags(parser, region, network):
     parser.add_argument(
         "--rescue",
         action="store_true",
-        help="Will run the rescue menu with full options, if your container is not running."
+        help="Will run the rescue menu with full options, if your container is not running.",
     )
 
     parser.add_argument(
         "--clean", action="store_true", help="Will run the clean script, removes database, reloads all data."
     )
 
-    parser.add_argument("--fn", action="store_true", help="Will update your fn wallet application.")
+    parser.add_argument(
+        "--fn", action="store_true", help="Will reset fn to your current key files replacing the running ones."
+    )
 
     parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
@@ -1606,19 +1545,16 @@ def parse_flags(parser, region, network):
     # parse the arguments
     args = parser.parse_args()
 
-    print(Fore.MAGENTA)
-
     if args.claim:
         claim_findora_rewards()
         finish_node()
 
     if args.installer:
-        network = set_main_or_test()
         menu_install_findora(network, region)
 
     if args.fn:
         update_fn_wallet()
-        
+
     if args.rescue:
         if container_running(findora_env.container_name):
             print_stars()
@@ -1634,26 +1570,30 @@ def parse_flags(parser, region, network):
     if args.update:
         if container_running(findora_env.container_name):
             print_stars()
-            question = ask_yes_no("* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) ")
+            question = ask_yes_no(
+                "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
+            )
             print_stars()
             if question:
-                run_container_update(True)
-            else: 
+                run_update_restart(os.environ.get("FRA_NETWORK"))
+            else:
                 finish_node()
         else:
-            run_container_update(True)
+            run_update_restart(os.environ.get("FRA_NETWORK"))
 
     if args.clean:
         if container_running(findora_env.container_name):
             print_stars()
-            question = ask_yes_no("* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) ")
+            question = ask_yes_no(
+                "* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) "
+            )
             print_stars()
             if question:
-                run_clean_script()
+                run_safety_clean_launcher()
             else:
                 finish_node()
         else:
-            run_clean_script()
+            run_safety_clean_launcher()
 
     if args.stats:
         menu_topper()
@@ -1662,7 +1602,7 @@ def parse_flags(parser, region, network):
     if args.ultrareset:
         # Are you really really sure?
         answer = ask_yes_no(
-            f"* WARNING, NUCLEAR OPTION: We will now totally remove all files in /data/findora and beyond.\n* YOU WILL LOSE ALL OF YOUR KEYS AND DATA IN /data/findora\n* After this completes you will need to re-run the installer and wait for a fresh download. Then you will be able to run our migration process.\n* Press Y to fully wipe and reset your server or N to exit: (Y/N) "
+            f"* WARNING, NUCLEAR OPTION: We will now totally remove all files in /data/findora and beyond.\n* YOU WILL LOSE ALL OF YOUR KEYS AND DATA IN /data/findora\n* After this completes you will need to re-run the installer and wait for a fresh download. Then you will be able to run our migration process.\n* {Fore.RED}Press Y to fully wipe and reset your server or N to exit: (Y/N){Fore.MAGENTA} "
         )
         if answer:
             # wipe data here
@@ -1673,32 +1613,6 @@ def parse_flags(parser, region, network):
         finish_node()
 
 
-def stop_and_remove_container(container_name):
-    # Create a Docker client
-    client = docker.from_env()
-
-    # List all containers
-    containers = client.containers.list(all=True)
-
-    # Check if the container with the specified name is running
-    container_found = any(re.fullmatch(container_name, container.name) for container in containers)
-
-    if container_found:
-        print(f"{container_name} Container found, stopping container to restart.")
-
-        # Stop and remove the container
-        container = client.containers.get(container_name)
-        container.stop()
-        container.remove()
-
-        # Remove the specified file
-        file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    else:
-        print(f"{container_name} container stopped or does not exist, continuing.")
-
-
 def run_troubleshooting_process():
     print(f"* Docker is running and working but the container '{findora_env.container_name}' is not.")
     while True:
@@ -1706,10 +1620,12 @@ def run_troubleshooting_process():
             "* Would you like to attempt to run the update_version script to try to get your container back online? (Y/N)"
         )
         if answer:
-            update_findora_container(True)
+            run_update_restart(os.environ.get("FRA_NETWORK"))
             break
         else:
-            answer2 = ask_yes_no("* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually troubleshoot)? (Y/N) ")
+            answer2 = ask_yes_no(
+                "* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually troubleshoot)? (Y/N) "
+            )
             if answer2:
                 rescue_menu()
             else:
