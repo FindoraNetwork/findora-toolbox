@@ -92,7 +92,7 @@ def finish_node():
     print(
         "* Thanks for using Findora Toolbox\n"
         + "* Please consider joining our discord & supporting us one time\n"
-        + "* or monthly at https://discord.gg/Rcz5T6D9CV today!\n*\n* Goodbye!"
+        + "* or monthly at https://bit.ly/easynodediscord today!\n*\n* Goodbye!"
     )
     print_stars()
     raise SystemExit(0)
