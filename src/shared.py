@@ -265,31 +265,51 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     os.remove(snapshot_file)
 
 
-def create_local_node(ROOT_DIR, FINDORAD_IMG, local_node_status):
+def create_local_node(ROOT_DIR, FINDORAD_IMG, local_node_status, network):
     # Define the Docker image and container name
     client = docker.from_env()
 
     CONTAINER_NAME = "findorad"
 
     try:
-        container = client.containers.run(
-            image=FINDORAD_IMG,
-            name=CONTAINER_NAME,
-            detach=True,
-            volumes={
-                f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
-                f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
-            },
-            ports={
-                "8669/tcp": 8669,
-                "8668/tcp": 8668,
-                "8667/tcp": 8667,
-                "8545/tcp": 8545,
-                "26657/tcp": 26657,
-            },
-            environment={"EVM_CHAIN_ID": "2152"},
-            command="node --ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service",
-        )
+        if network == "mainnet":
+            container = client.containers.run(
+                image=FINDORAD_IMG,
+                name=CONTAINER_NAME,
+                detach=True,
+                volumes={
+                    f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
+                    f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
+                },
+                ports={
+                    "8669/tcp": 8669,
+                    "8668/tcp": 8668,
+                    "8667/tcp": 8667,
+                    "8545/tcp": 8545,
+                    "26657/tcp": 26657,
+                },
+                environment={"EVM_CHAIN_ID": "2152"},
+                command="node --ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service",
+            )
+        elif network == "testnet":
+            container = client.containers.run(
+                image=FINDORAD_IMG,
+                name=CONTAINER_NAME,
+                detach=True,
+                volumes={
+                    f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
+                    f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
+                },
+                ports={
+                    "8669/tcp": 8669,
+                    "8668/tcp": 8668,
+                    "8667/tcp": 8667,
+                    "8545/tcp": 8545,
+                    "26657/tcp": 26657,
+                },
+                environment={"EVM_CHAIN_ID": "2152"},
+                command="node --ledger-dir /tmp/findora --checkpoint-file=/root/checkpoint.toml --tendermint-host 0.0.0.0 --tendermint-node-key-config-path=/root/.tendermint/config/priv_validator_key.json --enable-query-service",
+            )
 
         # Wait for the container to be up and the endpoint to respond
         while True:

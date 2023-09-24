@@ -28,4 +28,4 @@ def run_update_restart(network = os.environ.get("FRA_NETWORK")):
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "updater")
+    create_local_node(ROOT_DIR, FINDORAD_IMG, "updater", network)

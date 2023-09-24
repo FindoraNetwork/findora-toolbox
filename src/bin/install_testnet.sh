@@ -6,9 +6,10 @@ SERV_URL=https://${ENV}-${NAMESPACE}.${ENV}.findora.org
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
 FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
 CHECKPOINT_URL=https://${ENV}-${NAMESPACE}-us-west-2-ec2-instance.s3.us-west-2.amazonaws.com/${NAMESPACE}/checkpoint
-export ROOT_DIR=/data/findora/${NAMESPACE}
 keypath=${ROOT_DIR}/${NAMESPACE}_node.key
 CONTAINER_NAME=findorad
+
+export ROOT_DIR=/data/findora/${NAMESPACE}
 
 check_env() {
     for i in wget curl; do

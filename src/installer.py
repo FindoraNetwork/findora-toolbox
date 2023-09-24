@@ -46,4 +46,4 @@ def run_full_installer(network, region):
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "installer")
+    create_local_node(ROOT_DIR, FINDORAD_IMG, "installer", network)
