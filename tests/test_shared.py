@@ -89,4 +89,4 @@ def test_download_progress_hook(capfd):
     out, err = capfd.readouterr()
 
     # Assert the printed output is as expected
-    assert "Downloaded 1.0KB of 4.0KB (25.0%)" in out
+    assert "Downloaded 1.00 KB of 4.00 KB (25%). Speed: 1.33 GB/s. Elapsed Time: 0h 0m 0s. Time remaining: 0h 0m 0s.                    \r" in out
