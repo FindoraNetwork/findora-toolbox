@@ -3,10 +3,10 @@ from config import findora_env
 from shared import (
     create_directory_with_permissions,
     install_fn_app,
-    setup_wallet_key,
-    config_local_node,
-    get_snapshot,
-    create_local_node,
+    local_key_setup,
+    local_server_setup,
+    load_server_data,
+    start_local_validator,
     get_live_version,
 )
 
@@ -36,6 +36,8 @@ def run_full_installer(network, region):
 
     # Make Directories & Set Permissions
     create_directory_with_permissions("/data/findora", USERNAME)
+    
+    # Create backup directory
     subprocess.run(
         ["mkdir", "-p", f"/home/{USERNAME}/findora_backup"],
         stdout=subprocess.DEVNULL,
@@ -45,13 +47,13 @@ def run_full_installer(network, region):
     subprocess.run(["mkdir", "-p", ROOT_DIR], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
     # Setup wallet key
-    setup_wallet_key(keypath, ROOT_DIR, network)
+    local_key_setup(keypath, ROOT_DIR, network)
 
     # Config local node
-    config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG)
+    local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG)
 
     # get snapshot
-    get_snapshot(ENV, network, ROOT_DIR, region)
+    load_server_data(ENV, network, ROOT_DIR, region)
 
     # get checkpoint on testnet
     if network == "testnet":
@@ -72,4 +74,4 @@ def run_full_installer(network, region):
         )
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "installer", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)
+    start_local_validator(ROOT_DIR, FINDORAD_IMG, "installer", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)

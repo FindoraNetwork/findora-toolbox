@@ -5,8 +5,8 @@ from shared import (
     stop_and_remove_container,
     chown_dir,
     get_live_version,
-    create_local_node,
-    get_snapshot,
+    start_local_validator,
+    load_server_data,
 )
 
 
@@ -26,7 +26,7 @@ def run_safety_clean(network = os.environ.get("FRA_NETWORK"), region = os.enviro
     stop_and_remove_container(CONTAINER_NAME)
 
     # get snapshot
-    get_snapshot(ENV, network, ROOT_DIR, region)
+    load_server_data(ENV, network, ROOT_DIR, region)
 
     # get checkpoint on testnet
     if network == "testnet":
@@ -35,4 +35,4 @@ def run_safety_clean(network = os.environ.get("FRA_NETWORK"), region = os.enviro
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "safety_clean", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)
+    start_local_validator(ROOT_DIR, FINDORAD_IMG, "safety_clean", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)

@@ -116,7 +116,7 @@ def install_fn_app():
     print("* fn app installed.")
 
 
-def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
+def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
     # Extract node_mnemonic from keypath file
     with open(keypath, "r") as file:
         content = file.read()
@@ -181,7 +181,7 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
     print(f"* Copied new priv_validator_key.json to ~/findora_backup/config")
 
 
-def get_snapshot(ENV, network, ROOT_DIR, region):
+def load_server_data(ENV, network, ROOT_DIR, region):
     # Download latest link and get url
     if region == "na" or network == "testnet":
         latest_url = f"https://{ENV}-{network}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
@@ -289,7 +289,7 @@ def get_snapshot(ENV, network, ROOT_DIR, region):
     print(f"* Snapshot extracted and download removed, current disk space free space: {format_size(get_available_space(ROOT_DIR))}")
 
 
-def create_local_node(
+def start_local_validator(
     ROOT_DIR, FINDORAD_IMG, local_node_status, network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
 ):
     # Create a Docker client
@@ -374,7 +374,7 @@ def create_local_node(
         print("Local container was updated and restarted!")
 
 
-def setup_wallet_key(keypath, ROOT_DIR, network):
+def local_key_setup(keypath, ROOT_DIR, network):
     if not os.path.isfile(keypath):
         if os.path.isfile(f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair"):
             subprocess.run(

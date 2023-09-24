@@ -1,7 +1,7 @@
 import os
 import subprocess
 from config import findora_env
-from shared import chown_dir, create_local_node, stop_and_remove_container, get_live_version
+from shared import chown_dir, start_local_validator, stop_and_remove_container, get_live_version
 
 
 def run_update_restart(network = os.environ.get("FRA_NETWORK")):
@@ -26,4 +26,4 @@ def run_update_restart(network = os.environ.get("FRA_NETWORK")):
         subprocess.run(["wget", "-O", f"{ROOT_DIR}/checkpoint.toml", f"{CHECKPOINT_URL}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
 
     # Start findorad
-    create_local_node(ROOT_DIR, FINDORAD_IMG, "updater", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)
+    start_local_validator(ROOT_DIR, FINDORAD_IMG, "updater", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL)
