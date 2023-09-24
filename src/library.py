@@ -1410,11 +1410,21 @@ def backup_folder_check() -> None:
 
 
 def run_update_launcher() -> None:
-    run_update_restart(os.environ.get("FRA_NETWORK"))
+    question = ask_yes_no(
+    "* You may miss blocks while restarting the container.\n* Are you sure you want to run the upgrade/restart script? (Y/N) "
+    )
+    print_stars()
+    if question:
+        run_update_restart(os.environ.get("FRA_NETWORK"))
     
     
 def run_safety_clean_launcher() -> None:
-    run_safety_clean(os.environ.get("FRA_NETWORK"), os.environ.get("FRA_REGION"))
+    question = ask_yes_no(
+    "* You will miss blocks while downloading the new database, this can take awhile depending on location and connection.\n* Are you sure you want to run a safety_clean? (Y/N) "
+    )
+    print_stars()
+    if question:
+        run_safety_clean(os.environ.get("FRA_NETWORK"), os.environ.get("FRA_REGION"))
 
 def run_findora_menu() -> None:
     menu_options = {
