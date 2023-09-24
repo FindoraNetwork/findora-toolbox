@@ -1,4 +1,4 @@
-import subprocess, platform, os, time, argparse, json, re, shutil, pwd, getpass, requests, docker, dotenv, hashlib, psutil, cmd2
+import subprocess, platform, os, time, json, re, shutil, requests, docker, dotenv, psutil, cmd2
 from datetime import datetime, timezone
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
@@ -110,7 +110,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
-                f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n* Has not been installed on this system for the user {USERNAME}!\n* Install {tool} by running the following command:\n*\n* {Fore.CYAN}sudo apt install {tool}{Fore.MAGENTA}\n*\n* Then re-start the toolbox."
+                f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n* Has not been installed on this system for the user {USERNAME}!\n* Install {tool} by running the following command:\n*\n* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n* Then re-start the toolbox."
             )
             print_stars()
             print(

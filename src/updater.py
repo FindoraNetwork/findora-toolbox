@@ -1,7 +1,5 @@
-import requests
 import os
 import subprocess
-import re
 from config import findora_env
 from shared import chown_dir, create_local_node, stop_and_remove_container, get_live_version
 

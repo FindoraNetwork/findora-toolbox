@@ -1,5 +1,4 @@
-import os, argparse, subprocess
-from os import environ
+import os, argparse
 from library import (
     run_findora_menu,
     menu_install_findora,
@@ -14,7 +13,6 @@ from library import (
     set_na_or_eu,
     check_preflight_setup
 )
-from colorama import Fore
 from config import findora_env
 
 # Check the status and print a message

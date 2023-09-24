@@ -1,6 +1,4 @@
-import re
 import subprocess
-import requests
 from config import findora_env
 from shared import create_directory_with_permissions, install_fn_app, setup_wallet_key, config_local_node, get_snapshot, create_local_node, get_live_version
 
