@@ -303,11 +303,11 @@ def create_local_node(
         if network == "testnet":
             command = f"node --checkpoint-file=/root/checkpoint.toml {command_suffix}"
 
-        # Create the container
-        print(f"* Starting {CONTAINER_NAME} container...")
-        
         # Set the chain_id based on the network
         chain_id = "2153" if network == "testnet" else "2152"
+
+        # Create the container
+        print(f"* Starting {CONTAINER_NAME} container on {network} chain id {chain_id} now...")
       
         container = client.containers.run(
             image=FINDORAD_IMG,
