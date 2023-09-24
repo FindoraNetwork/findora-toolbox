@@ -1,6 +1,7 @@
 import sys
 import os
 import tempfile
+import time
 
 sys.path.insert(0, os.path.abspath("."))
 
@@ -73,12 +74,16 @@ def test_format_size():
     assert format_size(1073741824) == "1.00 GB"
 
 
+# Define start_time as a global variable
+start_time = time.time()
+
+
 def test_download_progress_hook(capfd):
     # Call the function with some sample values
     download_progress_hook(1, 1024, 4096)
-    
+
     # Capture the output
     out, err = capfd.readouterr()
-    
+
     # Assert the printed output is as expected
     assert out == "Downloaded 1.0KB of 4.0KB (25.0%)\n"
