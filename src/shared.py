@@ -174,7 +174,9 @@ def config_local_node(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD
     # Reset permissions on tendermint folder after init
     chown_dir(os.path.join(ROOT_DIR, "tendermint"), USERNAME, USERNAME)
 
-    # Backup priv_validator_key.json
+    # Backup new priv_validator_key.json
+    if os.path.exists(f"/home/{USERNAME}/findora_backup/config"):
+        shutil.rmtree(f"/home/{USERNAME}/findora_backup/config")
     shutil.copytree(os.path.join(ROOT_DIR, "tendermint/config"), f"/home/{USERNAME}/findora_backup/config")
 
     # If you're re-running this for some reason, stop and remove findorad
