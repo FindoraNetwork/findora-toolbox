@@ -264,9 +264,9 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     # Check snapshot file md5sum
     snapshot_file = os.path.join(ROOT_DIR, "snapshot")
     while True:
-        print("Downloading snapshot...")
+        print("* Downloading snapshot...")
         urllib.request.urlretrieve(CHAINDATA_URL, snapshot_file, reporthook=download_progress_hook)
-        print("\nDownload complete, calculating checksum now...")
+        print("* \nDownload complete, calculating checksum now...")
 
         # Calculate the md5 checksum of the downloaded file
         md5_hash = hashlib.md5()
@@ -276,13 +276,13 @@ def load_server_data(ENV, network, ROOT_DIR, region):
         CHECKSUM = md5_hash.hexdigest()
 
         if CHECKSUM_LATEST and CHECKSUM_LATEST == CHECKSUM:
-            print("Checksum matches, extracting snapshot now...")
+            print("* Checksum matches, extracting snapshot now...")
             break
         else:
-            print("Checksum does not match.")
-            retry = ask_yes_no("Checksum verification failed. Would you like to try downloading again? (y/n): ")
+            print("* Checksum does not match.")
+            retry = ask_yes_no("* Checksum verification failed. Would you like to try downloading again? (y/n): ")
             if not retry:
-                print("Exiting due to checksum verification failure.")
+                print("* Exiting due to checksum verification failure.")
                 exit(1)
 
     # Define the directory paths
@@ -299,10 +299,10 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     final_size = available_space - required_space + snapshot_size
     if available_space < required_space:
         print(
-            f"Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, "
-            f"Available: {format_size(available_space)}."
+            f"* Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, "
+            f"* Available: {format_size(available_space)}."
         )
-        question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
+        question = ask_yes_no("* Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
         if not question:
             exit(1)
     else:
@@ -312,7 +312,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
         )
 
     # Extract the tar archive and check the exit status
-    print("Extracting snapshot and setting up the local node...")
+    print("* Extracting snapshot and setting up the local node...")
     try:
         with tarfile.open(snapshot_file, "r:gz") as tar:
             extracted_count = 0
@@ -323,9 +323,9 @@ def load_server_data(ENV, network, ROOT_DIR, region):
         print("\nSnapshot extraction completed.")
     except OSError as e:
         if e.errno == 28:  # No space left on device
-            print("Error: Extraction failed due to insufficient disk space.")
+            print("* Error: Extraction failed due to insufficient disk space.")
         else:
-            print(f"Error: Extraction failed with error: {e}")
+            print(f"* Error: Extraction failed with error: {e}")
         exit(1)
 
     # Move the extracted files to the desired locations
@@ -428,10 +428,10 @@ def start_local_validator(
 
     if local_node_status == "installer":
         print(
-            "Local node initialized! You can now run the migration process or wait for sync and create your validator."
+            "* Local node initialized! You can now run the migration process or wait for sync and create your validator."
         )
     else:
-        print("Local container was updated and restarted!")
+        print("* Local container was updated and restarted!")
 
 
 def local_key_setup(keypath, ROOT_DIR, network):
