@@ -843,7 +843,6 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
                     if question:
                         with open(self.staker_memo_path, "w") as file:
                             file.write(memo_items_json)
-                        subprocess.call(["fn", "staker-update", "-M", memo_items_json])
                         print(Fore.MAGENTA)
                         print_stars()
                         print(
