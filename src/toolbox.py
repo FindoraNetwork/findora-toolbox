@@ -1738,16 +1738,16 @@ def run_register_node() -> None:
         spaces = "                         "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
     print_stars()
-    if balance < 10000:
-        print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n* Current balance: {balance} FRA")
-    else:
-        answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
-        if answer:
-            updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
-            # allow edit one by one, then have commit changes at the end?
-            updater.do_update(None)
-            # Validate info
-            # Register
-            coming_soon()
+    # if balance < 10000:
+    #     print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n* Current balance: {balance} FRA")
+    # else:
+    answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
+    if answer:
+        updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
+        # allow edit one by one, then have commit changes at the end?
+        updater.do_update(None)
+        # Validate info
+        # Register
+        coming_soon()
     print_stars()
     finish_node()
