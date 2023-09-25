@@ -1766,44 +1766,44 @@ def run_register_node() -> None:
                     print(f"* Invalid input! Stake amount must be a whole number between 10,000 and {balance}.")
             else:
                 print("* Invalid input! Please enter a whole number.")
-    print_stars()
-    print("* One last final review of information before going live.")
-    print(f"* Name: {staker_memo['name']}")
-    print(f"* Description: {staker_memo['desc']}")
-    print(f"* Website: {staker_memo['website']}")
-    print(f"* Logo: {staker_memo['logo']}")
-    print(f"* Rate: {rate}%")
-    print(f"* Stake Amount: {stake_amount} FRA")
-    print_stars()
-    answer = ask_yes_no(
-        "* Would you like to send the command to create your validator now with the information above? (Y/N) "
-    )
-    if answer:
-        # Convert stake_amount to the required format
-        stake_amount_in_format = stake_amount * 1000000
-
-        # Convert rate to the required format
-        rate_in_format = rate / 100
-
-        # Construct the command
-        command = [
-            "fn", "stake",
-            "-n", str(stake_amount_in_format),
-            "-R", str(rate_in_format),
-            "-M", json.dumps(staker_memo)
-        ]
-
-        # Run the command and capture the output
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate()
-
-        # Decode and print the output
         print_stars()
-        print(stdout.decode())
+        print("* One last final review of information before going live.")
+        print(f"* Name: {staker_memo['name']}")
+        print(f"* Description: {staker_memo['desc']}")
+        print(f"* Website: {staker_memo['website']}")
+        print(f"* Logo: {staker_memo['logo']}")
+        print(f"* Rate: {rate}%")
+        print(f"* Stake Amount: {stake_amount} FRA")
         print_stars()
-        print("* Validator created, you should begin signing blocks shortly!")
-        if stderr:
-            print("Error:", stderr.decode())
+        answer = ask_yes_no(
+            "* Would you like to send the command to create your validator now with the information above? (Y/N) "
+        )
+        if answer:
+            # Convert stake_amount to the required format
+            stake_amount_in_format = stake_amount * 1000000
+
+            # Convert rate to the required format
+            rate_in_format = rate / 100
+
+            # Construct the command
+            command = [
+                "fn", "stake",
+                "-n", str(stake_amount_in_format),
+                "-R", str(rate_in_format),
+                "-M", json.dumps(staker_memo)
+            ]
+
+            # Run the command and capture the output
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+
+            # Decode and print the output
+            print_stars()
+            print(stdout.decode())
+            print_stars()
+            print("* Validator created, you should begin signing blocks shortly!")
+            if stderr:
+                print("Error:", stderr.decode())
 
     print_stars()
     finish_node()
