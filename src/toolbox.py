@@ -121,9 +121,9 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
                 f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n"
-                + "* Has not been installed on this system for the user {USERNAME}!\n"
-                + "* Install {tool} by running the following command:\n*\n"
-                + "* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n"
+                + f"* Has not been installed on this system for the user {USERNAME}!\n"
+                + f"* Install {tool} by running the following command:\n*\n"
+                + f"* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n"
                 + "* Then re-start the toolbox."
             )
             print_stars()
