@@ -830,7 +830,7 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
             if choice == "Exit" or choice == "Exit and Send Update":
                 if not file_updated:
                     print("* No changes detected, returning to main menu.")
-                    return json.dumps(self.memo_items)
+                    return self.memo_items
                 else:
                     memo_items_json = json.dumps(self.memo_items)
                     print("* Here is your updated staker_memo information for verification before sending changes:")
@@ -844,7 +844,7 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
                         with open(self.staker_memo_path, "w") as file:
                             file.write(memo_items_json)
                     print_stars()
-                    return memo_items_json
+                    return self.memo_items
             file_updated = True
             key = choice.split(" - ")[0]
             new_value = input("Enter the new value: ")
@@ -1743,10 +1743,10 @@ def run_register_node() -> None:
         staker_memo = updater.do_update(None)
         # Staker Memo is saved, now we can register
     print("* One last final review of information before going live.")
-    print(f"* Name: {staker_memo[0]}")
-    print(f"* Description: {staker_memo[1]}")
-    print(f"* Website: {staker_memo[2]}")
-    print(f"* Logo: {staker_memo[3]}")
+    print(f"* Name: {staker_memo['name']}")
+    print(f"* Description: {staker_memo['desc']}")
+    print(f"* Website: {staker_memo['website']}")
+    print(f"* Logo: {staker_memo['logo']}")
     answer = ask_yes_no("* Would you like to send the command to create your validator now with the information above? (Y/N) ")
     if answer:
         # Create validator
