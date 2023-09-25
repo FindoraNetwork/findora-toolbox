@@ -810,7 +810,7 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
         self.staker_memo_path = staker_memo_path
         # Load the staker_memo data from the file
         if os.path.exists(staker_memo_path):
-            with open(staker_memo_path, 'r') as file:
+            with open(staker_memo_path, "r") as file:
                 self.memo_items = json.load(file)
         else:
             print(f"Error: The file {staker_memo_path} does not exist.")
@@ -857,6 +857,7 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
             self.memo_items[key] = new_value
             options[options.index(choice)] = f"{key} - {new_value}"
             options[-1] = "Exit and Send Update"
+
 
 def change_validator_info():
     print_stars()
@@ -1723,6 +1724,7 @@ def run_troubleshooting_process():
                 print_stars()
                 finish_node()
 
+
 def run_register_node() -> None:
     create_staker_memo()
     output = fetch_fn_show_output()
@@ -1748,6 +1750,5 @@ def run_register_node() -> None:
         # Validate info
         # Register
         coming_soon()
-        # subprocess.call(["fn", "staker-update", "-M", memo_items_json])
     print_stars()
     finish_node()
