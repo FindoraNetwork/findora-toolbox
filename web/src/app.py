@@ -44,7 +44,7 @@ app.register_error_handler(HTTPException, handle_error)
 
 class TokenExpiredError(HTTPException):
     code = 419
-    description = 'Token expired'
+    description = "Token expired"
 
 
 class MyClass:
@@ -84,9 +84,7 @@ def index():
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
-    if username != environ.get("WEB_USERNAME") or password != environ.get(
-        "WEB_PASSWORD"
-    ):
+    if username != environ.get("WEB_USERNAME") or password != environ.get("WEB_PASSWORD"):
         abort(401)
     jwt = create_access_token(identity=username)
     # Set the JWT token in a cookie
@@ -99,7 +97,7 @@ def login():
 @jwt_required()
 def statsRoute():
     try:
-        if not 'access_token_cookie' in request.cookies:
+        if not "access_token_cookie" in request.cookies:
             abort(401)
         output = updateStats()
         return render_template("stats.html", output=output), 200
@@ -171,9 +169,7 @@ def setupUserAccount():
             raise SystemExit(0)
 
     if environ.get("WEB_PORT") is None:
-        port = input(
-            "* No port found, please input your desired port (don't forget to update your firewall): "
-        )
+        port = input("* No port found, please input your desired port (don't forget to update your firewall): ")
         answer = ask_yes_no(f"* You picked {port}, is that correct? (Y/N) ")
         if answer:
             set_var(findora_env.dotenv_file, "WEB_PORT", port)

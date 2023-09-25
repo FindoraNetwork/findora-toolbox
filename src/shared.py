@@ -19,7 +19,7 @@ def get_url(timeout=5) -> str:
         # Parse the JSON response
         ip_data = response.json()
         result = ip_data["ip"]
-    except requests.exceptions.RequestException as x:
+    except requests.exceptions.RequestException:
         try:
             response = requests.get("https://ident.me", timeout=timeout)
             response.raise_for_status()  # Raises a HTTPError if the response was unsuccessful
@@ -102,7 +102,8 @@ def get_live_version(server_url):
             return LIVE_VERSION
     else:
         print(
-            f"Failed to retrieve the version from Findora's server, please try again later. HTTP Response Code: {response.status_code}"
+            "Failed to retrieve the version from Findora's server, please try again later. "
+            + f"HTTP Response Code: {response.status_code}"
         )
         exit(1)
 
@@ -141,7 +142,8 @@ def download_progress_hook(count, block_size, total_size):
     formatted_time_remaining = format_duration(time_remaining)
     print(
         f"Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). "
-        f"Speed: {formatted_speed}. Elapsed Time: {formatted_duration}. Time remaining: {formatted_time_remaining}.                    ",
+        f"Speed: {formatted_speed}. Elapsed Time: {formatted_duration}. Time remaining: "
+        f"{formatted_time_remaining}.                    ",
         end="\r",
     )
 
@@ -220,7 +222,7 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
     if os.path.exists(f"/home/{USERNAME}/findora_backup/config"):
         shutil.rmtree(f"/home/{USERNAME}/findora_backup/config")
     shutil.copytree(os.path.join(ROOT_DIR, "tendermint/config"), f"/home/{USERNAME}/findora_backup/config")
-    print(f"* Copied new priv_validator_key.json to ~/findora_backup/config")
+    print("* Copied new priv_validator_key.json to ~/findora_backup/config")
 
 
 def load_server_data(ENV, network, ROOT_DIR, region):
@@ -247,14 +249,16 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
     if available_space < (initial_required_size):
         print(
-            f"Error: Not enough disk space available. Minimum Required: {format_size(initial_required_size)}+, Available: {format_size(available_space)}."
+            f"Error: Not enough disk space available. Minimum Required: {format_size(initial_required_size)}+, "
+            f"Available: {format_size(available_space)}."
         )
         question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
         if not question:
             exit(1)
     else:
         print(
-            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(initial_required_size)}"
+            f"* Available disk space: {format_size(available_space)} - Estimated required space: "
+            f"{format_size(initial_required_size)}"
         )
 
     # Check snapshot file md5sum
@@ -295,14 +299,16 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     final_size = available_space - required_space + snapshot_size
     if available_space < required_space:
         print(
-            f"Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, Available: {format_size(available_space)}."
+            f"Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, "
+            f"Available: {format_size(available_space)}."
         )
         question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
         if not question:
             exit(1)
     else:
         print(
-            f"* Available disk space: {format_size(available_space)} - Estimated required space: {format_size(required_space)} - Estimated available space after unpacking: {format_size(final_size)} "
+            f"* Available disk space: {format_size(available_space)} - Estimated required space: "
+            f"{format_size(required_space)} - Estimated available space after unpacking: {format_size(final_size)} "
         )
 
     # Extract the tar archive and check the exit status
@@ -331,7 +337,8 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     os.remove(snapshot_file)
 
     print(
-        f"* Snapshot extracted and download removed, current disk space free space: {format_size(get_available_space(ROOT_DIR))}"
+        "* Snapshot extracted and download removed, current disk space free space: "
+        f"{format_size(get_available_space(ROOT_DIR))}"
     )
 
 
@@ -452,7 +459,8 @@ def local_key_setup(keypath, ROOT_DIR, network):
                 f"{ROOT_DIR}/{network}_node.key", f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair"
             )
             print(
-                f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and copied to ~/findora_backup/tmp.gen.keypair"
+                f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and "
+                "copied to ~/findora_backup/tmp.gen.keypair"
             )
 
 
