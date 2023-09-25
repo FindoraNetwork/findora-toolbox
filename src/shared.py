@@ -141,7 +141,7 @@ def download_progress_hook(count, block_size, total_size):
     formatted_duration = format_duration(duration)
     formatted_time_remaining = format_duration(time_remaining)
     print(
-        f"Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). "
+        f"* Downloaded {formatted_progress_size} of {formatted_total_size} ({percent}%). "
         f"Speed: {formatted_speed}. Elapsed Time: {formatted_duration}. Time remaining: "
         f"{formatted_time_remaining}.                    ",
         end="\r",
