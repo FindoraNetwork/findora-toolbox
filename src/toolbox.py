@@ -1638,7 +1638,7 @@ def parse_flags(parser, region, network):
     if args.register:
         output = fetch_fn_show_output()
         our_fn_stats = get_fn_stats(output)
-        balance = our_fn_stats[1]
+        balance = our_fn_stats["Balance"]
         for i in our_fn_stats:
             spaces = "                         "
             print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
