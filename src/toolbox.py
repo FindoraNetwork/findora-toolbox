@@ -1748,5 +1748,6 @@ def run_register_node() -> None:
         # Validate info
         # Register
         coming_soon()
+        # subprocess.call(["fn", "staker-update", "-M", memo_items_json])
     print_stars()
     finish_node()
