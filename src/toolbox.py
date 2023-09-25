@@ -1636,25 +1636,7 @@ def parse_flags(parser, region, network):
         finish_node()
 
     if args.register:
-        output = fetch_fn_show_output()
-        our_fn_stats = get_fn_stats(output)
-        balance = float(our_fn_stats["Balance"])
-        for i in our_fn_stats:
-            spaces = "                         "
-            print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
-        print_stars()
-        if balance < 10000:
-            print(f"* Not enough FRA to start a validator, please deposit 10,000+ FRA to continue. Current balance: {balance} FRA")
-            print_stars()
-            finish_node()
-        else:
-            answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
-            if answer:
-                # Do staker memo stuff here.
-                # Save staker memo
-                # Validate info
-                # Register
-                finish_node()
+        run_register_node()
 
     if args.ultrareset:
         # Are you really really sure?
@@ -1695,3 +1677,28 @@ def run_troubleshooting_process():
                 )
                 print_stars()
                 finish_node()
+
+def run_register_node() -> None:
+    output = fetch_fn_show_output()
+    our_fn_stats = get_fn_stats(output)
+    try:
+        our_fn_stats.pop("memo")
+    except KeyError as err:
+        pass
+    balance = float(our_fn_stats["Balance"])
+    for i in our_fn_stats:
+        spaces = "                         "
+        print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
+    print_stars()
+    if balance < 10000:
+        print(f"* Not enough FRA to start a validator, please deposit 10,000+ FRA to continue. Current balance: {balance} FRA")
+    else:
+        answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
+        if answer:
+            # Do staker memo stuff here.
+            # Save staker memo
+            # Validate info
+            # Register
+            coming_soon()
+    print_stars()
+    finish_node()
