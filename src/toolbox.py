@@ -1743,10 +1743,10 @@ def run_register_node() -> None:
         staker_memo = updater.do_update(None)
         # Staker Memo is saved, now we can register
     print("* One last final review of information before going live.")
-    print(f"* Name: {staker_memo['name']}")
-    print(f"* Description: {staker_memo['desc']}")
-    print(f"* Website: {staker_memo['website']}")
-    print(f"* Logo: {staker_memo['logo']}")
+    print(f"* Name: {staker_memo[0]}")
+    print(f"* Description: {staker_memo[1]}")
+    print(f"* Website: {staker_memo[2]}")
+    print(f"* Logo: {staker_memo[3]}")
     answer = ask_yes_no("* Would you like to send the command to create your validator now with the information above? (Y/N) ")
     if answer:
         # Create validator
