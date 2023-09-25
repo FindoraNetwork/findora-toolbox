@@ -1643,9 +1643,18 @@ def parse_flags(parser, region, network):
             spaces = "                         "
             print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
         print_stars()
-        if balance > 10000:
+        if balance < 10000:
             print(f"* Not enough FRA to start a validator, please deposit 10,000+ FRA to continue. Current balance: {balance} FRA")
-        finish_node()
+            print_stars()
+            finish_node()
+        else:
+            answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
+            if answer:
+                # Do staker memo stuff here.
+                # Save staker memo
+                # Validate info
+                # Register
+                finish_node()
 
     if args.ultrareset:
         # Are you really really sure?
