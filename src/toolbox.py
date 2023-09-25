@@ -829,7 +829,7 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
             choice = self.select(options)
             if choice == "Save and Continue...":
                 if not file_updated:
-                    print("* No changes detected, returning to main menu.")
+                    print("* No changes detected, continuing with current staker_memo information...")
                     return self.memo_items
                 else:
                     memo_items_json = json.dumps(self.memo_items)
