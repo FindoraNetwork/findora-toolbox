@@ -835,7 +835,10 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
                     memo_items_json = json.dumps(self.memo_items)
                     print("* Here is your updated staker_memo information for verification before sending changes:")
                     print_stars()
-                    print(self.memo_items)
+                    print(f"* Name: {self.memo_items['name']}")
+                    print(f"* Description: {self.memo_items['desc']}")
+                    print(f"* Website: {self.memo_items['website']}")
+                    print(f"* Logo: {self.memo_items['logo']}")
                     print_stars()
                     question = ask_yes_no("* Do you want to update ~/staker_memo with these changes? (Y/N) ")
                     if question:
