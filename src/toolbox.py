@@ -1742,11 +1742,23 @@ def run_register_node() -> None:
         # allow edit one by one, then have commit changes at the end?
         staker_memo = updater.do_update(None)
         # Staker Memo is saved, now we can register
+    # Get initial rate
+    while True:
+        answer = input("* Please enter the rate (fee) you would like to charge between 0 - 100%: ")
+        if answer.isdigit():
+            rate = int(answer)
+            if 0 <= rate <= 100:
+                break
+            else:
+                print("* Invalid input! Rate must be a whole number between 0 and 100.")
+        else:
+            print("* Invalid input! Please enter a whole number.")
     print("* One last final review of information before going live.")
     print(f"* Name: {staker_memo['name']}")
     print(f"* Description: {staker_memo['desc']}")
     print(f"* Website: {staker_memo['website']}")
     print(f"* Logo: {staker_memo['logo']}")
+    print(f"* Rate: {rate/100}%")
     answer = ask_yes_no("* Would you like to send the command to create your validator now with the information above? (Y/N) ")
     if answer:
         # Create validator
