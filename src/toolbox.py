@@ -129,11 +129,11 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
             print_stars()
             print(
                 f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
-                + '* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg '
+                + "* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg "
                 + '| apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal '
                 + 'stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce '
-                + 'docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip '
-                + '-y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n'
+                + "docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip "
+                + "-y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n"
                 + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run "
                 + "the toolbox again."
             )
@@ -597,7 +597,7 @@ def get_receiver_address() -> None:
     if environ.get("RECEIVER_WALLET"):
         question = ask_yes_no(
             f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")}{Fore.MAGENTA} on file. Would you like to send to '
-            + 'this address? (Y/N)'
+            + "this address? (Y/N)"
         )
         if question:
             return environ.get("RECEIVER_WALLET")
@@ -621,7 +621,7 @@ def get_privacy_option() -> None:
     if environ.get("PRIVACY"):
         question = ask_yes_no(
             f'* We have Privacy = {environ.get("PRIVACY")} on file, Would you like to use this option for this transaction '
-            + 'as well? (Y/N) '
+            + "as well? (Y/N) "
         )
         if question:
             return environ.get("PRIVACY")
@@ -1414,7 +1414,7 @@ def backup_folder_check() -> None:
                 question = ask_yes_no(
                     f"* Your file {findora_env.findora_backup}/tmp.gen.keypair does not match "
                     + f'your live {environ.get("FRA_NETWORK")}_node.key.'
-                    + f'\n* Do you want to copy the live key into the {findora_env.findora_backup} folder now? (Y/N) '
+                    + f"\n* Do you want to copy the live key into the {findora_env.findora_backup} folder now? (Y/N) "
                 )
                 if question:
                     # Copy key back
@@ -1565,9 +1565,11 @@ def parse_flags(parser, region, network):
     parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
     )
-    
+
     parser.add_argument(
-        "--register", action="store_true", help="Will register your validator on chain after server is synced and deposit is made.",
+        "--register",
+        action="store_true",
+        help="Will register your validator on chain after server is synced and deposit is made.",
     )
 
     parser.add_argument(
@@ -1632,13 +1634,16 @@ def parse_flags(parser, region, network):
     if args.stats:
         menu_topper()
         finish_node()
-        
+
     if args.register:
         output = fetch_fn_show_output()
         our_fn_stats = get_fn_stats(output)
+        balance = our_fn_stats[1]
         for i in our_fn_stats:
             spaces = "                         "
             print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
+        print_stars()
+        print(f"Balance: {balance}")
         finish_node()
 
     if args.ultrareset:
