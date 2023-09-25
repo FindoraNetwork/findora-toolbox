@@ -830,7 +830,7 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
             if choice == "Exit" or choice == "Exit and Send Update":
                 if not file_updated:
                     print("* No changes detected, returning to main menu.")
-                    return
+                    return json.dumps(self.memo_items)
                 else:
                     memo_items_json = json.dumps(self.memo_items)
                     print("* Here is your updated staker_memo information for verification before sending changes:")
@@ -838,19 +838,13 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
                     print(self.memo_items)
                     print_stars()
                     question = ask_yes_no(
-                        "* Do you want to update ~/staker_memo with these changes and send on chain update now? (Y/N) "
+                        "* Do you want to update ~/staker_memo with these changes? (Y/N) "
                     )
                     if question:
                         with open(self.staker_memo_path, "w") as file:
                             file.write(memo_items_json)
-                        print(Fore.MAGENTA)
-                        print_stars()
-                        print(
-                            f"* Blockchain update completed, please wait at least 1 block before checking for updated "
-                            + "information."
-                        )
                     print_stars()
-                    return
+                    return memo_items_json
             file_updated = True
             key = choice.split(" - ")[0]
             new_value = input("Enter the new value: ")
@@ -1746,9 +1740,14 @@ def run_register_node() -> None:
     if answer:
         updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
         # allow edit one by one, then have commit changes at the end?
-        updater.do_update(None)
-        # Validate info
-        # Register
+        staker_memo = updater.do_update(None)
+        # Staker Memo is saved, now we can register
+    print("* One last final review of information before going live.")
+    print(staker_memo)
+    answer = ask_yes_no("* Would you like to send the command to create your validator now? (Y/N) ")
+    if answer:
+        # Create validator
         coming_soon()
+        
     print_stars()
     finish_node()
