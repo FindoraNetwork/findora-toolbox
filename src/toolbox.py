@@ -1565,6 +1565,10 @@ def parse_flags(parser, region, network):
     parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
     )
+    
+    parser.add_argument(
+        "--register", action="store_true", help="Will register your validator on chain after server is synced and deposit is made.",
+    )
 
     parser.add_argument(
         "--ultrareset",
@@ -1627,6 +1631,14 @@ def parse_flags(parser, region, network):
 
     if args.stats:
         menu_topper()
+        finish_node()
+        
+    if args.register:
+        output = fetch_fn_show_output()
+        our_fn_stats = get_fn_stats(output)
+        for i in our_fn_stats:
+            spaces = "                         "
+            print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
         finish_node()
 
     if args.ultrareset:
