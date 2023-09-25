@@ -1686,12 +1686,13 @@ def run_register_node() -> None:
     except KeyError as err:
         pass
     balance = float(our_fn_stats["Balance"])
+    remaining = 10000 - balance
     for i in our_fn_stats:
         spaces = "                         "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
     print_stars()
     if balance < 10000:
-        print(f"* Not enough FRA to start a validator, please deposit 10,000+ FRA to continue. Current balance: {balance} FRA")
+        print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue. Current balance: {balance} FRA")
     else:
         answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
         if answer:
