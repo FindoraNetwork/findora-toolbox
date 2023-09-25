@@ -566,7 +566,7 @@ def refresh_fn_stats() -> None:
 def claim_findora_rewards() -> None:
     print_stars()
     try:
-        output = subprocess.call(
+        subprocess.call(
             ["fn", "claim"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -585,7 +585,7 @@ def get_total_send(our_fn_stats) -> None:
         f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}'
         + f"{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? "
     )
-    total2 = input(f"*\n* Please re-enter the amount of FRA you would like to transfer for verification: ")
+    total2 = input("*\n* Please re-enter the amount of FRA you would like to transfer for verification: ")
     if total == total2:
         return total
     else:
@@ -792,7 +792,7 @@ class MemoUpdater(cmd2.Cmd):
                         print(Fore.MAGENTA)
                         print_stars()
                         print(
-                            f"* Blockchain update completed, please wait at least 1 block before checking for updated "
+                            "* Blockchain update completed, please wait at least 1 block before checking for updated "
                             + "information."
                         )
                     print_stars()
@@ -868,7 +868,7 @@ def change_validator_info():
         )
         return
     # Change the rate & staker memo info
-    print(f"* Which validator options would you like to update?")
+    print("* Which validator options would you like to update?")
     change_info_menu = [
         "[0] - Change Commission Rate",
         "[1] - Change staker_memo Information",
@@ -925,7 +925,7 @@ def set_send_options() -> None:
         ["Set Wallet", "Set Privacy", "Set Express", "Exit to Main Menu"],
     )
     if menu_option == 0:
-        address = input(f"*\n* Please input the fra1 address you would like to send your FRA: ")
+        address = input("*\n* Please input the fra1 address you would like to send your FRA: ")
         check_address_input(address)
     if menu_option == 1:
         ask_question_menu(
@@ -1131,7 +1131,7 @@ def menu_topper() -> None:
         external_ip = findora_env.our_external_ip
         try:
             our_fn_stats.pop("memo")
-        except KeyError as err:
+        except KeyError:
             pass
         online_version = get_container_version(
             f'https://{findora_env.fra_env}-{environ.get("FRA_NETWORK")}.{findora_env.fra_env}.findora.org:8668/version'
@@ -1158,9 +1158,9 @@ def menu_topper() -> None:
     )
     print(f"* Public Address:            {curl_stats['result']['validator_info']['address']}")
     if our_fn_stats["Network"] == "https://prod-mainnet.prod.findora.org":
-        print(f"* Network:                   Mainnet")
+        print("* Network:                   Mainnet")
     if our_fn_stats["Network"] == "https://prod-testnet.prod.findora.org":
-        print(f"* Network:                   Testnet")
+        print("* Network:                   Testnet")
     our_fn_stats.pop("Network")
     print(f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
     if curl_stats["result"]["sync_info"]["catching_up"] == "False":
@@ -1738,7 +1738,7 @@ def run_register_node() -> None:
     our_fn_stats = get_fn_stats(output)
     try:
         our_fn_stats.pop("memo")
-    except KeyError as err:
+    except KeyError:
         pass
     balance_str = our_fn_stats["Balance"].replace(",", "")
     balance = float(balance_str)

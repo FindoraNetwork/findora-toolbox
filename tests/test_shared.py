@@ -2,14 +2,12 @@ import sys
 import os
 import tempfile
 import time
-
-sys.path.insert(0, os.path.abspath("."))
-
 import pytest
 from unittest import mock
 from unittest.mock import patch
 from src.shared import compare_two_files, ask_yes_no, get_file_size, format_size, download_progress_hook
 
+sys.path.insert(0, os.path.abspath("."))
 
 def test_compare_two_files():
     # Create two temporary files
