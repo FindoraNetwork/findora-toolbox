@@ -1725,8 +1725,7 @@ def run_register_node() -> None:
         our_fn_stats.pop("memo")
     except KeyError as err:
         pass
-    # balance = float(our_fn_stats["Balance"])
-    balance = 11000
+    balance = float(our_fn_stats["Balance"])
     remaining = 10000 - balance
     for i in our_fn_stats:
         spaces = "                         "
@@ -1776,8 +1775,31 @@ def run_register_node() -> None:
         "* Would you like to send the command to create your validator now with the information above? (Y/N) "
     )
     if answer:
-        # Create validator
-        coming_soon()
+        # Convert stake_amount to the required format
+        stake_amount_in_format = stake_amount * 1000000
+
+        # Convert rate to the required format
+        rate_in_format = rate / 100
+
+        # Construct the command
+        command = [
+            "fn", "stake",
+            "-n", str(stake_amount_in_format),
+            "-R", str(rate_in_format),
+            "-M", staker_memo
+        ]
+
+        # Run the command and capture the output
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+
+        # Decode and print the output
+        print_stars()
+        print(stdout.decode())
+        print_stars()
+        print("* Validator created, you should begin signing blocks shortly!")
+        if stderr:
+            print("Error:", stderr.decode())
 
     print_stars()
     finish_node()
