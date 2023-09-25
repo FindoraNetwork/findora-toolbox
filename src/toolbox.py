@@ -837,9 +837,7 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
                     print_stars()
                     print(self.memo_items)
                     print_stars()
-                    question = ask_yes_no(
-                        "* Do you want to update ~/staker_memo with these changes? (Y/N) "
-                    )
+                    question = ask_yes_no("* Do you want to update ~/staker_memo with these changes? (Y/N) ")
                     if question:
                         with open(self.staker_memo_path, "w") as file:
                             file.write(memo_items_json)
@@ -1727,42 +1725,59 @@ def run_register_node() -> None:
         our_fn_stats.pop("memo")
     except KeyError as err:
         pass
-    balance = float(our_fn_stats["Balance"])
+    # balance = float(our_fn_stats["Balance"])
+    balance = 11000
     remaining = 10000 - balance
     for i in our_fn_stats:
         spaces = "                         "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
     print_stars()
-    # if balance < 10000:
-    #     print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n* Current balance: {balance} FRA")
-    # else:
-    answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
-    if answer:
-        updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
-        # allow edit one by one, then have commit changes at the end?
-        staker_memo = updater.do_update(None)
-        # Staker Memo is saved, now we can register
-    # Get initial rate
-    while True:
-        answer = input("* Please enter the rate (fee) you would like to charge between 0 - 100%: ")
-        if answer.isdigit():
-            rate = int(answer)
-            if 0 <= rate <= 100:
-                break
+    if balance < 10000:
+        print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n* Current balance: {balance} FRA")
+    else:
+        answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
+        if answer:
+            updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
+            # allow edit one by one, then have commit changes at the end?
+            staker_memo = updater.do_update(None)
+            # Staker Memo is saved, now we can register
+        # Get initial rate
+        while True:
+            answer = input("* Please enter the rate (fee) you would like to charge between 0 - 100%: ")
+            if answer.isdigit():
+                rate = int(answer)
+                if 0 <= rate <= 100:
+                    break
+                else:
+                    print("* Invalid input! Rate must be a whole number between 0 and 100.")
             else:
-                print("* Invalid input! Rate must be a whole number between 0 and 100.")
-        else:
-            print("* Invalid input! Please enter a whole number.")
+                print("* Invalid input! Please enter a whole number.")
+        # Get stake amount
+        while True:
+            stake_amount = input(f"* How much would you like to stake to start (10,000 minimum, {balance} maximum)? ")
+            if stake_amount.isdigit():
+                stake_amount = int(stake_amount)
+                if 10000 <= stake_amount <= balance:
+                    break
+                else:
+                    print(f"* Invalid input! Stake amount must be a whole number between 10,000 and {balance}.")
+            else:
+                print("* Invalid input! Please enter a whole number.")
+    print_stars()
     print("* One last final review of information before going live.")
     print(f"* Name: {staker_memo['name']}")
     print(f"* Description: {staker_memo['desc']}")
     print(f"* Website: {staker_memo['website']}")
     print(f"* Logo: {staker_memo['logo']}")
-    print(f"* Rate: {rate/100}%")
-    answer = ask_yes_no("* Would you like to send the command to create your validator now with the information above? (Y/N) ")
+    print(f"* Rate: {rate}%")
+    print(f"* Stake Amount: {stake_amount} FRA")
+    print_stars()
+    answer = ask_yes_no(
+        "* Would you like to send the command to create your validator now with the information above? (Y/N) "
+    )
     if answer:
         # Create validator
         coming_soon()
-        
+
     print_stars()
     finish_node()
