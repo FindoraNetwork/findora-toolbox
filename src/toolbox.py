@@ -1012,17 +1012,17 @@ def get_fn_stats(output):
     # Extract other values
     network = extract_value(output, "Server URL")
     balance_raw = extract_value(output, "Node Balance")
-    balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f} FRA" if balance_raw else "0 FRA"
+    balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}" if balance_raw else "0"
 
     # Create the result dictionary with default values
     fn_info = {
         "Network": network,
         "Balance": balance,
-        "Pending Rewards": "0.00 FRA",
-        "Self Delegation": "0.00 FRA",
+        "Pending Rewards": "0.00",
+        "Self Delegation": "0.00",
         "Current Block": "N/A",
         "Proposed Blocks": "0",
-        "Pending Pool Rewards": "0.00 FRA",
+        "Pending Pool Rewards": "0.00",
         "Server Rank": "N/A",
         "Delegator Count": "N/A",
         "Commission Rate": "0.00%",
@@ -1032,13 +1032,13 @@ def get_fn_stats(output):
     # Extract delegation details
     if delegation_info:
         bond = delegation_info.get("bond", 0)
-        fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f} FRA"
+        fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f}"
 
         current_block = delegation_info.get("current_height", 0)
         fn_info["Current Block"] = str(current_block)
 
         your_delegation_rewards = delegation_info.get("rewards", 0)
-        fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f} FRA"
+        fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
 
     # Extract staking details (if available)
     if staking_info:
@@ -1046,7 +1046,7 @@ def get_fn_stats(output):
         fn_info["Proposed Blocks"] = str(proposed_blocks)
 
         unclaimed_rewards = staking_info.get("fra_rewards", 0)
-        fn_info["Pending Pool Rewards"] = f"{findora_gwei_convert(unclaimed_rewards):,.2f} FRA"
+        fn_info["Pending Pool Rewards"] = f"{findora_gwei_convert(unclaimed_rewards):,.2f}"
 
         server_rank = staking_info.get("voting_power_rank")
         fn_info["Server Rank"] = str(server_rank) if server_rank is not None else "N/A"
