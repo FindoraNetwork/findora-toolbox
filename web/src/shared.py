@@ -2,6 +2,7 @@ import os
 import socket
 import requests
 
+
 def get_url(timeout=5) -> str:
     try:
         response = requests.get("https://api.ipify.org?format=json", timeout=timeout)
@@ -19,6 +20,7 @@ def get_url(timeout=5) -> str:
             print(type(x), x)
             result = "0.0.0.0"
     return result
+
 
 class findora_env:
     toolbox_version = "1.0.7"

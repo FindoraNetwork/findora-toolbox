@@ -34,7 +34,7 @@ def run_full_installer(network, region):
     else:
         print("Unsupported system platform!")
         exit(1)
-        
+
     # Staker Memo
     create_staker_memo()
 

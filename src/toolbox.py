@@ -10,9 +10,9 @@ import dotenv
 import psutil
 import cmd2
 from datetime import datetime, timezone
+from requests.exceptions import RequestException
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
-from datetime import datetime
 from os import environ
 from dotenv import load_dotenv
 from colorama import Fore, Back, Style
@@ -58,7 +58,7 @@ string_stars_reset = print_stuff(reset=1).stringStars
 # loader intro splash screen
 def loader_intro():
     print_stars()
-    p = f"""*
+    p = """*
 *
 * ███████╗██╗███╗   ██╗██████╗  ██████╗ ██████╗  █████╗
 * ██╔════╝██║████╗  ██║██╔══██╗██╔═══██╗██╔══██╗██╔══██╗
@@ -121,14 +121,14 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
             print(
                 f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n"
-                + "* Has not been installed on this system for the user {USERNAME}!\n"
-                + "* Install {tool} by running the following command:\n*\n"
-                + "* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n"
+                + f"* Has not been installed on this system for the user {USERNAME}!\n"
+                + f"* Install {tool} by running the following command:\n*\n"
+                + f"* {Fore.CYAN}sudo apt install {tool} -y{Fore.MAGENTA}\n*\n"
                 + "* Then re-start the toolbox."
             )
             print_stars()
             print(
-                f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
+                "* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
                 + "* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg "
                 + '| apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal '
                 + 'stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce '
@@ -542,10 +542,11 @@ def get_curl_stats() -> None:
 def capture_stats() -> None:
     try:
         response = requests.get("http://localhost:26657/status")
+        response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
         stats = json.loads(response.text)
         return stats
-    except:
-        print("* No response from the rpc.\n* Is Docker running?")
+    except (RequestException, json.JSONDecodeError) as e:
+        print(f"* Error: {e}\n* Is Docker running?")
         finish_node()
 
 
@@ -565,12 +566,12 @@ def refresh_fn_stats() -> None:
 def claim_findora_rewards() -> None:
     print_stars()
     try:
-        output = subprocess.call(
+        subprocess.call(
             ["fn", "claim"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        print(f"* Claim all pending completed, refresh your stats after the next block.")
+        print("* Claim all pending completed, refresh your stats after the next block.")
     except subprocess.CalledProcessError as err:
         print(
             "* Error, no response from local API, try your command again or "
@@ -584,7 +585,7 @@ def get_total_send(our_fn_stats) -> None:
         f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}'
         + f"{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? "
     )
-    total2 = input(f"*\n* Please re-enter the amount of FRA you would like to transfer for verification: ")
+    total2 = input("*\n* Please re-enter the amount of FRA you would like to transfer for verification: ")
     if total == total2:
         return total
     else:
@@ -601,14 +602,14 @@ def get_receiver_address() -> None:
         )
         if question:
             return environ.get("RECEIVER_WALLET")
-    address = input(f"*\n* Please input the fra1 address you would like to send your FRA: ")
+    address = input("*\n* Please input the fra1 address you would like to send your FRA: ")
     if address[:4] != "fra1" or len(address) != 62:
         input(f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.")
         get_receiver_address()
     if address == environ.get("RECEIVER_WALLET"):
         print("* This is already your saved wallet, try again with a new wallet to update this option.")
         return environ.get("RECEIVER_WALLET")
-    address2 = input(f"*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
+    address2 = input("*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
     if address == address2:
         return address
     else:
@@ -643,7 +644,7 @@ def set_privacy(receiver_address, privacy) -> None:
         + f'{Fore.MAGENTA}\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}'
     )
     question = ask_yes_no(
-        f"*\n* Would you like to save this wallet and privacy setting as default options to "
+        "*\n* Would you like to save this wallet and privacy setting as default options to "
         + "bypass all these questions next time? (Y/N) "
     )
     if question:
@@ -791,7 +792,7 @@ class MemoUpdater(cmd2.Cmd):
                         print(Fore.MAGENTA)
                         print_stars()
                         print(
-                            f"* Blockchain update completed, please wait at least 1 block before checking for updated "
+                            "* Blockchain update completed, please wait at least 1 block before checking for updated "
                             + "information."
                         )
                     print_stars()
@@ -867,7 +868,7 @@ def change_validator_info():
         )
         return
     # Change the rate & staker memo info
-    print(f"* Which validator options would you like to update?")
+    print("* Which validator options would you like to update?")
     change_info_menu = [
         "[0] - Change Commission Rate",
         "[1] - Change staker_memo Information",
@@ -901,7 +902,7 @@ def check_address_input(address) -> None:
             + "to the menu."
         )
         return
-    address2 = input(f"*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
+    address2 = input("*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
     if address == address2:
         set_var(findora_env.dotenv_file, "RECEIVER_WALLET", address)
         input(f"* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}")
@@ -924,7 +925,7 @@ def set_send_options() -> None:
         ["Set Wallet", "Set Privacy", "Set Express", "Exit to Main Menu"],
     )
     if menu_option == 0:
-        address = input(f"*\n* Please input the fra1 address you would like to send your FRA: ")
+        address = input("*\n* Please input the fra1 address you would like to send your FRA: ")
         check_address_input(address)
     if menu_option == 1:
         ask_question_menu(
@@ -1130,7 +1131,7 @@ def menu_topper() -> None:
         external_ip = findora_env.our_external_ip
         try:
             our_fn_stats.pop("memo")
-        except KeyError as err:
+        except KeyError:
             pass
         online_version = get_container_version(
             f'https://{findora_env.fra_env}-{environ.get("FRA_NETWORK")}.{findora_env.fra_env}.findora.org:8668/version'
@@ -1157,9 +1158,9 @@ def menu_topper() -> None:
     )
     print(f"* Public Address:            {curl_stats['result']['validator_info']['address']}")
     if our_fn_stats["Network"] == "https://prod-mainnet.prod.findora.org":
-        print(f"* Network:                   Mainnet")
+        print("* Network:                   Mainnet")
     if our_fn_stats["Network"] == "https://prod-testnet.prod.findora.org":
-        print(f"* Network:                   Testnet")
+        print("* Network:                   Testnet")
     our_fn_stats.pop("Network")
     print(f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
     if curl_stats["result"]["sync_info"]["catching_up"] == "False":
@@ -1171,8 +1172,8 @@ def menu_topper() -> None:
             f"* Catching Up:               {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
         )
     print(
-        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  * Remote Latest Block:        "
-        + f"{our_fn_stats['Current Block']}"
+        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  "
+        f"* Remote Latest Block:        {our_fn_stats['Current Block']}"
     )
     our_fn_stats.pop("Current Block")
     print(f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}")
@@ -1183,7 +1184,8 @@ def menu_topper() -> None:
     print(f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(findora_env.findora_root): >6}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(findora_env.findora_root): >6}"
+        f"{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container Build:   {our_version.split()[1]}")
     if online_version != our_version:
@@ -1207,12 +1209,14 @@ def rescue_menu() -> None:
         3: run_safety_clean_launcher,
     }
     print(
-        "* We still don't detect a running container.\n* Sometimes it can take a few minutes before the api starts responding.\n"
+        "* We still don't detect a running container.\n* Sometimes it can take a few minutes before the "
+        + "api starts responding.\n"
         + "* You can attempt to get stats again for a few minutes, if that doesn't work review docker logs & try the "
         + "update_version.\n* Here are your options currently:"
         + "\n* 1 - CURL stats - Keep checking stats"
         + "\n* 2 - update_version script - Run the update version script as a first option for recovery."
-        + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and restart server."
+        + "\n* 3 - safety_clean script - Run the safety_clean script as a last option to reset database data and "
+        + "restart server."
         + "\n* 0 - Exit and manually troubleshoot"
     )
     print_stars()
@@ -1250,7 +1254,8 @@ def menu_install_findora(network, region) -> None:
         "* We've detected that Docker is properly installed for this user, excellent!"
         + f"\n* But...it doesn't look like you have Findora {network} installed."
         + "\n* We will setup Findora validator software on this server with a temporary key and wallet file."
-        + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or start a migration."
+        + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or "
+        + "start a migration."
         + "\n* Read more about migrating an existing validator here: "
         + "https://docs.easynode.pro/findora/moving#migrate-your-server-via-validator-toolbox"
     )
@@ -1483,8 +1488,8 @@ def backup_folder_check() -> None:
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your file {findora_env.findora_backup}/config/priv_validator_key.json does not match "
-                    + f'your {findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
+                    f"* Your file {findora_env.findora_backup}/config/priv_validator_key.json does not match your "
+                    + f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
                     + f"\n* Do you want to copy your config folder into {findora_env.findora_backup}/config ? (Y/N) "
                 )
                 if question:
@@ -1505,7 +1510,8 @@ def backup_folder_check() -> None:
 
 def run_update_launcher() -> None:
     question = ask_yes_no(
-        "* You may miss blocks while restarting the container.\n* Are you sure you want to run the upgrade/restart script? (Y/N) "
+        "* You may miss blocks while restarting the container.\n* Are you sure you want to run the "
+        "upgrade/restart script? (Y/N) "
     )
     print_stars()
     if question:
@@ -1682,7 +1688,10 @@ def parse_flags(parser, region, network):
     if args.ultrareset:
         # Are you really really sure?
         answer = ask_yes_no(
-            f"* WARNING, NUCLEAR OPTION: We will now totally remove all files in /data/findora and beyond.\n* YOU WILL LOSE ALL OF YOUR KEYS AND DATA IN /data/findora\n* After this completes you will need to re-run the installer and wait for a fresh download. Then you will be able to run our migration process.\n* {Fore.RED}Press Y to fully wipe and reset your server or N to exit: (Y/N){Fore.MAGENTA} "
+            "* WARNING, NUCLEAR OPTION: We will now totally remove all files in /data/findora and beyond.\n* YOU WILL "
+            "LOSE ALL OF YOUR KEYS AND DATA IN /data/findora\n* After this completes you will need to re-run the "
+            "installer and wait for a fresh download. Then you will be able to run our migration process.\n"
+            f"* {Fore.RED}Press Y to fully wipe and reset your server or N to exit: (Y/N){Fore.MAGENTA} "
         )
         if answer:
             # wipe data here
@@ -1704,16 +1713,19 @@ def run_troubleshooting_process():
             break
         else:
             answer2 = ask_yes_no(
-                "* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually troubleshoot)? (Y/N) "
+                "* Would you like to load the rescue menu to try and troubleshoot (Select N to exit and manually "
+                "troubleshoot)? (Y/N) "
             )
             if answer2:
                 rescue_menu()
             else:
                 print(
                     "* Stopping toolbox so you can troubleshoot the container manually.\n"
-                    + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors with: docker logs findorad\n"
+                    + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors "
+                    + "with: docker logs findorad\n"
                     + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./findora.sh -u\n"
-                    + "* If the above does not work you should be prompted to run a safety clean or you can do that manually with: ./findora.sh --clean\n"
+                    + "* If the above does not work you should be prompted to run a safety clean or you can do that "
+                    + "manually with: ./findora.sh --clean\n"
                     + "* If you are still having issues please reach out on our Discord: https://bit.ly/easynodediscord\n"
                 )
                 print_stars()
@@ -1726,7 +1738,7 @@ def run_register_node() -> None:
     our_fn_stats = get_fn_stats(output)
     try:
         our_fn_stats.pop("memo")
-    except KeyError as err:
+    except KeyError:
         pass
     balance_str = our_fn_stats["Balance"].replace(",", "")
     balance = float(balance_str)
@@ -1736,7 +1748,10 @@ def run_register_node() -> None:
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
     print_stars()
     if balance < 10000:
-        print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n* Current balance: {balance} FRA")
+        print(
+            f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n"
+            + f"* Current balance: {balance} FRA"
+        )
     else:
         answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
         if answer:
@@ -1787,10 +1802,14 @@ def run_register_node() -> None:
 
             # Construct the command
             command = [
-                "fn", "stake",
-                "-n", str(stake_amount_in_format),
-                "-R", str(rate_in_format),
-                "-M", json.dumps(staker_memo)
+                "fn",
+                "stake",
+                "-n",
+                str(stake_amount_in_format),
+                "-R",
+                str(rate_in_format),
+                "-M",
+                json.dumps(staker_memo),
             ]
 
             # Run the command and capture the output
