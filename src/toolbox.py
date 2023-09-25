@@ -820,14 +820,14 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
         options = []
         for key, value in self.memo_items.items():
             options.append(f"{key} - {value}")
-        options.append("Exit")
+        options.append("Save and Continue...")
         file_updated = False
         while True:
             print_stars()
             print("* Current Settings: ")
             print_stars()
             choice = self.select(options)
-            if choice == "Exit" or choice == "Exit and Send Update":
+            if choice == "Save and Continue...":
                 if not file_updated:
                     print("* No changes detected, returning to main menu.")
                     return self.memo_items
