@@ -107,6 +107,14 @@ def get_live_version(server_url):
         exit(1)
 
 
+def create_staker_memo() -> None:
+    if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
+        shutil.copy(
+            f"{findora_env.toolbox_location}/src/bin/staker_memo",
+            f"{findora_env.user_home_dir}",
+        )
+
+
 def format_duration(seconds):
     if seconds < 0:
         seconds = 0

@@ -7,6 +7,7 @@ from shared import (
     load_server_data,
     start_local_validator,
     get_live_version,
+    create_staker_memo,
     findora_env
 )
 
@@ -33,6 +34,9 @@ def run_full_installer(network, region):
     else:
         print("Unsupported system platform!")
         exit(1)
+        
+    # Staker Memo
+    create_staker_memo()
 
     # Make Directories & Set Permissions
     create_directory_with_permissions("/data/findora", USERNAME)

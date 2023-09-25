@@ -19,7 +19,7 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, findora_env
+from shared import ask_yes_no, compare_two_files, create_staker_memo, findora_env
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
@@ -1195,14 +1195,6 @@ def update_fn_wallet() -> None:
         )
 
 
-def create_staker_memo() -> None:
-    if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
-        shutil.copy(
-            f"{findora_env.toolbox_location}/src/bin/staker_memo",
-            f"{findora_env.user_home_dir}",
-        )
-
-
 def menu_install_findora(network, region) -> None:
     # Run installer ya'll!
     print(
@@ -1679,6 +1671,7 @@ def run_troubleshooting_process():
                 finish_node()
 
 def run_register_node() -> None:
+    create_staker_memo()
     output = fetch_fn_show_output()
     our_fn_stats = get_fn_stats(output)
     try:
@@ -1692,7 +1685,7 @@ def run_register_node() -> None:
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
     print_stars()
     if balance < 10000:
-        print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue. Current balance: {balance} FRA")
+        print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n* Current balance: {balance} FRA")
     else:
         answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
         if answer:
