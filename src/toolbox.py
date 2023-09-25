@@ -1790,7 +1790,7 @@ def run_register_node() -> None:
             "fn", "stake",
             "-n", str(stake_amount_in_format),
             "-R", str(rate_in_format),
-            "-M", staker_memo
+            "-M", json.dumps(staker_memo)
         ]
 
         # Run the command and capture the output
