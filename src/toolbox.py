@@ -804,8 +804,62 @@ class MemoUpdater(cmd2.Cmd):
             options[-1] = "Exit and Send Update"
 
 
+class MemoUpdaterLocalFiles(cmd2.Cmd):
+    def __init__(self, staker_memo_path):
+        super().__init__()
+        self.staker_memo_path = staker_memo_path
+        # Load the staker_memo data from the file
+        if os.path.exists(staker_memo_path):
+            with open(staker_memo_path, 'r') as file:
+                self.memo_items = json.load(file)
+        else:
+            print(f"Error: The file {staker_memo_path} does not exist.")
+            self.memo_items = {}
+
+    def do_update(self, arg):
+        options = []
+        for key, value in self.memo_items.items():
+            options.append(f"{key} - {value}")
+        options.append("Exit")
+        file_updated = False
+        while True:
+            print_stars()
+            print("* Current Settings: ")
+            print_stars()
+            choice = self.select(options)
+            if choice == "Exit" or choice == "Exit and Send Update":
+                if not file_updated:
+                    print("* No changes detected, returning to main menu.")
+                    return
+                else:
+                    memo_items_json = json.dumps(self.memo_items)
+                    print("* Here is your updated staker_memo information for verification before sending changes:")
+                    print_stars()
+                    print(self.memo_items)
+                    print_stars()
+                    question = ask_yes_no(
+                        "* Do you want to update ~/staker_memo with these changes and send on chain update now? (Y/N) "
+                    )
+                    if question:
+                        with open(self.staker_memo_path, "w") as file:
+                            file.write(memo_items_json)
+                        subprocess.call(["fn", "staker-update", "-M", memo_items_json])
+                        print(Fore.MAGENTA)
+                        print_stars()
+                        print(
+                            f"* Blockchain update completed, please wait at least 1 block before checking for updated "
+                            + "information."
+                        )
+                    print_stars()
+                    return
+            file_updated = True
+            key = choice.split(" - ")[0]
+            new_value = input("Enter the new value: ")
+            self.memo_items[key] = new_value
+            options[options.index(choice)] = f"{key} - {new_value}"
+            options[-1] = "Exit and Send Update"
+
 def change_validator_info():
-    # fix this menu, it's nuts. Always does change_rate
     print_stars()
     output = fetch_fn_show_output()
     our_fn_stats = get_fn_stats(output)
@@ -1689,8 +1743,9 @@ def run_register_node() -> None:
     else:
         answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
         if answer:
-            # Do staker memo stuff here.
-            # Save staker memo
+            updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
+            # allow edit one by one, then have commit changes at the end?
+            updater.do_update(None)
             # Validate info
             # Register
             coming_soon()
