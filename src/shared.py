@@ -31,7 +31,7 @@ def get_url(timeout=5) -> str:
 
 
 class findora_env:
-    toolbox_version = "1.3.1"
+    toolbox_version = "1.3.2"
     server_host_name = socket.gethostname()
     user_home_dir = os.path.expanduser("~")
     dotenv_file = f"{user_home_dir}/.findora.env"
@@ -105,6 +105,14 @@ def get_live_version(server_url):
             f"Failed to retrieve the version from Findora's server, please try again later. HTTP Response Code: {response.status_code}"
         )
         exit(1)
+
+
+def create_staker_memo() -> None:
+    if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
+        shutil.copy(
+            f"{findora_env.toolbox_location}/src/bin/staker_memo",
+            f"{findora_env.user_home_dir}",
+        )
 
 
 def format_duration(seconds):

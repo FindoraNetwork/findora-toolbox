@@ -19,7 +19,7 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, findora_env
+from shared import ask_yes_no, compare_two_files, create_staker_memo, findora_env
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
@@ -129,11 +129,11 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
             print_stars()
             print(
                 f"* To run all the prerequisites for toolbox in one command, run the following setup code:\n*\n"
-                + '* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg '
+                + "* `apt-get update && apt-get upgrade -y && curl -fsSL https://download.docker.com/linux/ubuntu/gpg "
                 + '| apt-key add - && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal '
                 + 'stable" && apt install apt-transport-https ca-certificates curl pv software-properties-common docker-ce '
-                + 'docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip '
-                + '-y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n'
+                + "docker-ce-cli dnsutils docker-compose containerd.io bind9-dnsutils git python3-pip python3-dotenv unzip "
+                + "-y && systemctl start docker && systemctl enable docker && usermod -aG docker servicefindora`\n"
                 + "* If you were missing docker, reconnect in a new terminal to gain access on `servicefindora`, then run "
                 + "the toolbox again."
             )
@@ -597,7 +597,7 @@ def get_receiver_address() -> None:
     if environ.get("RECEIVER_WALLET"):
         question = ask_yes_no(
             f'* We have {Fore.YELLOW}{environ.get("RECEIVER_WALLET")}{Fore.MAGENTA} on file. Would you like to send to '
-            + 'this address? (Y/N)'
+            + "this address? (Y/N)"
         )
         if question:
             return environ.get("RECEIVER_WALLET")
@@ -621,7 +621,7 @@ def get_privacy_option() -> None:
     if environ.get("PRIVACY"):
         question = ask_yes_no(
             f'* We have Privacy = {environ.get("PRIVACY")} on file, Would you like to use this option for this transaction '
-            + 'as well? (Y/N) '
+            + "as well? (Y/N) "
         )
         if question:
             return environ.get("PRIVACY")
@@ -804,8 +804,57 @@ class MemoUpdater(cmd2.Cmd):
             options[-1] = "Exit and Send Update"
 
 
+class MemoUpdaterLocalFiles(cmd2.Cmd):
+    def __init__(self, staker_memo_path):
+        super().__init__()
+        self.staker_memo_path = staker_memo_path
+        # Load the staker_memo data from the file
+        if os.path.exists(staker_memo_path):
+            with open(staker_memo_path, "r") as file:
+                self.memo_items = json.load(file)
+        else:
+            print(f"Error: The file {staker_memo_path} does not exist.")
+            self.memo_items = {}
+
+    def do_update(self, arg):
+        options = []
+        for key, value in self.memo_items.items():
+            options.append(f"{key} - {value}")
+        options.append("Save and Continue...")
+        file_updated = False
+        while True:
+            print_stars()
+            print("* Current Settings: ")
+            print_stars()
+            choice = self.select(options)
+            if choice == "Save and Continue...":
+                if not file_updated:
+                    print("* No changes detected, continuing with current staker_memo information...")
+                    return self.memo_items
+                else:
+                    memo_items_json = json.dumps(self.memo_items)
+                    print("* Here is your updated staker_memo information for verification before sending changes:")
+                    print_stars()
+                    print(f"* Name: {self.memo_items['name']}")
+                    print(f"* Description: {self.memo_items['desc']}")
+                    print(f"* Website: {self.memo_items['website']}")
+                    print(f"* Logo: {self.memo_items['logo']}")
+                    print_stars()
+                    question = ask_yes_no("* Do you want to update ~/staker_memo with these changes? (Y/N) ")
+                    if question:
+                        with open(self.staker_memo_path, "w") as file:
+                            file.write(memo_items_json)
+                    print_stars()
+                    return self.memo_items
+            file_updated = True
+            key = choice.split(" - ")[0]
+            new_value = input("Enter the new value: ")
+            self.memo_items[key] = new_value
+            options[options.index(choice)] = f"{key} - {new_value}"
+            options[-1] = "Exit and Send Update"
+
+
 def change_validator_info():
-    # fix this menu, it's nuts. Always does change_rate
     print_stars()
     output = fetch_fn_show_output()
     our_fn_stats = get_fn_stats(output)
@@ -1012,17 +1061,17 @@ def get_fn_stats(output):
     # Extract other values
     network = extract_value(output, "Server URL")
     balance_raw = extract_value(output, "Node Balance")
-    balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f} FRA" if balance_raw else "0 FRA"
+    balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}" if balance_raw else "0"
 
     # Create the result dictionary with default values
     fn_info = {
         "Network": network,
         "Balance": balance,
-        "Pending Rewards": "0.00 FRA",
-        "Self Delegation": "0.00 FRA",
+        "Pending Rewards": "0.00",
+        "Self Delegation": "0.00",
         "Current Block": "N/A",
         "Proposed Blocks": "0",
-        "Pending Pool Rewards": "0.00 FRA",
+        "Pending Pool Rewards": "0.00",
         "Server Rank": "N/A",
         "Delegator Count": "N/A",
         "Commission Rate": "0.00%",
@@ -1032,13 +1081,13 @@ def get_fn_stats(output):
     # Extract delegation details
     if delegation_info:
         bond = delegation_info.get("bond", 0)
-        fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f} FRA"
+        fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f}"
 
         current_block = delegation_info.get("current_height", 0)
         fn_info["Current Block"] = str(current_block)
 
         your_delegation_rewards = delegation_info.get("rewards", 0)
-        fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f} FRA"
+        fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
 
     # Extract staking details (if available)
     if staking_info:
@@ -1046,7 +1095,7 @@ def get_fn_stats(output):
         fn_info["Proposed Blocks"] = str(proposed_blocks)
 
         unclaimed_rewards = staking_info.get("fra_rewards", 0)
-        fn_info["Pending Pool Rewards"] = f"{findora_gwei_convert(unclaimed_rewards):,.2f} FRA"
+        fn_info["Pending Pool Rewards"] = f"{findora_gwei_convert(unclaimed_rewards):,.2f}"
 
         server_rank = staking_info.get("voting_power_rank")
         fn_info["Server Rank"] = str(server_rank) if server_rank is not None else "N/A"
@@ -1192,14 +1241,6 @@ def update_fn_wallet() -> None:
         subprocess.call(
             ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
             cwd=findora_env.user_home_dir,
-        )
-
-
-def create_staker_memo() -> None:
-    if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
-        shutil.copy(
-            f"{findora_env.toolbox_location}/src/bin/staker_memo",
-            f"{findora_env.user_home_dir}",
         )
 
 
@@ -1414,7 +1455,7 @@ def backup_folder_check() -> None:
                 question = ask_yes_no(
                     f"* Your file {findora_env.findora_backup}/tmp.gen.keypair does not match "
                     + f'your live {environ.get("FRA_NETWORK")}_node.key.'
-                    + f'\n* Do you want to copy the live key into the {findora_env.findora_backup} folder now? (Y/N) '
+                    + f"\n* Do you want to copy the live key into the {findora_env.findora_backup} folder now? (Y/N) "
                 )
                 if question:
                     # Copy key back
@@ -1567,6 +1608,12 @@ def parse_flags(parser, region, network):
     )
 
     parser.add_argument(
+        "--register",
+        action="store_true",
+        help="Will register your validator on chain after server is synced and deposit is made.",
+    )
+
+    parser.add_argument(
         "--ultrareset",
         action="store_true",
         help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
@@ -1629,6 +1676,9 @@ def parse_flags(parser, region, network):
         menu_topper()
         finish_node()
 
+    if args.register:
+        run_register_node()
+
     if args.ultrareset:
         # Are you really really sure?
         answer = ask_yes_no(
@@ -1668,3 +1718,92 @@ def run_troubleshooting_process():
                 )
                 print_stars()
                 finish_node()
+
+
+def run_register_node() -> None:
+    create_staker_memo()
+    output = fetch_fn_show_output()
+    our_fn_stats = get_fn_stats(output)
+    try:
+        our_fn_stats.pop("memo")
+    except KeyError as err:
+        pass
+    balance_str = our_fn_stats["Balance"].replace(",", "")
+    balance = float(balance_str)
+    remaining = 10000 - balance
+    for i in our_fn_stats:
+        spaces = "                         "
+        print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
+    print_stars()
+    if balance < 10000:
+        print(f"* Not enough FRA to start a validator, please deposit {remaining}+ FRA to continue.\n* Current balance: {balance} FRA")
+    else:
+        answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
+        if answer:
+            updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
+            # allow edit one by one, then have commit changes at the end?
+            staker_memo = updater.do_update(None)
+            # Staker Memo is saved, now we can register
+        # Get initial rate
+        while True:
+            answer = input("* Please enter the rate (fee) you would like to charge between 0 - 100%: ")
+            if answer.isdigit():
+                rate = int(answer)
+                if 0 <= rate <= 100:
+                    break
+                else:
+                    print("* Invalid input! Rate must be a whole number between 0 and 100.")
+            else:
+                print("* Invalid input! Please enter a whole number.")
+        # Get stake amount
+        while True:
+            stake_amount = input(f"* How much would you like to stake to start (10,000 minimum, {balance} maximum)? ")
+            if stake_amount.isdigit():
+                stake_amount = int(stake_amount)
+                if 10000 <= stake_amount <= balance:
+                    break
+                else:
+                    print(f"* Invalid input! Stake amount must be a whole number between 10,000 and {balance}.")
+            else:
+                print("* Invalid input! Please enter a whole number.")
+        print_stars()
+        print("* One last final review of information before going live.")
+        print(f"* Name: {staker_memo['name']}")
+        print(f"* Description: {staker_memo['desc']}")
+        print(f"* Website: {staker_memo['website']}")
+        print(f"* Logo: {staker_memo['logo']}")
+        print(f"* Rate: {rate}%")
+        print(f"* Stake Amount: {stake_amount} FRA")
+        print_stars()
+        answer = ask_yes_no(
+            "* Would you like to send the command to create your validator now with the information above? (Y/N) "
+        )
+        if answer:
+            # Convert stake_amount to the required format
+            stake_amount_in_format = stake_amount * 1000000
+
+            # Convert rate to the required format
+            rate_in_format = rate / 100
+
+            # Construct the command
+            command = [
+                "fn", "stake",
+                "-n", str(stake_amount_in_format),
+                "-R", str(rate_in_format),
+                "-M", json.dumps(staker_memo)
+            ]
+
+            # Run the command and capture the output
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+
+            # Decode and print the output
+            print_stars()
+            print(stdout.decode())
+            print_stars()
+            print("* Validator created, you should begin signing blocks shortly!")
+            if stderr:
+                print("Error:", stderr.decode())
+
+    print_stars()
+    finish_node()
