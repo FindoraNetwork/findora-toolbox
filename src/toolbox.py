@@ -1725,7 +1725,8 @@ def run_register_node() -> None:
         our_fn_stats.pop("memo")
     except KeyError as err:
         pass
-    balance = float(our_fn_stats["Balance"])
+    balance_str = our_fn_stats["Balance"].replace(",", "")
+    balance = float(balance_str)
     remaining = 10000 - balance
     for i in our_fn_stats:
         spaces = "                         "
