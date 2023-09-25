@@ -1638,12 +1638,13 @@ def parse_flags(parser, region, network):
     if args.register:
         output = fetch_fn_show_output()
         our_fn_stats = get_fn_stats(output)
-        balance = our_fn_stats["Balance"]
+        balance = float(our_fn_stats["Balance"])
         for i in our_fn_stats:
             spaces = "                         "
             print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
         print_stars()
-        print(f"Balance: {balance}")
+        if balance > 10000:
+            print(f"* Not enough FRA to start a validator, please deposit 10,000+ FRA to continue. Current balance: {balance} FRA")
         finish_node()
 
     if args.ultrareset:
