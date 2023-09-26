@@ -266,7 +266,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     while True:
         print("* Downloading snapshot...")
         urllib.request.urlretrieve(CHAINDATA_URL, snapshot_file, reporthook=download_progress_hook)
-        print("* \nDownload complete, calculating checksum now...")
+        print("\n* Download complete, calculating checksum now...")
 
         # Calculate the md5 checksum of the downloaded file
         md5_hash = hashlib.md5()
@@ -319,8 +319,8 @@ def load_server_data(ENV, network, ROOT_DIR, region):
             for member in tar:
                 tar.extract(member, path=SNAPSHOT_DIR)
                 extracted_count += 1
-                print(f"Extracted {extracted_count} files...", end="\r")
-        print("\nSnapshot extraction completed.")
+                print(f"* Extracted {extracted_count} files...", end="\r")
+        print("\n* Snapshot extraction completed.")
     except OSError as e:
         if e.errno == 28:  # No space left on device
             print("* Error: Extraction failed due to insufficient disk space.")
