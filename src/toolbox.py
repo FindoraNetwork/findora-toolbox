@@ -852,7 +852,6 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
             new_value = input("Enter the new value: ")
             self.memo_items[key] = new_value
             options[options.index(choice)] = f"{key} - {new_value}"
-            options[-1] = "Exit and Send Update"
 
 
 def change_validator_info():
