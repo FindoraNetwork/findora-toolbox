@@ -1143,7 +1143,9 @@ def menu_topper() -> None:
         print(f"* Timeout error: {e}")
         print_stars()
         input()
-
+    if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in our_version:
+        print_stars()
+        print(f"* Your container was updated to a test build, contact Findora support for assistance rolling back to the previous version.")
     if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in online_version:
         online_version = "v0.4.3-release"
 
