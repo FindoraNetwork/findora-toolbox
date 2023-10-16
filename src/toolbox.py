@@ -1150,6 +1150,7 @@ def menu_topper() -> None:
         print_stars()
         # Quit out if local is on temp build. 
         raise SystemExit(0)
+    # Check online version for temp build and set to old release if found 10/12/2023
     if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in online_version:
         online_version = "v0.4.3-release"
 
