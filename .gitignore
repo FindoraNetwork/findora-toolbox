@@ -135,3 +135,4 @@ dmypy.json
 result.example.json
 data/
 release-from-jail/
+release-from-jail/properties.conf
