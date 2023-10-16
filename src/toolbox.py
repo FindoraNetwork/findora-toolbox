@@ -1144,6 +1144,9 @@ def menu_topper() -> None:
         print_stars()
         input()
 
+    if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in online_version:
+        online_version = "v0.4.3-release"
+
     print(Fore.MAGENTA)
     print_stars()
     print(
