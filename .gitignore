@@ -134,5 +134,7 @@ dmypy.json
 # Other
 result.example.json
 data/
-release-from-jail/
+release-from-jail/CoreEasy.py
+release-from-jail/jailcheck.py
 release-from-jail/properties.conf
+release-from-jail/validators.csv
