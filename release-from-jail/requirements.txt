@@ -1,2 +1,2 @@
 web3==5.19.0
-requests==2.31.0
+requests>=2.31.0
