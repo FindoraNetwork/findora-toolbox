@@ -1,0 +1,61 @@
+{
+    "abi": [
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "validatorStatus",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "heapIndexOff1",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "isActive",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "jailed",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "uint64",
+                    "name": "unjailDatetime",
+                    "type": "uint64"
+                },
+                {
+                    "internalType": "uint16",
+                    "name": "shouldVote",
+                    "type": "uint16"
+                },
+                {
+                    "internalType": "uint16",
+                    "name": "voted",
+                    "type": "uint16"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "validator",
+                    "type": "address"
+                }
+            ],
+            "name": "releaseFromJail",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ]
+}
