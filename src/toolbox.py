@@ -1282,6 +1282,17 @@ def update_fn_wallet() -> None:
         )
 
 
+
+def update_fn_wallet_github() -> None:
+    print("* This option upgrades the fn wallet application.")
+    answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
+    if answer:
+        print("* We will show the output of the upgrade now.")
+        subprocess.call(
+            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}_github.sh"],
+            cwd=config.user_home_dir,
+        )
+
 def menu_install_findora(network, region) -> None:
     # Run installer ya'll!
     print(
@@ -1640,7 +1651,11 @@ def parse_flags(parser, region, network):
     )
 
     parser.add_argument(
-        "--fn", action="store_true", help="Will reset fn to your current key files replacing the running ones."
+        "--fn", action="store_true", help="Will update fn wallet application."
+    )
+    
+    parser.add_argument(
+        "--fn-new", action="store_true", help="Will update fn wallet to version 1.2.3 for full graphql stats."
     )
 
     parser.add_argument(
@@ -1671,6 +1686,9 @@ def parse_flags(parser, region, network):
 
     if args.fn:
         update_fn_wallet()
+        
+    if args.fn_new:
+        update_fn_wallet_github()
 
     if args.rescue:
         if container_running(config.container_name):
