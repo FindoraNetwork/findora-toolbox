@@ -1177,21 +1177,10 @@ def menu_topper() -> None:
         f"* Remote Latest Block:        {our_fn_stats['Current Block']}\n"
         f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}\n"
         f"* Voted Blocks:              {our_fn_stats['Voted Blocks']}\n"
-        f"* Missed Blocks:             {our_fn_stats['Missed Blocks']}"
+        f"* Missed Blocks:             {our_fn_stats['Missed Blocks']}\n"
+        f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}\n"
+        f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}"
     )
-    our_fn_stats.pop("Self Delegation")
-    our_fn_stats.pop("Balance")
-    our_fn_stats.pop("Pending Rewards")
-    our_fn_stats.pop("Commission Rate")
-    our_fn_stats.pop("Current Block")
-    our_fn_stats.pop("Proposed Blocks")
-    our_fn_stats.pop("Voted Blocks")
-    our_fn_stats.pop("Missed Blocks")
-    for i in our_fn_stats:
-        spaces = "                         "
-        print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
-    print(f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
-    print(f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
         f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(config.findora_root): >6}"
         f"{Style.RESET_ALL}{Fore.MAGENTA}"
