@@ -52,18 +52,18 @@ class Config:
         self.toolbox_version = "1.4.1"
         self.server_host_name = socket.gethostname()
         self.user_home_dir = os.path.expanduser("~")
-        self.dotenv_file = f"{user_home_dir}/.findora.env"
-        self.active_user_name = os.path.split(user_home_dir)[-1]
+        self.dotenv_file = f"{self.user_home_dir}/.findora.env"
+        self.active_user_name = os.path.split(self.user_home_dir)[-1]
         self.findora_root = "/data/findora"
-        self.findora_root_mainnet = f"{findora_root}/mainnet"
-        self.findora_root_testnet = f"{findora_root}/testnet"
-        self.toolbox_location = os.path.join(user_home_dir, "findora-toolbox")
-        self.staker_memo_path = os.path.join(user_home_dir, "staker_memo")
+        self.findora_root_mainnet = f"{self.findora_root}/mainnet"
+        self.findora_root_testnet = f"{self.findora_root}/testnet"
+        self.toolbox_location = os.path.join(self.user_home_dir, "findora-toolbox")
+        self.staker_memo_path = os.path.join(self.user_home_dir, "staker_memo")
         self.our_external_ip = get_url()
         self.container_name = "findorad"
-        self.migrate_dir = os.path.join(user_home_dir, "migrate")
+        self.migrate_dir = os.path.join(self.user_home_dir, "migrate")
         self.fra_env = "prod"
-        self.findora_backup = os.path.join(user_home_dir, "findora_backup")
+        self.findora_backup = os.path.join(self.user_home_dir, "findora_backup")
         self.graphql_endpoint = "https://graph.findora.org"
         self.graphql_endpoint_backup = "https://mainnet2.graph.findora.org"
         
