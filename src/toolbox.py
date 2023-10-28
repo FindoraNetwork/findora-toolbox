@@ -9,6 +9,7 @@ import docker
 import dotenv
 import psutil
 import cmd2
+import sys
 from datetime import datetime, timezone
 from requests.exceptions import RequestException
 from simple_term_menu import TerminalMenu
