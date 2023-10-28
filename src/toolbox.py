@@ -1198,9 +1198,8 @@ def menu_topper() -> None:
         print("* Network:                   Mainnet")
     if our_fn_stats["Network"] == "https://prod-testnet.prod.findora.org":
         print("* Network:                   Testnet")
-    our_fn_stats.pop("Network")
     print("* Server Status:             " + our_fn_stats["Server Status"])
-    our_fn_stats.pop("Server Status")
+    print("* Jail Status:               " + our_fn_stats["Jailed Status"])
     if curl_stats["result"]["sync_info"]["catching_up"] == "False":
         print(
             f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
