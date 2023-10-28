@@ -1054,6 +1054,11 @@ def fetch_fn_show_output():
 
 
 def get_fn_stats(output, validator_address):
+    # Convert the validator_address to lowercase and ensure it starts with '0x'
+    validator_address = validator_address.lower()
+    if not validator_address.startswith("0x"):
+        validator_address = "0x" + validator_address
+        
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address)
     
