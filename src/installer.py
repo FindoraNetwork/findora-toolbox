@@ -17,6 +17,9 @@ def run_full_installer(network, region):
     ENV = "prod"
     server_url = f"https://{ENV}-{network}.{ENV}.findora.org"
     LIVE_VERSION = get_live_version(server_url)
+    if LIVE_VERSION is None:
+        print("Failed to get live version from server, exiting...")
+        exit(1)
     FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"

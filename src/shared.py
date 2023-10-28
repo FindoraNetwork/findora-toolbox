@@ -60,10 +60,14 @@ def get_live_version(server_url):
     # Check if the request was successful
     if response.status_code == 200:
         # Extract the version using a regular expression
-        match = re.search(r"v[\d\.]+-release", response.text)
+        match = re.search(r"(v\d+\.\d+\.\d+-\d+-release)", response.text)
         if match:
             LIVE_VERSION = match.group()
+            print(f"Extracted Version: {LIVE_VERSION}")
             return LIVE_VERSION
+        else:
+            print("Regex didn't match.")
+            return None
     else:
         print(
             "Failed to retrieve the version from Findora's server, please try again later. "
@@ -138,7 +142,7 @@ def fetch_single_validator(validator_address):
         }}
     }}
     """
-    
+
     # GraphQL endpoint
     url = f"{config.graphql_endpoint}/subgraphs/name/evm/staking"
 
@@ -226,8 +230,8 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
         except UnboundLocalError:
             pass  # client was not successfully initialized
 
-    # Reset permissions on tendermint folder after init
-    chown_dir(os.path.join(ROOT_DIR, "tendermint"), USERNAME, USERNAME)
+    # Reset permissions on root folder after init
+    chown_dir(os.path.join(ROOT_DIR), USERNAME, USERNAME)
 
     # Backup new priv_validator_key.json
     if os.path.exists(f"/home/{USERNAME}/findora_backup/config"):
@@ -466,9 +470,7 @@ def local_key_setup(keypath, ROOT_DIR, network):
         else:
             with open(f"{ROOT_DIR}/{network}_node.key", "w") as file:
                 subprocess.run(["fn", "genkey"], stdout=file, text=True)
-            shutil.copyfile(
-                f"{ROOT_DIR}/{network}_node.key", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair"
-            )
+            shutil.copyfile(f"{ROOT_DIR}/{network}_node.key", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair")
             print(
                 f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and "
                 "copied to ~/findora_backup/tmp.gen.keypair"
