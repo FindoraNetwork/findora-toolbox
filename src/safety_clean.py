@@ -6,12 +6,11 @@ from shared import (
     get_live_version,
     start_local_validator,
     load_server_data,
-    findora_env,
 )
-
+from config import config
 
 def run_safety_clean(network=os.environ.get("FRA_NETWORK"), region=os.environ.get("FRA_REGION")):
-    USERNAME = findora_env.active_user_name
+    USERNAME = config.active_user_name
     ENV = "prod"
     server_url = f"https://{ENV}-{network}.{ENV}.findora.org"
     LIVE_VERSION = get_live_version(server_url)

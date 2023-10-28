@@ -12,7 +12,7 @@ from toolbox import (
     parse_flags,
     check_preflight_setup,
 )
-from shared import findora_env
+from config import config
 
 
 def main() -> None:
@@ -22,7 +22,7 @@ def main() -> None:
 
     # Load Vars / Set Network & Region
     network, region = check_preflight_setup(
-        findora_env.dotenv_file, findora_env.user_home_dir, findora_env.active_user_name
+        config.dotenv_file, config.user_home_dir, config.active_user_name
     )
 
     # Can this user access docker?
@@ -37,7 +37,7 @@ def main() -> None:
         # It does not, let's ask to install!
         menu_install_findora(network, region)
     # fn is found, is the findorad container running? Run the 'docker ps' command and filter the output using 'grep'
-    elif container_running(findora_env.container_name):
+    elif container_running(config.container_name):
         backup_folder_check()
         run_findora_menu()
     else:

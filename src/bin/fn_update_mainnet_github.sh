@@ -12,7 +12,7 @@ FN=${ROOT_DIR}/bin/fn
 
 # Downloading
 echo -n "Downloading ..."
-wget -O fn https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn >/dev/null 2>&1
+wget -O fn https://github.com/FindoraNetwork/platform/releases/download/v1.2.3-fn/v1.2.3-fn-linux >/dev/null 2>&1
 echo " completed"
 
 # Setting permissions

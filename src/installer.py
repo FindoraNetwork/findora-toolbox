@@ -7,13 +7,12 @@ from shared import (
     load_server_data,
     start_local_validator,
     get_live_version,
-    create_staker_memo,
-    findora_env
+    create_staker_memo
 )
-
+from config import config
 
 def run_full_installer(network, region):
-    USERNAME = findora_env.active_user_name
+    USERNAME = config.active_user_name
     # Testnet and mainnet are both prod, can update for mocknet in the future
     ENV = "prod"
     server_url = f"https://{ENV}-{network}.{ENV}.findora.org"
