@@ -116,6 +116,36 @@ def download_progress_hook(count, block_size, total_size):
     )
 
 
+def fetch_block_graphql():
+    # Search for the latest block
+    query = """
+    query MyQuery {
+        blocks(orderBy: number, orderDirection: desc, first: 1) {
+            number
+        }
+    }
+    """
+
+    # GraphQL endpoint
+    url = f"{config.graphql_endpoint}/subgraphs/name/evm/staking"
+
+    # Headers (if needed, e.g., authentication)
+    headers = {"Content-Type": "application/json"}
+
+    # Data payload
+    data = {"query": query}
+
+    # Send the request
+    response = requests.post(url, headers=headers, json=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: {response.status_code}")
+        return None
+
+
 def fetch_single_validator(validator_address):
     # Query for a single validator
     query = f"""

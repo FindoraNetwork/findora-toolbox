@@ -20,7 +20,7 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator
+from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator, fetch_block_graphql
 from config import print_stuff, config
 
 # from shared import stop_and_remove_container
@@ -1106,18 +1106,20 @@ def get_fn_stats(output):
     if not validator_address.startswith("0x"):
         validator_address = "0x" + validator_address
 
-    # Get validator data
+        # Get validator data
     graphql_stats = fetch_single_validator(validator_address)
 
-    # Extract data from graphql_stats with safety checks
-    current_block = graphql_stats.get("data", {}).get("blocks", [{}]).pop(0, {}).get("number", "N/A")
-    validator_list = graphql_stats.get("data", {}).get("validators", [{}])
+    blocks_data = graphql_stats.get("data", {}).get("blocks", [])
+    if not blocks_data:
+        # If blocks_data is missing in graphql_stats, fetch it using fetch_block_graphql()
+        blocks_data = fetch_block_graphql().get("data", {}).get("blocks", [])
+
+    current_block = blocks_data[0].get("number", "N/A") if blocks_data else "N/A"
+
+    validator_list = graphql_stats.get("data", {}).get("validators", [])
 
     # If validator list is empty, use a default empty dictionary
-    if not validator_list:
-        validator_data = {}
-    else:
-        validator_data = validator_list[0]
+    validator_data = validator_list[0] if validator_list else {}
 
     memo_data = json.loads(validator_data.get("memo", "{}"))
 
