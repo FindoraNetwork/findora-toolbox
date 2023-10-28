@@ -55,13 +55,14 @@ def get_available_space(directory):
 
 def get_live_version(server_url):
     # Make a GET request to the URL
+    print(server_url)
     response = requests.get(f"{server_url}:8668/version")
+    print(response)
 
     # Check if the request was successful
     if response.status_code == 200:
         # Extract the version using a regular expression
         match = re.search(r"v[\d\.]+-release", response.text)
-        print(match)
         if match:
             LIVE_VERSION = match.group()
             return LIVE_VERSION
