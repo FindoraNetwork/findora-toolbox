@@ -1055,7 +1055,7 @@ def fetch_fn_show_output():
     Executes the 'fn show' command, processes its output, and returns the cleaned up output.
     """
     try:
-        output = subprocess.check_output(["fn", "show"], stderr=subprocess.STDOUT)
+        output = subprocess.check_output(["fn", "show"])
         cleaned_output = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
         return cleaned_output
     except subprocess.CalledProcessError:
