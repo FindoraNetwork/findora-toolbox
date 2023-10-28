@@ -1063,9 +1063,10 @@ def fetch_fn_show_output():
         return ""
 
 
-def get_fn_stats(output, validator_address):
+def get_fn_stats(output):
+    address = extract_value(output, "Validator Node Addr")
     # Convert the validator_address to lowercase and ensure it starts with '0x'
-    validator_address = validator_address.lower()
+    validator_address = address.lower()
     if not validator_address.startswith("0x"):
         validator_address = "0x" + validator_address
         
@@ -1127,7 +1128,7 @@ def menu_topper() -> None:
         fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
         our_version = get_container_version()
         output = fetch_fn_show_output()
-        our_fn_stats, validator_address = get_fn_stats(output, curl_stats["result"]["validator_info"]["address"])
+        our_fn_stats, validator_address = get_fn_stats(output)
         external_ip = config.our_external_ip
         online_version = get_container_version(
             f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version'
