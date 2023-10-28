@@ -61,6 +61,7 @@ def get_live_version(server_url):
     if response.status_code == 200:
         # Extract the version using a regular expression
         match = re.search(r"v[\d\.]+-release", response.text)
+        print(match)
         if match:
             LIVE_VERSION = match.group()
             return LIVE_VERSION
