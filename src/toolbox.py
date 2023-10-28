@@ -988,6 +988,34 @@ def findora_gwei_convert(findora):
     return fra_amount
 
 
+def extract_key_value_pairs(output, section_title):
+    # Split the output by lines
+    lines = output.split('\n')
+    
+    # Find the section
+    section_start = None
+    for idx, line in enumerate(lines):
+        if line.strip() == section_title + ":":
+            section_start = idx
+            break
+
+    if section_start is None:
+        return None
+
+    section_data = {}
+    for line in lines[section_start+1:]:
+        if line.strip() == "":
+            # Stop at the first empty line after the section
+            break
+        
+        # Split each line into key and value based on the colon
+        key, value = [item.strip() for item in line.split(':', 1)]
+        section_data[key] = value
+
+    return section_data
+
+
+
 def extract_json_section(output, section_name):
     """
     Further improved version to extract the JSON sections.
@@ -1071,7 +1099,7 @@ def get_fn_stats(output, validator_address):
     memo_data = json.loads(validator_data.get("memo", "{}"))
 
     # Parse JSON sections
-    delegation_info = extract_json_section(output, "Your Delegation")
+    delegation_info = extract_key_value_pairs(output, "Your Delegation")
 
     # Extract other values
     network = extract_value(output, "Server URL")
