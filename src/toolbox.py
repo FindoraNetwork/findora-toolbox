@@ -1109,9 +1109,15 @@ def get_fn_stats(output):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address)
 
-    # Extract data from graphql_stats
-    current_block = graphql_stats.get("data", {}).get("blocks", [{}])[0].get("number", "N/A")
-    validator_data = graphql_stats.get("data", {}).get("validators", [{}])[0]
+    # Extract data from graphql_stats with safety checks
+    current_block = graphql_stats.get("data", {}).get("blocks", [{}]).pop(0, {}).get("number", "N/A")
+    validator_list = graphql_stats.get("data", {}).get("validators", [{}])
+
+    # If validator list is empty, use a default empty dictionary
+    if not validator_list:
+        validator_data = {}
+    else:
+        validator_data = validator_list[0]
 
     memo_data = json.loads(validator_data.get("memo", "{}"))
 
