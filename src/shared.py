@@ -226,8 +226,8 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
         except UnboundLocalError:
             pass  # client was not successfully initialized
 
-    # Reset permissions on tendermint folder after init
-    chown_dir(os.path.join(ROOT_DIR, "tendermint"), USERNAME, USERNAME)
+    # Reset permissions on root folder after init
+    chown_dir(os.path.join(ROOT_DIR), USERNAME, USERNAME)
 
     # Backup new priv_validator_key.json
     if os.path.exists(f"/home/{USERNAME}/findora_backup/config"):
