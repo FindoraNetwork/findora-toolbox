@@ -1135,6 +1135,9 @@ def get_fn_stats(output):
         "Server Status": f"{Fore.GREEN}Online{Fore.MAGENTA}"
         if validator_data.get("online", 0) == 1
         else f"{Fore.RED}Offline{Fore.MAGENTA}",
+        "Jailed Status": f"{Fore.GREEN}Not Jailed{Fore.MAGENTA}"
+        if validator_data.get("jailed", 0) == 0
+        else f"{Fore.RED}Jailed{Fore.MAGENTA}",
         "Voted Blocks": str(validator_data.get("votedCount", 0)),
         "Missed Blocks": str(validator_data.get("unvotedCount", 0)),
         "Commission Rate": f"{int(validator_data.get('rate', '0')) / 10000:.2f}%",
