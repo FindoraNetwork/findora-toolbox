@@ -1168,8 +1168,8 @@ def menu_topper() -> None:
             f"* Catching Up:               {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
         )
     print(
-        f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA"
-        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  "
+        f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA\n"
+        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  \n"
         f"* Remote Latest Block:        {our_fn_stats['Current Block']}"
     )
     our_fn_stats.pop("Current Block")
