@@ -1140,19 +1140,6 @@ def menu_topper() -> None:
         print(f"* Timeout error: {e}")
         print_stars()
         input()
-    # Check for temp build 10/12/2023
-    if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in our_version:
-        print_stars()
-        print(
-            f"* Your container was updated to a test build, contact Findora support for assistance rolling back to the previous version."
-        )
-        print_stars()
-        # Quit out if local is on temp build.
-        raise SystemExit(0)
-    # Check online version for temp build and set to old release if found 10/12/2023
-    if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in online_version:
-        online_version = "v0.4.3-release"
-
     print(Fore.MAGENTA)
     print_stars()
     print(
@@ -1170,7 +1157,8 @@ def menu_topper() -> None:
     if our_fn_stats["Network"] == "https://prod-testnet.prod.findora.org":
         print("* Network:                   Testnet")
     our_fn_stats.pop("Network")
-    print(f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA")
+    print("* Server Status:             " + our_fn_stats["Server Status"])
+    our_fn_stats.pop("Server Status")
     if curl_stats["result"]["sync_info"]["catching_up"] == "False":
         print(
             f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
@@ -1180,6 +1168,7 @@ def menu_topper() -> None:
             f"* Catching Up:               {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
         )
     print(
+        f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA"
         f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  "
         f"* Remote Latest Block:        {our_fn_stats['Current Block']}"
     )
