@@ -1,10 +1,11 @@
 import os
 import subprocess
-from shared import chown_dir, start_local_validator, stop_and_remove_container, get_live_version, findora_env
+from shared import chown_dir, start_local_validator, stop_and_remove_container, get_live_version
+from config import config
 
 
 def run_update_restart(network=os.environ.get("FRA_NETWORK")):
-    USERNAME = findora_env.active_user_name
+    USERNAME = config.active_user_name
     ENV = "prod"
     server_url = f"https://{ENV}-{network}.{ENV}.findora.org"
     LIVE_VERSION = get_live_version(server_url)
