@@ -62,10 +62,14 @@ def get_live_version(server_url):
     # Check if the request was successful
     if response.status_code == 200:
         # Extract the version using a regular expression
-        match = re.search(r"v[\d\.]+-release", response.text)
+        match = re.search(r"v[\d\.]+(?=-release)", response.text)
         if match:
             LIVE_VERSION = match.group()
+            print(f"Extracted Version: {LIVE_VERSION}")
             return LIVE_VERSION
+        else:
+            print("Regex didn't match.")
+            return None
     else:
         print(
             "Failed to retrieve the version from Findora's server, please try again later. "
