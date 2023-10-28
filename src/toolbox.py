@@ -20,7 +20,7 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator
+from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator, fetch_block_graphql
 from config import print_stuff, config
 
 # from shared import stop_and_remove_container
@@ -129,7 +129,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     region = set_na_or_eu()
 
     # Check fn version and update if needed
-    # check_and_update_fn_version()
+    check_and_update_fn_version()
     return network, region
 
 
@@ -145,10 +145,8 @@ def check_and_update_fn_version():
         return
 
     if current_version != desired_version:
-        subprocess.call(
-            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}_github.sh"],
-            cwd=config.user_home_dir,
-        )
+        print("* There is an upgrade available for 'fn'.")
+        update_fn_wallet()
     else:
         print(f"* 'fn' is up to date ({current_version}).")
 
@@ -1106,12 +1104,20 @@ def get_fn_stats(output):
     if not validator_address.startswith("0x"):
         validator_address = "0x" + validator_address
 
-    # Get validator data
+        # Get validator data
     graphql_stats = fetch_single_validator(validator_address)
 
-    # Extract data from graphql_stats
-    current_block = graphql_stats.get("data", {}).get("blocks", [{}])[0].get("number", "N/A")
-    validator_data = graphql_stats.get("data", {}).get("validators", [{}])[0]
+    blocks_data = graphql_stats.get("data", {}).get("blocks", [])
+    if not blocks_data:
+        # If blocks_data is missing in graphql_stats, fetch it using fetch_block_graphql()
+        blocks_data = fetch_block_graphql().get("data", {}).get("blocks", [])
+
+    current_block = blocks_data[0].get("number", "N/A") if blocks_data else "N/A"
+
+    validator_list = graphql_stats.get("data", {}).get("validators", [])
+
+    # If validator list is empty, use a default empty dictionary
+    validator_data = validator_list[0] if validator_list else {}
 
     memo_data = json.loads(validator_data.get("memo", "{}"))
 
@@ -1277,25 +1283,11 @@ def migration_update() -> None:
 
 
 def update_fn_wallet() -> None:
-    print("* This option upgrades the fn wallet application.")
     answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
     if answer:
         print("* Updating fn application now...")
         subprocess.call(
             ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=config.user_home_dir,
-            stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
-            stderr=subprocess.DEVNULL,  # this will suppress any errors
-        )
-
-
-def update_fn_wallet_github() -> None:
-    print("* This option upgrades the fn wallet application.")
-    answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
-    if answer:
-        print("* Updating fn application now...")
-        subprocess.call(
-            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}_github.sh"],
             cwd=config.user_home_dir,
             stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
             stderr=subprocess.DEVNULL,  # this will suppress any errors
@@ -1662,10 +1654,6 @@ def parse_flags(parser, region, network):
     parser.add_argument("--fn", action="store_true", help="Will update fn wallet application.")
 
     parser.add_argument(
-        "--fn-new", action="store_true", help="Will update fn wallet to version 1.2.3 for full graphql stats."
-    )
-
-    parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
     )
 
@@ -1693,9 +1681,6 @@ def parse_flags(parser, region, network):
 
     if args.fn:
         update_fn_wallet()
-
-    if args.fn_new:
-        update_fn_wallet_github()
 
     if args.rescue:
         if container_running(config.container_name):
