@@ -984,9 +984,14 @@ def findora_container_update(update) -> None:
 
 
 def findora_gwei_convert(findora):
-    fra_amount = int(findora) / 1000000
+    # Convert to FRA units assuming a factor of 10^6
+    fra_amount = int(findora) / 10**6
     return fra_amount
 
+def eth_gwei_convert(amount_str):
+    # Convert to FRA units assuming a factor of 10^18
+    amount_fra = int(amount_str) / 10**18
+    return formatted_amount
 
 def extract_key_value_pairs(output, section_title):
     # Split the output by lines
@@ -1089,8 +1094,6 @@ def get_fn_stats(output, validator_address):
         
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address)
-    
-    print(validator_address)
 
     # Extract data from graphql_stats
     current_block = graphql_stats.get("data", {}).get("blocks", [{}])[0].get("number", "N/A")
@@ -1129,13 +1132,13 @@ def get_fn_stats(output, validator_address):
     # Extract delegation details
     if delegation_info:
         bond = delegation_info.get("bound_amount", 0)
-        fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f}"
+        fn_info["Self Delegation"] = f"{eth_gwei_convert(bond):,.2f}"
 
         # Adjust for the new format
         your_delegation_rewards = delegation_info.get("reward", 0)
         fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
 
-    return fn_info
+    return fn_info, validator_address
 
 
 def menu_topper() -> None:
@@ -1146,12 +1149,8 @@ def menu_topper() -> None:
         fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
         our_version = get_container_version()
         output = fetch_fn_show_output()
-        our_fn_stats = get_fn_stats(output, curl_stats["result"]["validator_info"]["address"])
+        our_fn_stats, validator_address = get_fn_stats(output, curl_stats["result"]["validator_info"]["address"])
         external_ip = findora_env.our_external_ip
-        try:
-            our_fn_stats.pop("memo")
-        except KeyError:
-            pass
         online_version = get_container_version(
             f'https://{findora_env.fra_env}-{environ.get("FRA_NETWORK")}.{findora_env.fra_env}.findora.org:8668/version'
         )
@@ -1187,7 +1186,7 @@ def menu_topper() -> None:
         f"* Server Hostname & IP:      {findora_env.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Public Address:            {curl_stats['result']['validator_info']['address']}")
+    print(f"* Public Address:            {validator_address}")
     if our_fn_stats["Network"] == "https://prod-mainnet.prod.findora.org":
         print("* Network:                   Mainnet")
     if our_fn_stats["Network"] == "https://prod-testnet.prod.findora.org":
