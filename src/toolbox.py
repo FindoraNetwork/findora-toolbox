@@ -1172,6 +1172,7 @@ def menu_topper() -> None:
         f"* Self Stake:                {Fore.CYAN}{our_fn_stats['Self Delegation']}{Fore.MAGENTA} FRA\n"
         f"* Balance:                   {Fore.CYAN}{our_fn_stats['Balance']}{Fore.MAGENTA} FRA\n"
         f"* Pending Rewards:           {Fore.CYAN}{our_fn_stats['Pending Rewards']}{Fore.MAGENTA} FRA\n"
+        f"* Commission Rate:           {Fore.CYAN}{our_fn_stats['Commission Rate']}{Fore.MAGENTA}\n"
         f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  "
         f"* Remote Latest Block:        {our_fn_stats['Current Block']}\n"
         f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}\n"
@@ -1181,6 +1182,7 @@ def menu_topper() -> None:
     our_fn_stats.pop("Self Delegation")
     our_fn_stats.pop("Balance")
     our_fn_stats.pop("Pending Rewards")
+    our_fn_stats.pop("Commission Rate")
     our_fn_stats.pop("Current Block")
     our_fn_stats.pop("Proposed Blocks")
     our_fn_stats.pop("Voted Blocks")
