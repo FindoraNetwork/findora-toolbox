@@ -67,30 +67,29 @@ class Config:
         self.graphql_endpoint = "https://graph.findora.org"
         self.graphql_endpoint_backup = "https://mainnet2.graph.findora.org"
         
-        def validate(self):
-            essential_vars = [
-                "toolbox_version",
-                "server_host_name",
-                "user_home_dir",
-                "dotenv_file",
-                "active_user_name",
-                "findora_root",
-                "findora_root_mainnet",
-                "findora_root_testnet",
-                "toolbox_location",
-                "staker_memo_path",
-                "our_external_ip",
-                "container_name",
-                "migrate_dir",
-                "fra_env",
-                "findora_backup",
-                "graphql_endpoint",
-                "graphql_endpoint_backup",
-            ]
-            for var in essential_vars:
-                if not getattr(self, var):
-                    raise ValueError(f"Environment variable {var} is not set!")
-
+    def validate(self):
+        essential_vars = [
+            "toolbox_version",
+            "server_host_name",
+            "user_home_dir",
+            "dotenv_file",
+            "active_user_name",
+            "findora_root",
+            "findora_root_mainnet",
+            "findora_root_testnet",
+            "toolbox_location",
+            "staker_memo_path",
+            "our_external_ip",
+            "container_name",
+            "migrate_dir",
+            "fra_env",
+            "findora_backup",
+            "graphql_endpoint",
+            "graphql_endpoint_backup",
+        ]
+        for var in essential_vars:
+            if not getattr(self, var):
+                raise ValueError(f"Environment variable {var} is not set!")
 
 # Usage
 config = Config()
