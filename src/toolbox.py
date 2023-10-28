@@ -20,33 +20,10 @@ from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
 from shared import ask_yes_no, compare_two_files, create_staker_memo, findora_env, fetch_single_validator
+from config import print_stuff
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
-
-
-class print_stuff:
-    def __init__(self, reset: int = 0):
-        self.reset = reset
-        self.print_stars = f"{Fore.MAGENTA}*" * 93
-        self.reset_stars = self.print_stars + Style.RESET_ALL
-
-    def printStars(self) -> None:
-        p = self.print_stars
-        if self.reset:
-            p = self.reset_stars
-        print(p)
-
-    def stringStars(self) -> str:
-        p = self.print_stars
-        if self.reset:
-            p = self.reset_stars
-        return p
-
-    @classmethod
-    def printWhitespace(self) -> None:
-        print("\n" * 8)
-
 
 print_whitespace = print_stuff.printWhitespace
 print_stars = print_stuff().printStars
