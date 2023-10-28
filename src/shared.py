@@ -9,45 +9,7 @@ import urllib.request
 import tarfile
 import docker
 import socket
-
-
-def get_url(timeout=5) -> str:
-    try:
-        response = requests.get("https://api.ipify.org?format=json", timeout=timeout)
-        response.raise_for_status()  # Raises a HTTPError if the response was unsuccessful
-
-        # Parse the JSON response
-        ip_data = response.json()
-        result = ip_data["ip"]
-    except requests.exceptions.RequestException:
-        try:
-            response = requests.get("https://ident.me", timeout=timeout)
-            response.raise_for_status()  # Raises a HTTPError if the response was unsuccessful
-            result = response.text
-        except requests.exceptions.RequestException as x:
-            print(type(x), x)
-            result = "0.0.0.0"
-    return result
-
-
-class findora_env:
-    toolbox_version = "1.4.1"
-    server_host_name = socket.gethostname()
-    user_home_dir = os.path.expanduser("~")
-    dotenv_file = f"{user_home_dir}/.findora.env"
-    active_user_name = os.path.split(user_home_dir)[-1]
-    findora_root = "/data/findora"
-    findora_root_mainnet = f"{findora_root}/mainnet"
-    findora_root_testnet = f"{findora_root}/testnet"
-    toolbox_location = os.path.join(user_home_dir, "findora-toolbox")
-    staker_memo_path = os.path.join(user_home_dir, "staker_memo")
-    our_external_ip = get_url()
-    container_name = "findorad"
-    migrate_dir = os.path.join(user_home_dir, "migrate")
-    fra_env = "prod"
-    findora_backup = os.path.join(user_home_dir, "findora_backup")
-    graphql_endpoint = "https://graph.findora.org"
-    graphql_endpoint_backup = "https://mainnet2.graph.findora.org"
+from config import config
 
 
 def execute_command(command):
@@ -111,10 +73,10 @@ def get_live_version(server_url):
 
 
 def create_staker_memo() -> None:
-    if os.path.exists(f"{findora_env.user_home_dir}/staker_memo") is False:
+    if os.path.exists(f"{config.user_home_dir}/staker_memo") is False:
         shutil.copy(
-            f"{findora_env.toolbox_location}/src/bin/staker_memo",
-            f"{findora_env.user_home_dir}",
+            f"{config.toolbox_location}/src/bin/staker_memo",
+            f"{config.user_home_dir}",
         )
 
 
@@ -178,7 +140,7 @@ def fetch_single_validator(validator_address):
     """
     
     # GraphQL endpoint
-    url = f"{findora_env.graphql_endpoint}/subgraphs/name/evm/staking"
+    url = f"{config.graphql_endpoint}/subgraphs/name/evm/staking"
 
     # Headers (if needed, e.g., authentication)
     headers = {"Content-Type": "application/json"}
@@ -485,17 +447,17 @@ def start_local_validator(
 
 def local_key_setup(keypath, ROOT_DIR, network):
     if not os.path.isfile(keypath):
-        if os.path.isfile(f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair"):
+        if os.path.isfile(f"{config.user_home_dir}/findora_backup/tmp.gen.keypair"):
             subprocess.run(
-                ["cp", f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
+                ["cp", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 check=True,
             )
             print(f"* tmp.gen.keypair file detected, copying to {network}_node.key")
-        elif os.path.isfile(f"{findora_env.user_home_dir}/tmp.gen.keypair"):
+        elif os.path.isfile(f"{config.user_home_dir}/tmp.gen.keypair"):
             subprocess.run(
-                ["cp", f"{findora_env.user_home_dir}/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
+                ["cp", f"{config.user_home_dir}/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 check=True,
@@ -505,7 +467,7 @@ def local_key_setup(keypath, ROOT_DIR, network):
             with open(f"{ROOT_DIR}/{network}_node.key", "w") as file:
                 subprocess.run(["fn", "genkey"], stdout=file, text=True)
             shutil.copyfile(
-                f"{ROOT_DIR}/{network}_node.key", f"{findora_env.user_home_dir}/findora_backup/tmp.gen.keypair"
+                f"{ROOT_DIR}/{network}_node.key", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair"
             )
             print(
                 f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and "

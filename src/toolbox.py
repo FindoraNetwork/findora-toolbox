@@ -25,12 +25,12 @@ from config import print_stuff
 # from shared import stop_and_remove_container
 from installer import run_full_installer
 
+# Setup print stuff from config class print_stuff
 print_whitespace = print_stuff.printWhitespace
 print_stars = print_stuff().printStars
 string_stars = print_stuff().stringStars
 print_stars_reset = print_stuff(reset=1).printStars
 string_stars_reset = print_stuff(reset=1).stringStars
-
 
 # loader intro splash screen
 def loader_intro():
