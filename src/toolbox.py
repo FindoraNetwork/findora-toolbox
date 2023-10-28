@@ -1055,9 +1055,16 @@ def fetch_fn_show_output():
     Executes the 'fn show' command, processes its output, and returns the cleaned up output.
     """
     try:
-        output = subprocess.check_output(["fn", "show"], stderr=subprocess.STDOUT)
-        cleaned_output = output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
+        # Start the process with Popen
+        process = subprocess.Popen(["fn", "show"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        # Wait for the process to complete
+        stdout, _ = process.communicate()
+
+        # Decode and clean the output
+        cleaned_output = stdout.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
         return cleaned_output
+
     except subprocess.CalledProcessError:
         # Handle any errors that might occur during command execution.
         return ""
