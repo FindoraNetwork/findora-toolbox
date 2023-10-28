@@ -131,6 +131,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     # check_and_update_fn_version()
     return network, region
 
+
 def check_and_update_fn_version():
     """
     Checks the version of 'fn' and updates it if it's not the desired version.
@@ -149,6 +150,7 @@ def check_and_update_fn_version():
         )
     else:
         print(f"* 'fn' is up to date ({current_version}).")
+
 
 def get_fn_version():
     """
@@ -1279,8 +1281,9 @@ def update_fn_wallet() -> None:
         subprocess.call(
             ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
             cwd=config.user_home_dir,
+            stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
+            stderr=subprocess.DEVNULL,  # this will suppress any errors
         )
-
 
 
 def update_fn_wallet_github() -> None:
@@ -1291,7 +1294,10 @@ def update_fn_wallet_github() -> None:
         subprocess.call(
             ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}_github.sh"],
             cwd=config.user_home_dir,
+            stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
+            stderr=subprocess.DEVNULL,  # this will suppress any errors
         )
+
 
 def menu_install_findora(network, region) -> None:
     # Run installer ya'll!
@@ -1650,10 +1656,8 @@ def parse_flags(parser, region, network):
         "--clean", action="store_true", help="Will run the clean script, removes database, reloads all data."
     )
 
-    parser.add_argument(
-        "--fn", action="store_true", help="Will update fn wallet application."
-    )
-    
+    parser.add_argument("--fn", action="store_true", help="Will update fn wallet application.")
+
     parser.add_argument(
         "--fn-new", action="store_true", help="Will update fn wallet to version 1.2.3 for full graphql stats."
     )
@@ -1686,7 +1690,7 @@ def parse_flags(parser, region, network):
 
     if args.fn:
         update_fn_wallet()
-        
+
     if args.fn_new:
         update_fn_wallet_github()
 
