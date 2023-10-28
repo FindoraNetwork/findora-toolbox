@@ -1118,7 +1118,7 @@ def get_fn_stats(output, validator_address):
         "Current Block": current_block,
         "Proposed Blocks": str(validator_data.get("proposerCount", 0)),
         "Pending Pool Rewards": "0.00",  # Not provided in graphql_stats, adjust if needed
-        "Server Status": "Online" if validator_data.get("online", 0) == 1 else "Offline",
+        "Server Status": f"{Fore.GREEN}Online{Fore.MAGENTA}" if validator_data.get("online", 0) == 1 else f"{Fore.RED}Offline{Fore.MAGENTA}",
         "Voted Blocks": str(validator_data.get("votedCount", 0)),
         "Missed Blocks": str(validator_data.get("unvotedCount", 0)),
         "Commission Rate": f"{int(validator_data.get('rate', '0')) / 10000:.2f}%",
