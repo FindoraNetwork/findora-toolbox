@@ -55,14 +55,15 @@ def get_available_space(directory):
 
 def get_live_version(server_url):
     # Make a GET request to the URL
-    print(server_url)
+    print(f"Fetching version from: {server_url}:8668/version")
+
     response = requests.get(f"{server_url}:8668/version")
-    print(response.text)
+    print(f"Response Text: {response.text}")
 
     # Check if the request was successful
     if response.status_code == 200:
         # Extract the version using a regular expression
-        match = re.search(r"v[\d\.]+(?=-release)", response.text)
+        match = re.search(r"(v\d+\.\d+\.\d+-\d+-release)", response.text)
         if match:
             LIVE_VERSION = match.group()
             print(f"Extracted Version: {LIVE_VERSION}")
@@ -144,7 +145,7 @@ def fetch_single_validator(validator_address):
         }}
     }}
     """
-    
+
     # GraphQL endpoint
     url = f"{config.graphql_endpoint}/subgraphs/name/evm/staking"
 
@@ -472,9 +473,7 @@ def local_key_setup(keypath, ROOT_DIR, network):
         else:
             with open(f"{ROOT_DIR}/{network}_node.key", "w") as file:
                 subprocess.run(["fn", "genkey"], stdout=file, text=True)
-            shutil.copyfile(
-                f"{ROOT_DIR}/{network}_node.key", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair"
-            )
+            shutil.copyfile(f"{ROOT_DIR}/{network}_node.key", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair")
             print(
                 f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and "
                 "copied to ~/findora_backup/tmp.gen.keypair"
