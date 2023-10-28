@@ -46,6 +46,8 @@ class findora_env:
     migrate_dir = os.path.join(user_home_dir, "migrate")
     fra_env = "prod"
     findora_backup = os.path.join(user_home_dir, "findora_backup")
+    graphql_endpoint = "https://graph.findora.org"
+    graphql_endpoint_backup = "https://mainnet2.graph.findora.org"
 
 
 def execute_command(command):
@@ -146,6 +148,53 @@ def download_progress_hook(count, block_size, total_size):
         f"{formatted_time_remaining}.                    ",
         end="\r",
     )
+
+
+def fetch_single_validator(validator_address):
+    # Query for a single validator
+    query = f"""
+    query MyQuery {{
+        blocks(orderBy: number, orderDirection: desc, first: 1) {{ 
+            number 
+        }}
+        validators(where: {{id: "{validator_address}"}}) {{
+            id
+            jailed
+            memo
+            online
+            proposerCount
+            publicKeyType
+            rate
+            votedCount
+            unvotedCount
+            amount
+            staker {{
+                address
+                amount
+                reward
+            }}
+        }}
+    }}
+    """
+    
+    # GraphQL endpoint
+    url = f"{findora_env.graphql_endpoint}/subgraphs/name/evm/staking"
+
+    # Headers (if needed, e.g., authentication)
+    headers = {"Content-Type": "application/json"}
+
+    # Data payload
+    data = {"query": query}
+
+    # Send the request
+    response = requests.post(url, headers=headers, json=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: {response.status_code}")
+        return None
 
 
 def install_fn_app():

@@ -19,7 +19,7 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, create_staker_memo, findora_env
+from shared import ask_yes_no, compare_two_files, create_staker_memo, findora_env, fetch_single_validator
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
@@ -1053,10 +1053,18 @@ def fetch_fn_show_output():
         return ""
 
 
-def get_fn_stats(output):
+def get_fn_stats(output, validator_address):
+    # Get validator data
+    graphql_stats = fetch_single_validator(validator_address)
+
+    # Extract data from graphql_stats
+    current_block = graphql_stats.get("data", {}).get("blocks", [{}])[0].get("number", "N/A")
+    validator_data = graphql_stats.get("data", {}).get("validators", [{}])[0]
+
+    memo_data = json.loads(validator_data.get("memo", "{}"))
+
     # Parse JSON sections
     delegation_info = extract_json_section(output, "Your Delegation")
-    staking_info = extract_json_section(output, "Your Staking")
 
     # Extract other values
     network = extract_value(output, "Server URL")
@@ -1069,51 +1077,28 @@ def get_fn_stats(output):
         "Balance": balance,
         "Pending Rewards": "0.00",
         "Self Delegation": "0.00",
-        "Current Block": "N/A",
-        "Proposed Blocks": "0",
-        "Pending Pool Rewards": "0.00",
-        "Server Rank": "N/A",
-        "Delegator Count": "N/A",
-        "Commission Rate": "0.00%",
-        "memo": {"name": "N/A", "desc": "N/A", "website": "N/A", "logo": "N/A"},
+        "Current Block": current_block,
+        "Proposed Blocks": str(validator_data.get("proposerCount", 0)),
+        "Pending Pool Rewards": "0.00",  # Not provided in graphql_stats, adjust if needed
+        "Server Rank": "Online" if validator_data.get("online", 0) == 1 else "Offline",
+        "Delegator Count": str(validator_data.get("votedCount", 0) - validator_data.get("unvotedCount", 0)),
+        "Commission Rate": f"{int(validator_data.get('rate', '0')) / 1000:.2f}%",  # Assuming the rate is in thousandths
+        "memo": {
+            "name": memo_data.get("name", "N/A"),
+            "desc": memo_data.get("desc", "N/A"),
+            "website": memo_data.get("website", "N/A"),
+            "logo": memo_data.get("logo", "N/A"),
+        },
     }
 
     # Extract delegation details
     if delegation_info:
-        bond = delegation_info.get("bond", 0)
+        bond = delegation_info.get("bound_amount", 0)
         fn_info["Self Delegation"] = f"{findora_gwei_convert(bond):,.2f}"
 
-        current_block = delegation_info.get("current_height", 0)
-        fn_info["Current Block"] = str(current_block)
-
-        your_delegation_rewards = delegation_info.get("rewards", 0)
+        # Adjust for the new format
+        your_delegation_rewards = delegation_info.get("reward", 0)
         fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
-
-    # Extract staking details (if available)
-    if staking_info:
-        proposed_blocks = staking_info.get("block_proposed_cnt", 0)
-        fn_info["Proposed Blocks"] = str(proposed_blocks)
-
-        unclaimed_rewards = staking_info.get("fra_rewards", 0)
-        fn_info["Pending Pool Rewards"] = f"{findora_gwei_convert(unclaimed_rewards):,.2f}"
-
-        server_rank = staking_info.get("voting_power_rank")
-        fn_info["Server Rank"] = str(server_rank) if server_rank is not None else "N/A"
-
-        delegator_count = staking_info.get("delegator_cnt")
-        fn_info["Delegator Count"] = str(delegator_count) if delegator_count is not None else "N/A"
-
-        commission_rate = staking_info.get("commission_rate", [0, 1])
-        commission_percentage = (commission_rate[0] / commission_rate[1]) * 100
-        fn_info["Commission Rate"] = f"{commission_percentage:.2f}%"
-
-        memo = staking_info.get("memo", {})
-        fn_info["memo"] = {
-            "name": memo.get("name", "N/A"),
-            "desc": memo.get("desc", "N/A"),
-            "website": memo.get("website", "N/A"),
-            "logo": memo.get("logo", "N/A"),
-        }
 
     return fn_info
 
@@ -1126,7 +1111,7 @@ def menu_topper() -> None:
         fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
         our_version = get_container_version()
         output = fetch_fn_show_output()
-        our_fn_stats = get_fn_stats(output)
+        our_fn_stats = get_fn_stats(output, curl_stats["result"]["validator_info"]["address"])
         external_ip = findora_env.our_external_ip
         try:
             our_fn_stats.pop("memo")
@@ -1146,9 +1131,11 @@ def menu_topper() -> None:
     # Check for temp build 10/12/2023
     if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in our_version:
         print_stars()
-        print(f"* Your container was updated to a test build, contact Findora support for assistance rolling back to the previous version.")
+        print(
+            f"* Your container was updated to a test build, contact Findora support for assistance rolling back to the previous version."
+        )
         print_stars()
-        # Quit out if local is on temp build. 
+        # Quit out if local is on temp build.
         raise SystemExit(0)
     # Check online version for temp build and set to old release if found 10/12/2023
     if "main-a6361f0e18941b5de2db4f8d28d72314570bfd3a" in online_version:
