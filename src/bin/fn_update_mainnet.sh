@@ -27,8 +27,6 @@ echo " completed"
 # Configuring
 echo -n "Configuring ..."
 $FN setup -S ${SERV_URL} >/dev/null 2>&1 || { echo " failed"; exit 1; }
-echo -n "Configuring ..."
 $FN setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json >/dev/null 2>&1 || { echo " failed"; exit 1; }
-echo -n "Configuring ..."
 $FN setup -O ${ROOT_DIR}/node.mnemonic >/dev/null 2>&1 || { echo " failed"; exit 1; }
 echo " completed"
