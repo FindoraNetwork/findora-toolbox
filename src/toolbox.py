@@ -983,15 +983,15 @@ def findora_container_update(update) -> None:
         return
 
 
-def findora_gwei_convert(findora):
+def findora_gwei_convert(amount_str):
     # Convert to FRA units assuming a factor of 10^6
-    fra_amount = int(findora) / 10**6
-    return fra_amount
+    amount_fra = int(amount_str) / 10**6
+    return amount_fra
 
 def eth_gwei_convert(amount_str):
     # Convert to FRA units assuming a factor of 10^18
     amount_fra = int(amount_str) / 10**18
-    return formatted_amount
+    return amount_fra
 
 def extract_key_value_pairs(output, section_title):
     # Split the output by lines
