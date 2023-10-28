@@ -129,7 +129,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     region = set_na_or_eu()
 
     # Check fn version and update if needed
-    # check_and_update_fn_version()
+    check_and_update_fn_version()
     return network, region
 
 
@@ -145,10 +145,8 @@ def check_and_update_fn_version():
         return
 
     if current_version != desired_version:
-        subprocess.call(
-            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}_github.sh"],
-            cwd=config.user_home_dir,
-        )
+        print("* There is an upgrade available for 'fn'.")
+        update_fn_wallet()
     else:
         print(f"* 'fn' is up to date ({current_version}).")
 
@@ -1285,25 +1283,11 @@ def migration_update() -> None:
 
 
 def update_fn_wallet() -> None:
-    print("* This option upgrades the fn wallet application.")
     answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
     if answer:
         print("* Updating fn application now...")
         subprocess.call(
             ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=config.user_home_dir,
-            stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
-            stderr=subprocess.DEVNULL,  # this will suppress any errors
-        )
-
-
-def update_fn_wallet_github() -> None:
-    print("* This option upgrades the fn wallet application.")
-    answer = ask_yes_no("* Do you want to upgrade fn now? (Y/N) ")
-    if answer:
-        print("* Updating fn application now...")
-        subprocess.call(
-            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}_github.sh"],
             cwd=config.user_home_dir,
             stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
             stderr=subprocess.DEVNULL,  # this will suppress any errors
@@ -1670,10 +1654,6 @@ def parse_flags(parser, region, network):
     parser.add_argument("--fn", action="store_true", help="Will update fn wallet application.")
 
     parser.add_argument(
-        "--fn-new", action="store_true", help="Will update fn wallet to version 1.2.3 for full graphql stats."
-    )
-
-    parser.add_argument(
         "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
     )
 
@@ -1701,9 +1681,6 @@ def parse_flags(parser, region, network):
 
     if args.fn:
         update_fn_wallet()
-
-    if args.fn_new:
-        update_fn_wallet_github()
 
     if args.rescue:
         if container_running(config.container_name):
