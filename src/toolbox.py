@@ -1121,7 +1121,7 @@ def get_fn_stats(output, validator_address):
         "Server Status": "Online" if validator_data.get("online", 0) == 1 else "Offline",
         "Voted Blocks": str(validator_data.get("votedCount", 0)),
         "Missed Blocks": str(validator_data.get("unvotedCount", 0)),
-        "Commission Rate": f"{int(validator_data.get('rate', '0')) / 100:.2f}%",
+        "Commission Rate": f"{int(validator_data.get('rate', '0')) / 10000:.2f}%",
         "memo": {
             "name": memo_data.get("name", "N/A"),
             "desc": memo_data.get("desc", "N/A"),
