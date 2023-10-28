@@ -32,6 +32,7 @@ string_stars = print_stuff().stringStars
 print_stars_reset = print_stuff(reset=1).printStars
 string_stars_reset = print_stuff(reset=1).stringStars
 
+
 # loader intro splash screen
 def loader_intro():
     print_stars()
@@ -267,9 +268,7 @@ def docker_check():
         exit(2)
     except docker.errors.DockerException:
         print("* There's a problem with your Docker. Are you in the `docker` group?")
-        print(
-            f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}"
-        )
+        print(f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}")
         print(
             "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
         )
@@ -965,37 +964,33 @@ def findora_gwei_convert(amount_str):
     amount_fra = int(amount_str) / 10**6
     return amount_fra
 
+
 def eth_gwei_convert(amount_str):
     # Convert to FRA units assuming a factor of 10^18
     amount_fra = int(amount_str) / 10**18
     return amount_fra
 
+
 def extract_key_value_pairs(output, section_title):
-    # Split the output by lines
-    lines = output.split('\n')
-    
-    # Find the section
-    section_start = None
-    for idx, line in enumerate(lines):
-        if line.strip() == section_title + ":":
-            section_start = idx
-            break
+    """
+    Extracts key-value pairs from the specified section of the output.
+    """
+    in_section = False
+    results = {}
 
-    if section_start is None:
-        return None
-
-    section_data = {}
-    for line in lines[section_start+1:]:
-        if line.strip() == "":
-            # Stop at the first empty line after the section
-            break
-        
-        # Split each line into key and value based on the colon
-        key, value = [item.strip() for item in line.split(':', 1)]
-        section_data[key] = value
-
-    return section_data
-
+    for line in output.splitlines():
+        line = line.strip()
+        if section_title in line:
+            in_section = True
+            continue
+        if in_section:
+            if ":" in line:
+                key, value = [item.strip() for item in line.split(":", 1)]
+                results[key] = value
+            else:
+                # End the section if a line without a colon is encountered
+                break
+    return results
 
 
 def extract_json_section(output, section_name):
@@ -1073,7 +1068,7 @@ def get_fn_stats(output):
     validator_address = address.lower()
     if not validator_address.startswith("0x"):
         validator_address = "0x" + validator_address
-        
+
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address)
 
@@ -1100,7 +1095,9 @@ def get_fn_stats(output):
         "Current Block": current_block,
         "Proposed Blocks": str(validator_data.get("proposerCount", 0)),
         "Pending Pool Rewards": "0.00",  # Not provided in graphql_stats, adjust if needed
-        "Server Status": f"{Fore.GREEN}Online{Fore.MAGENTA}" if validator_data.get("online", 0) == 1 else f"{Fore.RED}Offline{Fore.MAGENTA}",
+        "Server Status": f"{Fore.GREEN}Online{Fore.MAGENTA}"
+        if validator_data.get("online", 0) == 1
+        else f"{Fore.RED}Offline{Fore.MAGENTA}",
         "Voted Blocks": str(validator_data.get("votedCount", 0)),
         "Missed Blocks": str(validator_data.get("unvotedCount", 0)),
         "Commission Rate": f"{int(validator_data.get('rate', '0')) / 10000:.2f}%",
