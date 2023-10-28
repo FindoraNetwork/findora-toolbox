@@ -1056,6 +1056,8 @@ def fetch_fn_show_output():
 def get_fn_stats(output, validator_address):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address)
+    
+    print(validator_address)
 
     # Extract data from graphql_stats
     current_block = graphql_stats.get("data", {}).get("blocks", [{}])[0].get("number", "N/A")
