@@ -57,7 +57,7 @@ def get_live_version(server_url):
     # Make a GET request to the URL
     print(server_url)
     response = requests.get(f"{server_url}:8668/version")
-    print(response)
+    print(response.text)
 
     # Check if the request was successful
     if response.status_code == 200:
