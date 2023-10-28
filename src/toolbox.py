@@ -128,7 +128,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     region = set_na_or_eu()
 
     # Check fn version and update if needed
-    check_and_update_fn_version()
+    # check_and_update_fn_version()
     return network, region
 
 def check_and_update_fn_version():

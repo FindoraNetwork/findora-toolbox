@@ -9,7 +9,7 @@ FN=${ROOT_DIR}/bin/fn
 ##################
 # Install fn App #
 ##################
-wget https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn
+wget -O fn https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn
 chmod +x fn
 sudo mv fn /usr/local/bin/
 cp /usr/local/bin/fn $FN
