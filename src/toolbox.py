@@ -126,7 +126,41 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     # Check if we have a network/region set, if not, ask for it.
     network = set_main_or_test()
     region = set_na_or_eu()
+
+    # Check fn version and update if needed
+    check_and_update_fn_version()
     return network, region
+
+def check_and_update_fn_version():
+    """
+    Checks the version of 'fn' and updates it if it's not the desired version.
+    """
+    desired_version = "b8e88ae3a5aa679372822265d836151204cccbba"  # Adjust this as needed
+
+    current_version = get_fn_version()
+    if current_version is None:
+        print("Error: Unable to determine 'fn' version.")
+        return
+
+    if current_version != desired_version:
+        subprocess.call(
+            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}_github.sh"],
+            cwd=config.user_home_dir,
+        )
+    else:
+        print(f"* 'fn' is up to date ({current_version}).")
+
+def get_fn_version():
+    """
+    Get the version of 'fn'.
+    Returns the version string if successful, None otherwise.
+    """
+    try:
+        output = subprocess.check_output(["fn", "--version"], stderr=subprocess.STDOUT)
+        cleaned_output = output.decode().splitlines()[0]  # Get the first line of the output
+        return cleaned_output
+    except subprocess.CalledProcessError:
+        return None
 
 
 def run_ubuntu_updater() -> None:
