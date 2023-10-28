@@ -19,8 +19,8 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, create_staker_memo, findora_env, fetch_single_validator
-from config import print_stuff
+from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator
+from config import print_stuff, config
 
 # from shared import stop_and_remove_container
 from installer import run_full_installer
@@ -63,7 +63,7 @@ def set_var(env_file, key_name, update_name):
     if environ.get(key_name):
         dotenv.unset_key(env_file, key_name)
     dotenv.set_key(env_file, key_name, update_name)
-    load_var_file(findora_env.dotenv_file)
+    load_var_file(config.dotenv_file)
     return
 
 
@@ -92,7 +92,7 @@ def pause_for_cause():
     input()
 
 
-def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_name):
+def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     # Check for missing commands we use in the toolbox
     for tool in ["wget", "curl", "pv", "docker"]:
         if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
@@ -120,7 +120,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=findora_env.active_user_n
     if not os.path.exists(env_file):
         os.system(f"touch {home_dir}/.findora.env")
     else:
-        load_var_file(findora_env.dotenv_file)
+        load_var_file(config.dotenv_file)
 
     # Check if we have a network/region set, if not, ask for it.
     network = set_main_or_test()
@@ -268,7 +268,7 @@ def docker_check():
     except docker.errors.DockerException:
         print("* There's a problem with your Docker. Are you in the `docker` group?")
         print(
-            f"* Add your current user to the docker group with: sudo usermod -aG docker {findora_env.active_user_name}"
+            f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}"
         )
         print(
             "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
@@ -425,7 +425,7 @@ def ask_question_menu(var_name, question_message, question_title, options_list) 
         terminal_menu = TerminalMenu(menu_options, title=question_title)
         choice_index = terminal_menu.show()
         result = options_list[choice_index]
-        set_var(findora_env.dotenv_file, var_name, result)
+        set_var(config.dotenv_file, var_name, result)
 
     return result
 
@@ -625,9 +625,9 @@ def set_privacy(receiver_address, privacy) -> None:
         + "bypass all these questions next time? (Y/N) "
     )
     if question:
-        set_var(findora_env.dotenv_file, "SEND_EXPRESS", "True")
-        set_var(findora_env.dotenv_file, "RECEIVER_WALLET", receiver_address)
-        set_var(findora_env.dotenv_file, "PRIVACY", f"{privacy}")
+        set_var(config.dotenv_file, "SEND_EXPRESS", "True")
+        set_var(config.dotenv_file, "RECEIVER_WALLET", receiver_address)
+        set_var(config.dotenv_file, "PRIVACY", f"{privacy}")
     print(
         f"* Currently saved options:\n* Address: {Fore.YELLOW}{receiver_address}{Fore.MAGENTA}"
         + f'\n* Privacy {privacy}\n* Express send: {environ.get("SEND_EXPRESS")}'
@@ -763,7 +763,7 @@ class MemoUpdater(cmd2.Cmd):
                         "* Do you want to update ~/staker_memo with these changes and send on chain update now? (Y/N) "
                     )
                     if question:
-                        with open(findora_env.staker_memo_path, "w") as file:
+                        with open(config.staker_memo_path, "w") as file:
                             file.write(memo_items_json)
                         subprocess.call(["fn", "staker-update", "-M", memo_items_json])
                         print(Fore.MAGENTA)
@@ -880,7 +880,7 @@ def check_address_input(address) -> None:
         return
     address2 = input("*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
     if address == address2:
-        set_var(findora_env.dotenv_file, "RECEIVER_WALLET", address)
+        set_var(config.dotenv_file, "RECEIVER_WALLET", address)
         input(f"* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}")
         return
     else:
@@ -928,14 +928,14 @@ def server_disk_check() -> None:
     for part in disk_partitions():
         print(part)
     print_stars()
-    total, used, free = shutil.disk_usage(findora_env.findora_root)
+    total, used, free = shutil.disk_usage(config.findora_root)
     total = str(converted_unit(total))
     used = str(converted_unit(used))
     print(
         "Disk: "
-        + str(findora_env.findora_root)
+        + str(config.findora_root)
         + "\n"
-        + free_space_check(findora_env.findora_root)
+        + free_space_check(config.findora_root)
         + " Free\n"
         + used
         + " Used\n"
@@ -1128,9 +1128,9 @@ def menu_topper() -> None:
         our_version = get_container_version()
         output = fetch_fn_show_output()
         our_fn_stats, validator_address = get_fn_stats(output, curl_stats["result"]["validator_info"]["address"])
-        external_ip = findora_env.our_external_ip
+        external_ip = config.our_external_ip
         online_version = get_container_version(
-            f'https://{findora_env.fra_env}-{environ.get("FRA_NETWORK")}.{findora_env.fra_env}.findora.org:8668/version'
+            f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version'
         )
     except TimeoutError as e:
         our_version = "No Response"
@@ -1157,11 +1157,11 @@ def menu_topper() -> None:
     print_stars()
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}Findora Toolbox Management Menu"
-        + f"                 v{findora_env.toolbox_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://findora.org *"
+        + f"                 v{config.toolbox_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://findora.org *"
     )
     print_stars()
     print(
-        f"* Server Hostname & IP:      {findora_env.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
+        f"* Server Hostname & IP:      {config.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Public Address:            {validator_address}")
@@ -1192,7 +1192,7 @@ def menu_topper() -> None:
     print(f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}")
     print(f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}")
     print(
-        f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(findora_env.findora_root): >6}"
+        f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(config.findora_root): >6}"
         f"{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Current Container Build:   {our_version.split()[1]}")
@@ -1240,8 +1240,8 @@ def rescue_menu() -> None:
 
 def migration_update() -> None:
     subprocess.call(
-        ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
-        cwd=findora_env.user_home_dir,
+        ["bash", "-x", f"{config.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
+        cwd=config.user_home_dir,
     )
 
 
@@ -1251,8 +1251,8 @@ def update_fn_wallet() -> None:
     if answer:
         print("* We will show the output of the upgrade now.")
         subprocess.call(
-            ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=findora_env.user_home_dir,
+            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
+            cwd=config.user_home_dir,
         )
 
 
@@ -1298,8 +1298,8 @@ def run_ubuntu_updates() -> None:
 def migration_instructions():
     # path doesn't exist, explain migration process.
     print(
-        f"* We didn't locate a folder at {findora_env.migrate_dir}\n*\n* Exit the toolbox, then:"
-        + f"\n* 1. Make a folder named {findora_env.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder"
+        f"* We didn't locate a folder at {config.migrate_dir}\n*\n* Exit the toolbox, then:"
+        + f"\n* 1. Make a folder named {config.migrate_dir}\n* 2. Add your tmp.gen.keypair file into the folder"
         + "\n* 3. Add your config folder containing your priv_validator_key.json file into ~/migrate"
         + "\n* 4. If this server is catching_up=False, you can shut off the old server and relaunch the menu here to migrate."
         + "\n*\n* The goal is to avoid double signing and a 5% slashing fee!!!\n*\n* Load your files and run this "
@@ -1308,17 +1308,17 @@ def migration_instructions():
 
 
 def migrate_to_server() -> None:
-    if os.path.exists(f"{findora_env.migrate_dir}"):
+    if os.path.exists(f"{config.migrate_dir}"):
         # check for tmp.gen.keypair and priv_validator_key.json in ~/migrate
         print("* You have a migrate folder, checking for files.")
         if (
-            os.path.exists(f"{findora_env.migrate_dir}/tmp.gen.keypair")
-            and os.path.exists(f"{findora_env.migrate_dir}/config/priv_validator_key.json")
-            or os.path.exists(f"{findora_env.migrate_dir}/priv_validator_key.json")
+            os.path.exists(f"{config.migrate_dir}/tmp.gen.keypair")
+            and os.path.exists(f"{config.migrate_dir}/config/priv_validator_key.json")
+            or os.path.exists(f"{config.migrate_dir}/priv_validator_key.json")
         ):
             print(
-                f"* {findora_env.migrate_dir}/tmp.gen.keypair found!\n"
-                + f"* {findora_env.migrate_dir}/config/priv_validator_key.json found!"
+                f"* {config.migrate_dir}/tmp.gen.keypair found!\n"
+                + f"* {config.migrate_dir}/config/priv_validator_key.json found!"
                 + "\n* All required files in place, ready for upgrade!"
             )
             # Ask to start migration, warn about double sign again, again
@@ -1335,27 +1335,27 @@ def migrate_to_server() -> None:
                 subprocess.call(["docker", "container", "stop", "findorad"])
                 # move files
                 if os.path.exists(
-                    f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
+                    f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
                 ):
                     os.remove(
-                        f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
+                        f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
                     )
                 shutil.move(
-                    f"{findora_env.migrate_dir}/tmp.gen.keypair",
-                    f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                    f"{config.migrate_dir}/tmp.gen.keypair",
+                    f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
                 )
                 os.remove(
-                    f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json'
+                    f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json'
                 )
-                if os.path.exists(f"{findora_env.migrate_dir}/priv_validator_key.json"):
+                if os.path.exists(f"{config.migrate_dir}/priv_validator_key.json"):
                     shutil.move(
-                        f"{findora_env.migrate_dir}/priv_validator_key.json",
-                        f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+                        f"{config.migrate_dir}/priv_validator_key.json",
+                        f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
                     )
-                elif os.path.exists(f"{findora_env.migrate_dir}/config/priv_validator_key.json"):
+                elif os.path.exists(f"{config.migrate_dir}/config/priv_validator_key.json"):
                     shutil.move(
-                        f"{findora_env.migrate_dir}/config/priv_validator_key.json",
-                        f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+                        f"{config.migrate_dir}/config/priv_validator_key.json",
+                        f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
                     )
                 else:
                     print(
@@ -1363,28 +1363,28 @@ def migrate_to_server() -> None:
                         + "\n* You'll have to get your key into the config folder and run a safety clean."
                     )
                 node_mnemonic = subprocess.getoutput(
-                    f"cat {findora_env.findora_root}/{environ.get('FRA_NETWORK')}/{environ.get('FRA_NETWORK')}_node.key "
+                    f"cat {config.findora_root}/{environ.get('FRA_NETWORK')}/{environ.get('FRA_NETWORK')}_node.key "
                     + "| grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'"
                 )
-                os.remove(f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
+                os.remove(f"{config.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
                 subprocess.call(
                     [
                         "touch",
-                        f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
+                        f"{config.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
                     ]
                 )
                 with open(
-                    f"{findora_env.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
+                    f"{config.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic",
                     "w",
                 ) as file:
                     file.write(node_mnemonic)
                 print("* File copying completed, restarting services.")
                 # Wipe backup folder and re-create
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                backup_dir = f"{findora_env.user_home_dir}/findora_backup_{format(timestamp)}"
-                shutil.copytree(findora_env.findora_backup, backup_dir)
-                shutil.rmtree(findora_env.findora_backup)
-                shutil.rmtree(findora_env.migrate_dir)
+                backup_dir = f"{config.user_home_dir}/findora_backup_{format(timestamp)}"
+                shutil.copytree(config.findora_backup, backup_dir)
+                shutil.rmtree(config.findora_backup)
+                shutil.rmtree(config.migrate_dir)
                 backup_folder_check()
                 # Restart container
                 migration_update()
@@ -1396,8 +1396,8 @@ def migrate_to_server() -> None:
         else:
             print(
                 "* We're sorry, your folder is there but you are missing file(s), please try again after fixing the contents."
-                + f"\n* Add the files from your old server into:\n* {findora_env.migrate_dir}/tmp.gen.keypair"
-                + f"\n* {findora_env.migrate_dir}/config/priv_validator_key.json\n*"
+                + f"\n* Add the files from your old server into:\n* {config.migrate_dir}/tmp.gen.keypair"
+                + f"\n* {config.migrate_dir}/config/priv_validator_key.json\n*"
             )
 
     else:
@@ -1407,27 +1407,27 @@ def migrate_to_server() -> None:
 
 def migration_check() -> None:
     file_paths = {}
-    if os.path.exists(f"{findora_env.migrate_dir}/tmp.gen.keypair"):
-        file_paths["tmp.gen.keypair"] = f"{findora_env.migrate_dir}/tmp.gen.keypair"
+    if os.path.exists(f"{config.migrate_dir}/tmp.gen.keypair"):
+        file_paths["tmp.gen.keypair"] = f"{config.migrate_dir}/tmp.gen.keypair"
     else:
         # No tmp.gen.keypair, we're out.
         return False
-    if os.path.exists(f"{findora_env.migrate_dir}/priv_validator_key.json"):
-        file_paths["priv_validator_key.json"] = f"{findora_env.migrate_dir}/priv_validator_key.json"
-    elif os.path.exists(f"{findora_env.migrate_dir}/config/priv_validator_key.json"):
-        file_paths["priv_validator_key.json"] = f"{findora_env.migrate_dir}/config/priv_validator_key.json"
+    if os.path.exists(f"{config.migrate_dir}/priv_validator_key.json"):
+        file_paths["priv_validator_key.json"] = f"{config.migrate_dir}/priv_validator_key.json"
+    elif os.path.exists(f"{config.migrate_dir}/config/priv_validator_key.json"):
+        file_paths["priv_validator_key.json"] = f"{config.migrate_dir}/config/priv_validator_key.json"
     else:
         # No matches on priv_validator_key.json, we're out.
         return False
     if compare_two_files(
         file_paths["tmp.gen.keypair"],
-        f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+        f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
     ):
         # If these are the same, already migrated, don't display
         return False
     if compare_two_files(
         file_paths["priv_validator_key.json"],
-        f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+        f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
     ):
         # If these are the same, already migrated, don't display
         return False
@@ -1440,79 +1440,79 @@ def print_migrate():
 
 def backup_folder_check() -> None:
     # check for backup folder
-    if os.path.exists(findora_env.findora_backup) is False:
+    if os.path.exists(config.findora_backup) is False:
         # No dir = mkdir and backup all files
-        os.mkdir(findora_env.findora_backup)
+        os.mkdir(config.findora_backup)
         # add all files
         shutil.copy(
-            f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-            f"{findora_env.findora_backup}/tmp.gen.keypair",
+            f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+            f"{config.findora_backup}/tmp.gen.keypair",
         )
         shutil.copytree(
-            f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-            f"{findora_env.findora_backup}/config",
+            f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
+            f"{config.findora_backup}/config",
         )
         return
     else:
         # check for tmp.gen.keypair, backup if missing
-        if os.path.exists(f"{findora_env.findora_backup}/tmp.gen.keypair"):
+        if os.path.exists(f"{config.findora_backup}/tmp.gen.keypair"):
             # found tmp.gen.keypair in backups, compare to live
             if (
                 compare_two_files(
-                    f"{findora_env.findora_backup}/tmp.gen.keypair",
-                    f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                    f"{config.findora_backup}/tmp.gen.keypair",
+                    f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
                 )
                 is False
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your file {findora_env.findora_backup}/tmp.gen.keypair does not match "
+                    f"* Your file {config.findora_backup}/tmp.gen.keypair does not match "
                     + f'your live {environ.get("FRA_NETWORK")}_node.key.'
-                    + f"\n* Do you want to copy the live key into the {findora_env.findora_backup} folder now? (Y/N) "
+                    + f"\n* Do you want to copy the live key into the {config.findora_backup} folder now? (Y/N) "
                 )
                 if question:
                     # Copy key back
-                    os.remove(f"{findora_env.findora_backup}/tmp.gen.keypair")
+                    os.remove(f"{config.findora_backup}/tmp.gen.keypair")
                     shutil.copy(
-                        f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-                        f"{findora_env.findora_backup}/tmp.gen.keypair",
+                        f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                        f"{config.findora_backup}/tmp.gen.keypair",
                     )
         else:
             # Key file didn't exist, back it up
             shutil.copy(
-                f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-                f"{findora_env.findora_backup}/tmp.gen.keypair",
+                f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
+                f"{config.findora_backup}/tmp.gen.keypair",
             )
-        if os.path.exists(f"{findora_env.findora_backup}/config") and os.path.exists(
-            f"{findora_env.findora_backup}/config/priv_validator_key.json"
+        if os.path.exists(f"{config.findora_backup}/config") and os.path.exists(
+            f"{config.findora_backup}/config/priv_validator_key.json"
         ):
             # found config folder & priv_validator_key.json
             if (
                 compare_two_files(
-                    f"{findora_env.findora_backup}/config/priv_validator_key.json",
-                    f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
+                    f"{config.findora_backup}/config/priv_validator_key.json",
+                    f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
                 )
                 is False
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your file {findora_env.findora_backup}/config/priv_validator_key.json does not match your "
-                    + f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
-                    + f"\n* Do you want to copy your config folder into {findora_env.findora_backup}/config ? (Y/N) "
+                    f"* Your file {config.findora_backup}/config/priv_validator_key.json does not match your "
+                    + f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
+                    + f"\n* Do you want to copy your config folder into {config.findora_backup}/config ? (Y/N) "
                 )
                 if question:
                     # Copy folder back
-                    shutil.rmtree(f"{findora_env.findora_backup}/config")
+                    shutil.rmtree(f"{config.findora_backup}/config")
                     shutil.copytree(
-                        f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-                        f"{findora_env.findora_backup}/config",
+                        f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
+                        f"{config.findora_backup}/config",
                     )
         else:
             # Key file didn't exist, back it up
-            shutil.rmtree(f"{findora_env.findora_backup}/config")
+            shutil.rmtree(f"{config.findora_backup}/config")
             shutil.copytree(
-                f'{findora_env.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-                f"{findora_env.findora_backup}/config",
+                f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
+                f"{config.findora_backup}/config",
             )
 
 
@@ -1560,7 +1560,7 @@ def run_findora_menu() -> None:
     }
     # Keep this loop going so when an item ends the menu reloads
     while True:
-        load_var_file(findora_env.dotenv_file)
+        load_var_file(config.dotenv_file)
         menu_findora()
         # Pick an option, any option
         value = input("* Enter your option: ")
@@ -1647,7 +1647,7 @@ def parse_flags(parser, region, network):
         update_fn_wallet()
 
     if args.rescue:
-        if container_running(findora_env.container_name):
+        if container_running(config.container_name):
             print_stars()
             question = ask_yes_no("* Your container is running. Are you sure you want to load the rescue menu? (Y/N) ")
             print_stars()
@@ -1659,7 +1659,7 @@ def parse_flags(parser, region, network):
             rescue_menu()
 
     if args.update:
-        if container_running(findora_env.container_name):
+        if container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
                 "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
@@ -1673,7 +1673,7 @@ def parse_flags(parser, region, network):
             run_update_restart(os.environ.get("FRA_NETWORK"))
 
     if args.clean:
-        if container_running(findora_env.container_name):
+        if container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
                 "* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) "
@@ -1704,14 +1704,14 @@ def parse_flags(parser, region, network):
         if answer:
             # wipe data here
             subprocess.call(
-                ["bash", "-x", f"{findora_env.toolbox_location}/src/bin/wipe_findora_{environ.get('FRA_NETWORK')}.sh"],
-                cwd=findora_env.user_home_dir,
+                ["bash", "-x", f"{config.toolbox_location}/src/bin/wipe_findora_{environ.get('FRA_NETWORK')}.sh"],
+                cwd=config.user_home_dir,
             )
         finish_node()
 
 
 def run_troubleshooting_process():
-    print(f"* Docker is running and working but the container '{findora_env.container_name}' is not.")
+    print(f"* Docker is running and working but the container '{config.container_name}' is not.")
     while True:
         answer = ask_yes_no(
             "* Would you like to attempt to run the update_version script to try to get your container back online? (Y/N)"
@@ -1763,7 +1763,7 @@ def run_register_node() -> None:
     else:
         answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
         if answer:
-            updater = MemoUpdaterLocalFiles(findora_env.staker_memo_path)
+            updater = MemoUpdaterLocalFiles(config.staker_memo_path)
             # allow edit one by one, then have commit changes at the end?
             staker_memo = updater.do_update(None)
             # Staker Memo is saved, now we can register
