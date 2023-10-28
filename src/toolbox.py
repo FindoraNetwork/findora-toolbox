@@ -1169,12 +1169,16 @@ def menu_topper() -> None:
         )
     print(
         f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA\n"
-        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  \n"
-        f"* Remote Latest Block:        {our_fn_stats['Current Block']}"
+        f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  "
+        f"* Remote Latest Block:        {our_fn_stats['Current Block']}\n"
+        f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}\n"
+        f"* Voted Blocks:              {our_fn_stats['Voted Blocks']}\n"
+        f"* Missed Blocks:             {our_fn_stats['Missed Blocks']}\n"
     )
     our_fn_stats.pop("Current Block")
-    print(f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}")
     our_fn_stats.pop("Proposed Blocks")
+    our_fn_stats.pop("Voted Blocks")
+    our_fn_stats.pop("Missed Blocks")
     for i in our_fn_stats:
         spaces = "                         "
         print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
