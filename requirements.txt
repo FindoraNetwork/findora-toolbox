@@ -10,6 +10,7 @@ pyperclip
 pyreadline3
 python-dotenv
 requests
+retrying
 simple-term-menu
 urllib3
 wcwidth

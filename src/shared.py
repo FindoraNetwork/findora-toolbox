@@ -9,6 +9,7 @@ import urllib.request
 import tarfile
 import docker
 import socket
+import retrying
 from config import config
 
 
@@ -116,6 +117,12 @@ def download_progress_hook(count, block_size, total_size):
     )
 
 
+# Define a decorator to retry the function on specific exceptions
+def retry_on_exception(exc):
+    return isinstance(exc, (requests.exceptions.ConnectionError, requests.exceptions.Timeout))
+
+
+@retrying.retry(retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000)
 def fetch_block_graphql():
     # Search for the latest block
     query = """
@@ -146,6 +153,7 @@ def fetch_block_graphql():
         return None
 
 
+@retrying.retry(retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000)
 def fetch_single_validator(validator_address):
     # Query for a single validator
     query = f"""
