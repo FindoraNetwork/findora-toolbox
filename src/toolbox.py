@@ -140,8 +140,9 @@ def check_and_update_fn_version():
     desired_version = "b8e88ae3a5aa679372822265d836151204cccbba"  # Adjust this as needed
 
     current_version = get_fn_version()
+    
     if current_version is None:
-        print("Error: Unable to determine 'fn' version.")
+        print("* Error: Unable to determine 'fn' version.")
         return
 
     if current_version != desired_version:
@@ -163,12 +164,6 @@ def get_fn_version():
     except subprocess.CalledProcessError:
         return None
     except FileNotFoundError:
-        subprocess.call(
-            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
-            cwd=config.user_home_dir,
-            stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
-            stderr=subprocess.DEVNULL,  # this will suppress any errors
-        )
         return None
 
 
