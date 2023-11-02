@@ -140,8 +140,9 @@ def check_and_update_fn_version():
     desired_version = "b8e88ae3a5aa679372822265d836151204cccbba"  # Adjust this as needed
 
     current_version = get_fn_version()
+    
     if current_version is None:
-        print("Error: Unable to determine 'fn' version.")
+        print("* Error: Unable to determine 'fn' version.")
         return
 
     if current_version != desired_version:
@@ -161,6 +162,8 @@ def get_fn_version():
         cleaned_output = output.decode().splitlines()[0]  # Get the first line of the output
         return cleaned_output
     except subprocess.CalledProcessError:
+        return None
+    except FileNotFoundError:
         return None
 
 
