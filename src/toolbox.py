@@ -162,6 +162,14 @@ def get_fn_version():
         return cleaned_output
     except subprocess.CalledProcessError:
         return None
+    except FileNotFoundError:
+        subprocess.call(
+            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
+            cwd=config.user_home_dir,
+            stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
+            stderr=subprocess.DEVNULL,  # this will suppress any errors
+        )
+        return None
 
 
 def run_ubuntu_updater() -> None:

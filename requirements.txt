@@ -9,6 +9,7 @@ psutil
 pyperclip
 pyreadline3
 python-dotenv
+pv
 requests
 retrying
 simple-term-menu
