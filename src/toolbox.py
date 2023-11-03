@@ -1131,11 +1131,13 @@ def get_fn_stats(output):
     network = extract_value(output, "Server URL")
     balance_raw = extract_value(output, "Node Balance")
     balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}" if balance_raw else "0"
+    staked_balance = f"{findora_gwei_convert(int(validator_data.get('amount', 0))):,.2f}"
 
     # Create the result dictionary with default values
     fn_info = {
         "Network": network,
         "Balance": balance,
+        "Total Stake GQL": staked_balance,
         "Pending Rewards": "0.00",
         "Self Delegation": "0.00",
         "Current Block": current_block,
