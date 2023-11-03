@@ -1221,6 +1221,7 @@ def menu_topper() -> None:
         )
     print(
         f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA\n"
+        f"* Current FRA GQL Staked:    {Fore.CYAN}{our_fn_stats['Total Stake GQL']}{Fore.MAGENTA} FRA\n"
         f"* Self Stake:                {Fore.CYAN}{our_fn_stats['Self Delegation']}{Fore.MAGENTA} FRA\n"
         f"* Balance:                   {Fore.CYAN}{our_fn_stats['Balance']}{Fore.MAGENTA} FRA\n"
         f"* Pending Rewards:           {Fore.CYAN}{our_fn_stats['Pending Rewards']}{Fore.MAGENTA} FRA\n"
