@@ -1131,11 +1131,13 @@ def get_fn_stats(output):
     network = extract_value(output, "Server URL")
     balance_raw = extract_value(output, "Node Balance")
     balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}" if balance_raw else "0"
+    staked_balance = f"{eth_gwei_convert(int(validator_data.get('amount'))):,.2f}"
 
     # Create the result dictionary with default values
     fn_info = {
         "Network": network,
         "Balance": balance,
+        "Total Stake GQL": staked_balance,
         "Pending Rewards": "0.00",
         "Self Delegation": "0.00",
         "Current Block": current_block,
@@ -1218,7 +1220,8 @@ def menu_topper() -> None:
             f"* Catching Up:               {Fore.GREEN}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
         )
     print(
-        f"* Current FRA Staked:        {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA\n"
+        f"* Current FRA Staked (curl): {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA\n"
+        f"* Current FRA Staked (GQL):  {Fore.CYAN}{our_fn_stats['Total Stake GQL']}{Fore.MAGENTA} FRA\n"
         f"* Self Stake:                {Fore.CYAN}{our_fn_stats['Self Delegation']}{Fore.MAGENTA} FRA\n"
         f"* Balance:                   {Fore.CYAN}{our_fn_stats['Balance']}{Fore.MAGENTA} FRA\n"
         f"* Pending Rewards:           {Fore.CYAN}{our_fn_stats['Pending Rewards']}{Fore.MAGENTA} FRA\n"
