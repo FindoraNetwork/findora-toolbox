@@ -581,7 +581,7 @@ def claim_findora_rewards(public_address) -> None:
     print_stars()
     try:
         subprocess.call(
-            ["fn", "claim", f"--validator-td-addr {public_address}"],
+            ["fn", "claim", "--validator-td-addr", public_address],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
