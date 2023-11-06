@@ -577,11 +577,11 @@ def refresh_fn_stats() -> None:
         )
 
 
-def claim_findora_rewards() -> None:
+def claim_findora_rewards(public_address) -> None:
     print_stars()
     try:
         subprocess.call(
-            ["fn", "claim", f"--validator-td-addr {}"],
+            ["fn", "claim", f"--validator-td-addr {public_address}"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
@@ -1679,7 +1679,9 @@ def parse_flags(parser, region, network):
     args = parser.parse_args()
 
     if args.claim:
-        claim_findora_rewards()
+        output = fetch_fn_show_output()
+        our_fn_stats, validator_address, public_address = get_fn_stats(output)
+        claim_findora_rewards(public_address)
         finish_node()
 
     if args.installer:
