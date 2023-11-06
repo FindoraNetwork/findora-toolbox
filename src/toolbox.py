@@ -504,7 +504,7 @@ def set_main_or_test() -> None:
 
 def menu_findora() -> None:
     print(Fore.MAGENTA)
-    update = menu_topper()
+    update, public_address = menu_topper()
     print("* Findora Validator Toolbox - Menu Options:")
     print("*")
     print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
@@ -537,7 +537,7 @@ def menu_findora() -> None:
     )
     print("*   0 -  Exit Application          - Goodbye!")
     print_stars()
-    return
+    return public_address
 
 
 def get_curl_stats() -> None:
@@ -581,7 +581,7 @@ def claim_findora_rewards() -> None:
     print_stars()
     try:
         subprocess.call(
-            ["fn", "claim"],
+            ["fn", "claim", f"--validator-td-addr {}"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
@@ -1101,14 +1101,14 @@ def fetch_fn_show_output():
 
 
 def get_fn_stats(output):
-    address = extract_value(output, "Validator Node Addr")
+    public_address = extract_value(output, "Validator Node Addr")
     # Convert the validator_address to lowercase and ensure it starts with '0x'
-    validator_address = address.lower()
-    if not validator_address.startswith("0x"):
-        validator_address = "0x" + validator_address
+    validator_address_evm, public = public_address.lower()
+    if not validator_address_evm, public.startswith("0x"):
+        validator_address_evm, public = "0x" + validator_address_evm, public
 
         # Get validator data
-    graphql_stats = fetch_single_validator(validator_address)
+    graphql_stats = fetch_single_validator(validator_address_evm, public)
 
     blocks_data = graphql_stats.get("data", {}).get("blocks", [])
     if not blocks_data:
@@ -1169,7 +1169,7 @@ def get_fn_stats(output):
         your_delegation_rewards = delegation_info.get("reward", 0)
         fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
 
-    return fn_info, validator_address
+    return fn_info, validator_address_evm, public_address
 
 
 def menu_topper() -> None:
@@ -1180,7 +1180,7 @@ def menu_topper() -> None:
         fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
         our_version = get_container_version()
         output = fetch_fn_show_output()
-        our_fn_stats, validator_address = get_fn_stats(output)
+        our_fn_stats, validator_address, public_address = get_fn_stats(output)
         external_ip = config.our_external_ip
         online_version = get_container_version(
             f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version'
@@ -1249,7 +1249,7 @@ def menu_topper() -> None:
         f"* CPU Load Averages: {round(Load1, 2)} over 1 min, {round(Load5, 2)} over 5 min, {round(Load15, 2)} over 15 min"
     )
     print_stars()
-    return update
+    return update, public_address
 
 
 def rescue_menu() -> None:
@@ -1585,7 +1585,7 @@ def run_findora_menu() -> None:
         0: finish_node,
         1: get_curl_stats,
         2: refresh_fn_stats,
-        3: claim_findora_rewards,
+        3: lambda: claim_findora_rewards(public_address),
         4: pre_send_findora,
         5: set_send_options,
         6: change_validator_info,
@@ -1605,7 +1605,7 @@ def run_findora_menu() -> None:
     # Keep this loop going so when an item ends the menu reloads
     while True:
         load_var_file(config.dotenv_file)
-        menu_findora()
+        public_address = menu_findora()
         # Pick an option, any option
         value = input("* Enter your option: ")
         # Try/Catch - If it's not a number, goodbye, try again
