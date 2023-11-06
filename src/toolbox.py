@@ -577,20 +577,24 @@ def refresh_fn_stats() -> None:
         )
 
 
+import subprocess
+
 def claim_findora_rewards(public_address) -> None:
     print_stars()
     try:
-        subprocess.call(
+        print("* Claiming all pending FRA rewards now.")
+        result = subprocess.call(
             ["fn", "claim", "--validator-td-addr", public_address],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        print("* Claim all pending completed, refresh your stats after the next block.")
-    except subprocess.CalledProcessError as err:
-        print(
-            "* Error, no response from local API, try your command again or "
-            + f"check your fn stats to see if there's an issue.\n* Error: {err}"
-        )
+        if result == 0:
+            print("* Claim all pending completed, refresh your stats after the next block.")
+        else:
+            print("* Error: An issue occurred while claiming rewards. Please check your command and try again.")
+    except Exception as err:
+        print("* Error: An unexpected error occurred. Please check your setup and try again.")
+        print(f"* Error: {err}")
 
 
 def get_total_send(our_fn_stats) -> None:
