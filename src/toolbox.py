@@ -1103,12 +1103,12 @@ def fetch_fn_show_output():
 def get_fn_stats(output):
     public_address = extract_value(output, "Validator Node Addr")
     # Convert the validator_address to lowercase and ensure it starts with '0x'
-    validator_address_evm, public = public_address.lower()
-    if not validator_address_evm, public.startswith("0x"):
-        validator_address_evm, public = "0x" + validator_address_evm, public
+    validator_address_evm = public_address.lower()
+    if not validator_address_evm.startswith("0x"):
+        validator_address_evm = "0x" + validator_address_evm
 
         # Get validator data
-    graphql_stats = fetch_single_validator(validator_address_evm, public)
+    graphql_stats = fetch_single_validator(validator_address_evm)
 
     blocks_data = graphql_stats.get("data", {}).get("blocks", [])
     if not blocks_data:
