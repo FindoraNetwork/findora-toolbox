@@ -43,6 +43,16 @@ def compare_two_files(input1, input2) -> None:
         return False
 
 
+def finish_node():
+    print(
+        "* Thanks for using Findora Toolbox\n"
+        + "* Please consider joining our discord & supporting us one time\n"
+        + "* or monthly at https://bit.ly/easynodediscord today!\n*\n* Goodbye!"
+    )
+    print_stars()
+    raise SystemExit(0)
+
+
 def get_file_size(url):
     response = requests.head(url)
     file_size = int(response.headers.get("Content-Length", 0))
@@ -55,16 +65,6 @@ def get_available_space(directory):
     return stat.f_bavail * stat.f_frsize
 
 
-def finish_node():
-    print(
-        "* Thanks for using Findora Toolbox\n"
-        + "* Please consider joining our discord & supporting us one time\n"
-        + "* or monthly at https://bit.ly/easynodediscord today!\n*\n* Goodbye!"
-    )
-    print_stars()
-    raise SystemExit(0)
-
-
 def get_live_version(server_url):
     try:
         # Make a GET request to the URL
@@ -73,15 +73,15 @@ def get_live_version(server_url):
 
         # Check if the request was successful
         if response.status_code == 200:
-            # Adjusted regex pattern with a capturing group to extract the version
-            match = re.search(r"Build: (v\d+\.\d+\.\d+-\d+-release)", response.text, re.IGNORECASE)
-
+            # Extract the version using a regular expression
+            match = re.search(r"Build: v([\d.]+-release)", response.text)
             if match:
-                live_version = match.group(1)
-                print(f"Extracted Version: {live_version}")
+                LIVE_VERSION = match.group(1)
+                print(f"Extracted Version: {LIVE_VERSION}")
+                return LIVE_VERSION
             else:
                 print("Regex didn't match.")
-                print(f"Attempted Regex: Build: (v\\d+\\.\\d+\\.\\d+-\\d+-release)")
+                print(f"Attempted Regex: Build: v([\\d.]+-release)")
                 print(f"Actual Response Content: {response.text}")
                 finish_node()
         else:
