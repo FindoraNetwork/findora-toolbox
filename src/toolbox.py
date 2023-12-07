@@ -20,7 +20,7 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator, fetch_block_graphql
+from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator, fetch_block_graphql, finish_node
 from config import print_stuff, config
 
 # from shared import stop_and_remove_container
@@ -74,16 +74,6 @@ def load_var_file(var_file):
         load_dotenv(var_file, override=True)
     else:
         subprocess.run(["touch", var_file])
-
-
-def finish_node():
-    print(
-        "* Thanks for using Findora Toolbox\n"
-        + "* Please consider joining our discord & supporting us one time\n"
-        + "* or monthly at https://bit.ly/easynodediscord today!\n*\n* Goodbye!"
-    )
-    print_stars()
-    raise SystemExit(0)
 
 
 def pause_for_cause():

@@ -10,8 +10,9 @@ import tarfile
 import docker
 import socket
 import retrying
-from config import config
+from config import config, print_stuff
 
+print_stars = print_stuff().printStars
 
 def execute_command(command):
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
@@ -54,27 +55,40 @@ def get_available_space(directory):
     return stat.f_bavail * stat.f_frsize
 
 
-def get_live_version(server_url):
-    # Make a GET request to the URL
-    response = requests.get(f"{server_url}:8668/version")
+def finish_node():
+    print(
+        "* Thanks for using Findora Toolbox\n"
+        + "* Please consider joining our discord & supporting us one time\n"
+        + "* or monthly at https://bit.ly/easynodediscord today!\n*\n* Goodbye!"
+    )
+    print_stars()
+    raise SystemExit(0)
 
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Extract the version using a regular expression
-        match = re.search(r"(v\d+\.\d+\.\d+-\d+-release)", response.text)
-        if match:
-            LIVE_VERSION = match.group()
-            print(f"Extracted Version: {LIVE_VERSION}")
-            return LIVE_VERSION
+
+def get_live_version(server_url):
+    try:
+        # Make a GET request to the URL
+        response = requests.get(f"{server_url}:8668/version")
+        response.raise_for_status()  # Raises HTTPError for bad responses
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            # Extract the version using a regular expression
+            match = re.search(r"(v\d+\.\d+\.\d+-\d+-release)", response.text, re.IGNORECASE)
+            if match:
+                LIVE_VERSION = match.group()
+                print(f"Extracted Version: {LIVE_VERSION}")
+                return LIVE_VERSION
+            else:
+                print("Regex didn't match.")
+                finish_node()
         else:
-            print("Regex didn't match.")
-            return None
-    else:
-        print(
-            "Failed to retrieve the version from Findora's server, please try again later. "
-            + f"HTTP Response Code: {response.status_code}"
-        )
-        exit(1)
+            print(f"Unexpected HTTP response code: {response.status_code}")
+            finish_node()
+
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to retrieve version. Exception: {e}")
+        return None
 
 
 def create_staker_memo() -> None:
