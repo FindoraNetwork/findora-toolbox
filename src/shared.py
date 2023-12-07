@@ -74,7 +74,7 @@ def get_live_version(server_url):
         # Check if the request was successful
         if response.status_code == 200:
             # Extract the version using a regular expression
-            match = re.search(r"(v\d+\.\d+\.\d+-\d+-release)", response.text, re.IGNORECASE)
+            match = re.search(r"Build: (v\d+\.\d+\.\d+-\d+-release)", response.text, re.IGNORECASE)
             if match:
                 LIVE_VERSION = match.group()
                 print(f"Extracted Version: {LIVE_VERSION}")
