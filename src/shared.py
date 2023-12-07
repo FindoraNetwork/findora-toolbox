@@ -81,6 +81,8 @@ def get_live_version(server_url):
                 return LIVE_VERSION
             else:
                 print("Regex didn't match.")
+                print(f"Attempted Regex: (v\\d+\\.\\d+\\.\\d+-\\d+-release)")
+                print(f"Actual Response Content: {response.text}")
                 finish_node()
         else:
             print(f"Unexpected HTTP response code: {response.status_code}")
@@ -88,7 +90,7 @@ def get_live_version(server_url):
 
     except requests.exceptions.RequestException as e:
         print(f"Failed to retrieve version. Exception: {e}")
-        return None
+        finish_node()
 
 
 def create_staker_memo() -> None:
