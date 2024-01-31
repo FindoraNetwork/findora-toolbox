@@ -49,7 +49,7 @@ class Config:
         # Load environment variables from .env file
         load_dotenv()
         
-        self.toolbox_version = "1.5.4"
+        self.toolbox_version = "1.5.5"
         self.server_host_name = socket.gethostname()
         self.user_home_dir = os.path.expanduser("~")
         self.dotenv_file = f"{self.user_home_dir}/.findora.env"
@@ -64,8 +64,9 @@ class Config:
         self.migrate_dir = os.path.join(self.user_home_dir, "migrate")
         self.fra_env = "prod"
         self.findora_backup = os.path.join(self.user_home_dir, "findora_backup")
-        self.graphql_endpoint = "https://graph.findora.org"
-        self.graphql_endpoint_backup = "https://mainnet2.graph.findora.org"
+        # self.graphql_endpoint_1 = "https://graph.findora.org"
+        # self.graphql_endpoint_2 = "https://mainnet2.graph.findora.org"
+        self.graphql_endpoint = "https://mainnet3.graph.findora.org"
         
     def validate(self):
         essential_vars = [
