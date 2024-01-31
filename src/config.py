@@ -86,7 +86,8 @@ class Config:
             "fra_env",
             "findora_backup",
             "graphql_endpoint",
-            "graphql_endpoint_backup",
+            # "graphql_endpoint_1",
+            # "graphql_endpoint_2",
         ]
         for var in essential_vars:
             if not getattr(self, var):
