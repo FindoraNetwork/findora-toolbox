@@ -182,7 +182,7 @@ def fetch_block_graphql():
 )
 def fetch_block_backend():
     # Backend data endpoint URL
-    url = config.backend_data_endpoint
+    url = config.backend_data_endpoint + "/api/blocks"
 
     # Send the request
     response = requests.get(url)
