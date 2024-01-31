@@ -14,8 +14,11 @@ from config import config, print_stuff
 
 print_stars = print_stuff().printStars
 
+
 def execute_command(command):
-    subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(
+        command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True
+    )
 
 
 def ask_yes_no(question: str) -> bool:
@@ -135,10 +138,14 @@ def download_progress_hook(count, block_size, total_size):
 
 # Define a decorator to retry the function on specific exceptions
 def retry_on_exception(exc):
-    return isinstance(exc, (requests.exceptions.ConnectionError, requests.exceptions.Timeout))
+    return isinstance(
+        exc, (requests.exceptions.ConnectionError, requests.exceptions.Timeout)
+    )
 
 
-@retrying.retry(retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000)
+@retrying.retry(
+    retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000
+)
 def fetch_block_graphql():
     # Search for the latest block
     query = """
@@ -169,30 +176,44 @@ def fetch_block_graphql():
         return None
 
 
-@retrying.retry(retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000)
+# Backend Blocks
+@retrying.retry(
+    retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000
+)
+def fetch_block_backend():
+    # Backend data endpoint URL
+    url = config.backend_data_endpoint + "/api/blocks"
+
+    # Send the request
+    response = requests.get(url)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: {response.status_code}")
+        return None
+
+
+@retrying.retry(
+    retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000
+)
 def fetch_single_validator(validator_address):
     # Query for a single validator
     query = f"""
     query MyQuery {{
-        blocks(orderBy: number, orderDirection: desc, first: 1) {{ 
-            number 
-        }}
         validators(where: {{id: "{validator_address}"}}) {{
             id
-            jailed
             memo
-            online
-            proposerCount
             publicKeyType
             rate
-            votedCount
-            unvotedCount
             amount
-            staker {{
-                address
-                amount
-                reward
-            }}
+        }}
+        validatorStatus(id: "{validator_address}") {{
+            jailed
+            online
+            proposerCount
+            unvotedCount
         }}
     }}
     """
@@ -219,12 +240,20 @@ def fetch_single_validator(validator_address):
 
 def install_fn_app():
     subprocess.run(
-        ["wget", "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn"],
+        [
+            "wget",
+            "https://github.com/FindoraNetwork/findora-wiki-docs/raw/main/.gitbook/assets/fn",
+        ],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         check=True,
     )
-    subprocess.run(["chmod", "+x", "fn"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    subprocess.run(
+        ["chmod", "+x", "fn"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
     subprocess.run(["sudo", "mv", "fn", "/usr/local/bin/"], check=True)
     print("* fn app installed.")
 
@@ -246,7 +275,14 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
 
     # Run FN setup commands
     execute_command(["fn", "setup", "-S", server_url])
-    execute_command(["fn", "setup", "-K", os.path.join(ROOT_DIR, "tendermint/config/priv_validator_key.json")])
+    execute_command(
+        [
+            "fn",
+            "setup",
+            "-K",
+            os.path.join(ROOT_DIR, "tendermint/config/priv_validator_key.json"),
+        ]
+    )
     execute_command(["fn", "setup", "-O", node_mnemonic_path])
     print("* fn application has been configured.")
 
@@ -290,7 +326,10 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
     # Backup new priv_validator_key.json
     if os.path.exists(f"/home/{USERNAME}/findora_backup/config"):
         shutil.rmtree(f"/home/{USERNAME}/findora_backup/config")
-    shutil.copytree(os.path.join(ROOT_DIR, "tendermint/config"), f"/home/{USERNAME}/findora_backup/config")
+    shutil.copytree(
+        os.path.join(ROOT_DIR, "tendermint/config"),
+        f"/home/{USERNAME}/findora_backup/config",
+    )
     print("* Copied new priv_validator_key.json to ~/findora_backup/config")
 
 
@@ -299,7 +338,9 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     if region == "na" or network == "testnet":
         latest_url = f"https://{ENV}-{network}-us-west-2-chain-data-backup.s3.us-west-2.amazonaws.com/latest"
     elif region == "eu" and network == "mainnet":
-        latest_url = f"https://{ENV}-{network}-eu-download.s3.eu-central-1.amazonaws.com/latest"
+        latest_url = (
+            f"https://{ENV}-{network}-eu-download.s3.eu-central-1.amazonaws.com/latest"
+        )
     latest_file = os.path.join(ROOT_DIR, "latest")
     urllib.request.urlretrieve(latest_url, latest_file)
 
@@ -309,7 +350,10 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     # Remove old data
     shutil.rmtree(os.path.join(ROOT_DIR, "findorad"), ignore_errors=True)
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "data"), ignore_errors=True)
-    shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"), ignore_errors=True)
+    shutil.rmtree(
+        os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"),
+        ignore_errors=True,
+    )
 
     # Get the size of snapshot first
     snapshot_size = get_file_size(CHAINDATA_URL)
@@ -321,7 +365,9 @@ def load_server_data(ENV, network, ROOT_DIR, region):
             f"Error: Not enough disk space available. Minimum Required: {format_size(initial_required_size)}+, "
             f"Available: {format_size(available_space)}."
         )
-        question = ask_yes_no("Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
+        question = ask_yes_no(
+            "Would you like to continue anyway (at own risk of running out of storage)? (y/n): "
+        )
         if not question:
             exit(1)
     else:
@@ -334,7 +380,9 @@ def load_server_data(ENV, network, ROOT_DIR, region):
     snapshot_file = os.path.join(ROOT_DIR, "snapshot")
     while True:
         print("* Downloading snapshot...")
-        urllib.request.urlretrieve(CHAINDATA_URL, snapshot_file, reporthook=download_progress_hook)
+        urllib.request.urlretrieve(
+            CHAINDATA_URL, snapshot_file, reporthook=download_progress_hook
+        )
         print("\n* Download complete, calculating checksum now...")
 
         # Calculate the md5 checksum of the downloaded file
@@ -349,7 +397,9 @@ def load_server_data(ENV, network, ROOT_DIR, region):
             break
         else:
             print("* Checksum does not match.")
-            retry = ask_yes_no("* Checksum verification failed. Would you like to try downloading again? (y/n): ")
+            retry = ask_yes_no(
+                "* Checksum verification failed. Would you like to try downloading again? (y/n): "
+            )
             if not retry:
                 print("* Exiting due to checksum verification failure.")
                 exit(1)
@@ -371,7 +421,9 @@ def load_server_data(ENV, network, ROOT_DIR, region):
             f"* Error: Not enough disk space available. Minimum Required: {format_size(required_space)}+, "
             f"* Available: {format_size(available_space)}."
         )
-        question = ask_yes_no("* Would you like to continue anyway (at own risk of running out of storage)? (y/n): ")
+        question = ask_yes_no(
+            "* Would you like to continue anyway (at own risk of running out of storage)? (y/n): "
+        )
         if not question:
             exit(1)
     else:
@@ -399,7 +451,10 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
     # Move the extracted files to the desired locations
     shutil.move(os.path.join(SNAPSHOT_DIR, "data", "ledger"), LEDGER_DIR)
-    shutil.move(os.path.join(SNAPSHOT_DIR, "data", "tendermint", "mainnet", "node0", "data"), TENDERMINT_DIR)
+    shutil.move(
+        os.path.join(SNAPSHOT_DIR, "data", "tendermint", "mainnet", "node0", "data"),
+        TENDERMINT_DIR,
+    )
 
     # Remove the temporary directories and files
     shutil.rmtree(SNAPSHOT_DIR)
@@ -412,7 +467,13 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
 
 def start_local_validator(
-    ROOT_DIR, FINDORAD_IMG, local_node_status, network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
+    ROOT_DIR,
+    FINDORAD_IMG,
+    local_node_status,
+    network,
+    CONTAINER_NAME,
+    ENDPOINT_STATUS_URL,
+    RETRY_INTERVAL,
 ):
     # Create a Docker client
     client = docker.from_env()
@@ -438,10 +499,15 @@ def start_local_validator(
 
         # Add additional volume for testnet
         if network == "testnet":
-            volumes[f"{ROOT_DIR}/checkpoint.toml"] = {"bind": "/root/checkpoint.toml", "mode": "rw"}
+            volumes[f"{ROOT_DIR}/checkpoint.toml"] = {
+                "bind": "/root/checkpoint.toml",
+                "mode": "rw",
+            }
 
         # Create the container
-        print(f"* Starting {CONTAINER_NAME} container on {network} chain id {chain_id} now...")
+        print(
+            f"* Starting {CONTAINER_NAME} container on {network} chain id {chain_id} now..."
+        )
 
         container = client.containers.run(
             image=FINDORAD_IMG,
@@ -473,10 +539,14 @@ def start_local_validator(
                         print("* Container is up and endpoint is responding.")
                         break
                     else:
-                        print("* Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
+                        print(
+                            "* Container is up, but endpoint is not responding yet. Retrying in 10 seconds..."
+                        )
                         time.sleep(RETRY_INTERVAL)
                 except requests.ConnectionError:
-                    print("* Container is up, but endpoint is not responding yet. Retrying in 10 seconds...")
+                    print(
+                        "* Container is up, but endpoint is not responding yet. Retrying in 10 seconds..."
+                    )
                     time.sleep(RETRY_INTERVAL)
             else:
                 print("* Container is not running. Exiting...")
@@ -507,7 +577,11 @@ def local_key_setup(keypath, ROOT_DIR, network):
     if not os.path.isfile(keypath):
         if os.path.isfile(f"{config.user_home_dir}/findora_backup/tmp.gen.keypair"):
             subprocess.run(
-                ["cp", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
+                [
+                    "cp",
+                    f"{config.user_home_dir}/findora_backup/tmp.gen.keypair",
+                    f"{ROOT_DIR}/{network}_node.key",
+                ],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 check=True,
@@ -515,7 +589,11 @@ def local_key_setup(keypath, ROOT_DIR, network):
             print(f"* tmp.gen.keypair file detected, copying to {network}_node.key")
         elif os.path.isfile(f"{config.user_home_dir}/tmp.gen.keypair"):
             subprocess.run(
-                ["cp", f"{config.user_home_dir}/tmp.gen.keypair", f"{ROOT_DIR}/{network}_node.key"],
+                [
+                    "cp",
+                    f"{config.user_home_dir}/tmp.gen.keypair",
+                    f"{ROOT_DIR}/{network}_node.key",
+                ],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 check=True,
@@ -524,7 +602,10 @@ def local_key_setup(keypath, ROOT_DIR, network):
         else:
             with open(f"{ROOT_DIR}/{network}_node.key", "w") as file:
                 subprocess.run(["fn", "genkey"], stdout=file, text=True)
-            shutil.copyfile(f"{ROOT_DIR}/{network}_node.key", f"{config.user_home_dir}/findora_backup/tmp.gen.keypair")
+            shutil.copyfile(
+                f"{ROOT_DIR}/{network}_node.key",
+                f"{config.user_home_dir}/findora_backup/tmp.gen.keypair",
+            )
             print(
                 f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and "
                 "copied to ~/findora_backup/tmp.gen.keypair"
@@ -579,7 +660,11 @@ def format_size(size_in_bytes, is_speed=False):
 
 def chown_dir(chown_dir, user, group) -> None:
     try:
-        subprocess.run(["sudo", "chown", "-R", f"{user}:{group}", chown_dir], check=True)
+        subprocess.run(
+            ["sudo", "chown", "-R", f"{user}:{group}", chown_dir], check=True
+        )
     except subprocess.CalledProcessError as e:
         # Output a custom error message along with the stderr of the command
-        print(f"Failed to change ownership of {chown_dir} to {user}:{group}. Error: {e.stderr.decode()}")
+        print(
+            f"Failed to change ownership of {chown_dir} to {user}:{group}. Error: {e.stderr.decode()}"
+        )

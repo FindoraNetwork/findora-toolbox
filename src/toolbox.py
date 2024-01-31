@@ -20,7 +20,7 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator, fetch_block_graphql, finish_node
+from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator, fetch_block_backend, finish_node
 from config import print_stuff, config
 
 # from shared import stop_and_remove_container
@@ -1101,15 +1101,11 @@ def get_fn_stats(output):
     if not validator_address_evm.startswith("0x"):
         validator_address_evm = "0x" + validator_address_evm
 
-        # Get validator data
+    # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
-    blocks_data = graphql_stats.get("data", {}).get("blocks", [])
-    if not blocks_data:
-        # If blocks_data is missing in graphql_stats, fetch it using fetch_block_graphql()
-        blocks_data = fetch_block_graphql().get("data", {}).get("blocks", [])
-
-    current_block = blocks_data[0].get("number", "N/A") if blocks_data else "N/A"
+    blocks_data = fetch_block_backend().get("data", {}).get("blocks", [])
+    current_block = blocks_data[0].get("height", "N/A") if blocks_data else "N/A"
 
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
@@ -1118,6 +1114,13 @@ def get_fn_stats(output):
 
     memo_data = json.loads(validator_data.get("memo", "{}"))
 
+    # Extract data from validatorStatus
+    validator_status = graphql_stats.get("data", {}).get("validatorStatus", {})
+    online_status = validator_status.get("online", 0)
+    jailed_status = validator_status.get("jailed", 0)
+    proposer_count = validator_status.get("proposerCount", 0)
+    unvoted_count = validator_status.get("unvotedCount", 0)
+
     # Parse JSON sections
     delegation_info = extract_key_value_pairs(output, "Your Delegation")
 
@@ -1125,7 +1128,7 @@ def get_fn_stats(output):
     network = extract_value(output, "Server URL")
     balance_raw = extract_value(output, "Node Balance")
     balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}" if balance_raw else "0"
-    staked_balance = f"{eth_gwei_convert(int(validator_data.get('amount'))):,.2f}"
+    staked_balance = f"{eth_gwei_convert(int(validator_data.get('amount', '0'))):,.2f}"
 
     # Create the result dictionary with default values
     fn_info = {
@@ -1135,16 +1138,16 @@ def get_fn_stats(output):
         "Pending Rewards": "0.00",
         "Self Delegation": "0.00",
         "Current Block": current_block,
-        "Proposed Blocks": str(validator_data.get("proposerCount", 0)),
+        "Proposed Blocks": str(proposer_count),
         "Pending Pool Rewards": "0.00",  # Not provided in graphql_stats, adjust if needed
         "Server Status": f"{Fore.GREEN}Online{Fore.MAGENTA}"
-        if validator_data.get("online", 0) == 1
+        if online_status == 1
         else f"{Fore.RED}Offline{Fore.MAGENTA}",
         "Jailed Status": f"{Fore.GREEN}Not Jailed{Fore.MAGENTA}"
-        if validator_data.get("jailed", 0) == 0
+        if jailed_status == 0
         else f"{Fore.RED}Jailed{Fore.MAGENTA}",
-        "Voted Blocks": str(validator_data.get("votedCount", 0)),
-        "Missed Blocks": str(validator_data.get("unvotedCount", 0)),
+        "Voted Blocks": "0",  # Adjusted, as the field doesn't exist anymore
+        "Missed Blocks": str(unvoted_count),
         "Commission Rate": f"{int(validator_data.get('rate', '0')) / 10000:.2f}%",
         "memo": {
             "name": memo_data.get("name", "N/A"),
