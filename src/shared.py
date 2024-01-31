@@ -189,11 +189,6 @@ def fetch_single_validator(validator_address):
             publicKeyType
             rate
             amount
-            staker {{
-                address
-                amount
-                reward
-            }}
         }}
         }}
         validatorStatus(where: {{id: "{validator_address}"}}) {{
