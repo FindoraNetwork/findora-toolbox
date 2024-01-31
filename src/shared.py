@@ -157,16 +157,13 @@ def fetch_block_graphql():
     """
 
     # GraphQL endpoint
-    url = f"{config.graphql_endpoint}/subgraphs/name/evm/staking"
+    url = f"{config.backend_data_endpoint}/api/blocks"
 
     # Headers (if needed, e.g., authentication)
     headers = {"Content-Type": "application/json"}
 
-    # Data payload
-    data = {"query": query}
-
     # Send the request
-    response = requests.post(url, headers=headers, json=data)
+    response = requests.post(url, headers=headers)
 
     # Check if the request was successful
     if response.status_code == 200:

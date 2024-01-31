@@ -1104,12 +1104,8 @@ def get_fn_stats(output):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
-    blocks_data = graphql_stats.get("data", {}).get("blocks", [])
-    if not blocks_data:
-        # If blocks_data is missing in graphql_stats, fetch it using fetch_block_graphql()
-        blocks_data = fetch_block_graphql().get("data", {}).get("blocks", [])
-
-    current_block = blocks_data[0].get("number", "N/A") if blocks_data else "N/A"
+    blocks_data = fetch_block_graphql().get("data", {}).get("blocks", [])
+    current_block = blocks_data[0].get("height", "N/A") if blocks_data else "N/A"
 
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 

@@ -67,6 +67,7 @@ class Config:
         # self.graphql_endpoint_1 = "https://graph.findora.org"
         # self.graphql_endpoint_2 = "https://mainnet2.graph.findora.org"
         self.graphql_endpoint = "https://mainnet3.graph.findora.org"
+        self.backend_data_endpoint = "https://mainnet.backend.findorascan.io"
         
     def validate(self):
         essential_vars = [
@@ -88,6 +89,7 @@ class Config:
             "graphql_endpoint",
             # "graphql_endpoint_1",
             # "graphql_endpoint_2",
+            "backend_data_endpoint",
         ]
         for var in essential_vars:
             if not getattr(self, var):
