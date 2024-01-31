@@ -1101,16 +1101,18 @@ def get_fn_stats(output):
     if not validator_address_evm.startswith("0x"):
         validator_address_evm = "0x" + validator_address_evm
 
-        # Get validator data
+    # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
-    blocks_data = graphql_stats.get("data", {}).get("blocks", [])
-    if not blocks_data:
-        # If blocks_data is missing in graphql_stats, fetch it using fetch_block_graphql()
-        blocks_data = fetch_block_graphql().get("data", {}).get("blocks", [])
+    # blocks_data = graphql_stats.get("data", {}).get("blocks", [])
+    # if not blocks_data:
+    #     # If blocks_data is missing in graphql_stats, fetch it using fetch_block_graphql()
+    #     blocks_data = fetch_block_graphql().get("data", {}).get("blocks", [])
 
-    current_block = blocks_data[0].get("number", "N/A") if blocks_data else "N/A"
-
+    # current_block = blocks_data[0].get("number", "N/A") if blocks_data else "N/A"
+    # Remove when block is fixed in gql
+    current_block = "N/A"
+    
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
     # If validator list is empty, use a default empty dictionary
