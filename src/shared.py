@@ -209,7 +209,7 @@ def fetch_single_validator(validator_address):
             rate
             amount
         }}
-        validatorStatus(where: {{id: "{validator_address}"}}) {{
+        validatorStatus(id: "{validator_address}") {{
             jailed
             online
             proposerCount
