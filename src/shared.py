@@ -157,13 +157,35 @@ def fetch_block_graphql():
     """
 
     # GraphQL endpoint
-    url = f"{config.backend_data_endpoint}/api/blocks"
+    url = f"{config.graphql_endpoint}/subgraphs/name/evm/staking"
 
     # Headers (if needed, e.g., authentication)
     headers = {"Content-Type": "application/json"}
 
+    # Data payload
+    data = {"query": query}
+
     # Send the request
-    response = requests.post(url, headers=headers)
+    response = requests.post(url, headers=headers, json=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: {response.status_code}")
+        return None
+
+
+# Backend Blocks
+@retrying.retry(
+    retry_on_exception=retry_on_exception, stop_max_attempt_number=3, wait_fixed=1000
+)
+def fetch_block_backend():
+    # Backend data endpoint URL
+    url = config.backend_data_endpoint
+
+    # Send the request
+    response = requests.get(url)
 
     # Check if the request was successful
     if response.status_code == 200:
