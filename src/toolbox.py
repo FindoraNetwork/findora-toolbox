@@ -1105,7 +1105,7 @@ def get_fn_stats(output):
     graphql_stats = fetch_single_validator(validator_address_evm)
 
     blocks_data = fetch_block_backend().get("data", {}).get("blocks", [])
-    current_block = blocks_data[0].get("height", 0) if blocks_data else "N/A"
+    current_block = int(blocks_data[0].get("block_header", {}).get("height", 0)) if blocks_data else "N/A"
 
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
