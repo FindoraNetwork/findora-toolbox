@@ -20,7 +20,14 @@ from colorama import Fore, Back, Style
 from pprint import pprint
 from updater import run_update_restart
 from safety_clean import run_safety_clean
-from shared import ask_yes_no, compare_two_files, create_staker_memo, fetch_single_validator, fetch_block_backend, finish_node
+from shared import (
+    ask_yes_no,
+    compare_two_files,
+    create_staker_memo,
+    fetch_single_validator,
+    fetch_block_backend,
+    finish_node,
+)
 from config import print_stuff, config
 
 # from shared import stop_and_remove_container
@@ -87,7 +94,12 @@ def pause_for_cause():
 def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     # Check for missing commands we use in the toolbox
     for tool in ["wget", "curl", "pv", "docker"]:
-        if subprocess.call(["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
+        if (
+            subprocess.call(
+                ["which", tool], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
+            != 0
+        ):
             print(
                 f"{Fore.YELLOW}* The package: {Fore.RED}{tool}{Fore.YELLOW}\n"
                 + f"* Has not been installed on this system for the user {USERNAME}!\n"
@@ -127,10 +139,12 @@ def check_and_update_fn_version():
     """
     Checks the version of 'fn' and updates it if it's not the desired version.
     """
-    desired_version = "b8e88ae3a5aa679372822265d836151204cccbba"  # Adjust this as needed
+    desired_version = (
+        "b8e88ae3a5aa679372822265d836151204cccbba"  # Adjust this as needed
+    )
 
     current_version = get_fn_version()
-    
+
     if current_version is None:
         print("* Error: Unable to determine 'fn' version.")
         return
@@ -149,7 +163,9 @@ def get_fn_version():
     """
     try:
         output = subprocess.check_output(["fn", "--version"], stderr=subprocess.STDOUT)
-        cleaned_output = output.decode().splitlines()[0]  # Get the first line of the output
+        cleaned_output = output.decode().splitlines()[
+            0
+        ]  # Get the first line of the output
         return cleaned_output
     except subprocess.CalledProcessError:
         return None
@@ -296,7 +312,9 @@ def docker_check():
         exit(2)
     except docker.errors.DockerException:
         print("* There's a problem with your Docker. Are you in the `docker` group?")
-        print(f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}")
+        print(
+            f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}"
+        )
         print(
             "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
         )
@@ -497,23 +515,39 @@ def menu_findora() -> None:
     update, public_address = menu_topper()
     print("* Findora Validator Toolbox - Menu Options:")
     print("*")
-    print("*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!")
+    print(
+        "*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!"
+    )
     print("*   2 -  Show 'fn' stats info      - Run this to show your local fn stats!")
     print("*   3 -  Claim Pending FRA         - Claim all of your unclaimed FRA now")
     print("*   4 -  Transfer FRA              - Send FRA to another fra address now")
-    print("*   5 -  Set Transfer Options Menu - Configure your preferred send wallet & privacy")
-    print("*   6 -  Change Rate or Info Menu  - Change your rate. Change info coming soon.")
-    print("*   7 -  Update fn Application     - Pull update for the wallet application, fn")
-    print(f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}")
+    print(
+        "*   5 -  Set Transfer Options Menu - Configure your preferred send wallet & privacy"
+    )
+    print(
+        "*   6 -  Change Rate or Info Menu  - Change your rate. Change info coming soon."
+    )
+    print(
+        "*   7 -  Update fn Application     - Pull update for the wallet application, fn"
+    )
+    print(
+        f"*                                   {Fore.CYAN}{Back.RED}The Danger Zone:{Style.RESET_ALL}{Fore.MAGENTA}"
+    )
     findora_container_update(update)
-    print("*   9 -  Run Safety Clean          - Stop your container, reset and download database fresh")
+    print(
+        "*   9 -  Run Safety Clean          - Stop your container, reset and download database fresh"
+    )
     print("*  10 -  Update Operating System   - Update Ubuntu Operating System Files")
     print(
         f"*                                   {Fore.BLUE}{Back.YELLOW}Informational Section:{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print("*  11 -  Show system disk info     - Current drive space status")
-    print("*  12 -  TMI about your Server     - Seriously a lot of info about this server")
-    print("*  13 -  Instructions on Migrating - Run this to read info on migrating to this server.")
+    print(
+        "*  12 -  TMI about your Server     - Seriously a lot of info about this server"
+    )
+    print(
+        "*  13 -  Instructions on Migrating - Run this to read info on migrating to this server."
+    )
     print_stars()
     if migration_check():
         print_migrate()
@@ -569,6 +603,7 @@ def refresh_fn_stats() -> None:
 
 import subprocess
 
+
 def claim_findora_rewards(public_address) -> None:
     print_stars()
     try:
@@ -579,11 +614,17 @@ def claim_findora_rewards(public_address) -> None:
             stderr=subprocess.DEVNULL,
         )
         if result == 0:
-            print("* Claim all pending completed, refresh your stats after the next block.")
+            print(
+                "* Claim all pending completed, refresh your stats after the next block."
+            )
         else:
-            print("* Error: An issue occurred while claiming rewards. Please check your command and try again.")
+            print(
+                "* Error: An issue occurred while claiming rewards. Please check your command and try again."
+            )
     except Exception as err:
-        print("* Error: An unexpected error occurred. Please check your setup and try again.")
+        print(
+            "* Error: An unexpected error occurred. Please check your setup and try again."
+        )
         print(f"* Error: {err}")
 
 
@@ -593,7 +634,9 @@ def get_total_send(our_fn_stats) -> None:
         f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}'
         + f"{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? "
     )
-    total2 = input("*\n* Please re-enter the amount of FRA you would like to transfer for verification: ")
+    total2 = input(
+        "*\n* Please re-enter the amount of FRA you would like to transfer for verification: "
+    )
     if total == total2:
         return total
     else:
@@ -610,14 +653,22 @@ def get_receiver_address() -> None:
         )
         if question:
             return environ.get("RECEIVER_WALLET")
-    address = input("*\n* Please input the fra1 address you would like to send your FRA: ")
+    address = input(
+        "*\n* Please input the fra1 address you would like to send your FRA: "
+    )
     if address[:4] != "fra1" or len(address) != 62:
-        input(f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again.")
+        input(
+            f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to try again."
+        )
         get_receiver_address()
     if address == environ.get("RECEIVER_WALLET"):
-        print("* This is already your saved wallet, try again with a new wallet to update this option.")
+        print(
+            "* This is already your saved wallet, try again with a new wallet to update this option."
+        )
         return environ.get("RECEIVER_WALLET")
-    address2 = input("*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
+    address2 = input(
+        "*\n* Please re-input the fra1 address you would like to send your FRA for verification: "
+    )
     if address == address2:
         return address
     else:
@@ -643,7 +694,9 @@ def get_privacy_option() -> None:
 
 def set_privacy(receiver_address, privacy) -> None:
     # if these are already set, bypass
-    if receiver_address == environ.get("RECEIVER_WALLET") and privacy == environ.get("PRIVACY"):
+    if receiver_address == environ.get("RECEIVER_WALLET") and privacy == environ.get(
+        "PRIVACY"
+    ):
         return
     # ask and set
     print_stars()
@@ -735,7 +788,9 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
             + "Please note it will take at least a block to get updated stats in toolbox.\n*\n*"
         )
     except subprocess.CalledProcessError as err:
-        print(f"{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later.")
+        print(
+            f"{Fore.MAGENTA}* Error sending transaction:\n* {err}\n* Please try again later."
+        )
     return
 
 
@@ -748,7 +803,9 @@ def change_rate(our_fn_stats):
     )
     answer2 = input("* Please re-enter your new rate to confirm: ")
     if answer == answer2:
-        question = ask_yes_no(f"* Are you sure you want to change your rate to {float(answer)*100}%? (Y/N) ")
+        question = ask_yes_no(
+            f"* Are you sure you want to change your rate to {float(answer)*100}%? (Y/N) "
+        )
         if question:
             subprocess.call(
                 ["fn", "staker-update", "-R", answer],
@@ -786,7 +843,9 @@ class MemoUpdater(cmd2.Cmd):
                     return
                 else:
                     memo_items_json = json.dumps(memo_items)
-                    print("* Here is your updated staker_memo information for verification before sending changes:")
+                    print(
+                        "* Here is your updated staker_memo information for verification before sending changes:"
+                    )
                     print_stars()
                     print(memo_items)
                     print_stars()
@@ -838,18 +897,24 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
             choice = self.select(options)
             if choice == "Save and Continue...":
                 if not file_updated:
-                    print("* No changes detected, continuing with current staker_memo information...")
+                    print(
+                        "* No changes detected, continuing with current staker_memo information..."
+                    )
                     return self.memo_items
                 else:
                     memo_items_json = json.dumps(self.memo_items)
-                    print("* Here is your updated staker_memo information for verification before sending changes:")
+                    print(
+                        "* Here is your updated staker_memo information for verification before sending changes:"
+                    )
                     print_stars()
                     print(f"* Name: {self.memo_items['name']}")
                     print(f"* Description: {self.memo_items['desc']}")
                     print(f"* Website: {self.memo_items['website']}")
                     print(f"* Logo: {self.memo_items['logo']}")
                     print_stars()
-                    question = ask_yes_no("* Do you want to update ~/staker_memo with these changes? (Y/N) ")
+                    question = ask_yes_no(
+                        "* Do you want to update ~/staker_memo with these changes? (Y/N) "
+                    )
                     if question:
                         with open(self.staker_memo_path, "w") as file:
                             file.write(memo_items_json)
@@ -882,7 +947,9 @@ def change_validator_info():
         "[2] - Exit to Main Menu",
     ]
     print_stars()
-    terminal_menu = TerminalMenu(change_info_menu, title="* What would you like to update today? ")
+    terminal_menu = TerminalMenu(
+        change_info_menu, title="* What would you like to update today? "
+    )
     response = terminal_menu.show()
     # add logic for choices here pass our_fn_stats to #2
     if response == 0:
@@ -901,7 +968,9 @@ def change_validator_info():
 
 def check_address_input(address) -> None:
     if address[:4] != "fra1" or len(address) != 62:
-        input(f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to the menu.")
+        input(
+            f"* {address} does not look like a valid fra1 address, please retry. Press enter to return to the menu."
+        )
         return
     if address == environ.get("RECEIVER_WALLET"):
         input(
@@ -909,13 +978,17 @@ def check_address_input(address) -> None:
             + "to the menu."
         )
         return
-    address2 = input("*\n* Please re-input the fra1 address you would like to send your FRA for verification: ")
+    address2 = input(
+        "*\n* Please re-input the fra1 address you would like to send your FRA for verification: "
+    )
     if address == address2:
         set_var(config.dotenv_file, "RECEIVER_WALLET", address)
         input(f"* Wallet updated to {Fore.YELLOW}{address}{Fore.MAGENTA}")
         return
     else:
-        input("* Address did not match, try again with matching info. Press enter to return to the menu.")
+        input(
+            "* Address did not match, try again with matching info. Press enter to return to the menu."
+        )
         return
 
 
@@ -932,7 +1005,9 @@ def set_send_options() -> None:
         ["Set Wallet", "Set Privacy", "Set Express", "Exit to Main Menu"],
     )
     if menu_option == 0:
-        address = input("*\n* Please input the fra1 address you would like to send your FRA: ")
+        address = input(
+            "*\n* Please input the fra1 address you would like to send your FRA: "
+        )
         check_address_input(address)
     if menu_option == 1:
         ask_question_menu(
@@ -987,7 +1062,9 @@ def findora_container_update(update) -> None:
         )
         return
     else:
-        print("*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora")
+        print(
+            "*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora"
+        )
         return
 
 
@@ -1082,12 +1159,19 @@ def fetch_fn_show_output():
     Executes the 'fn show' command, processes its output, and returns the cleaned up output.
     """
     try:
-        process = subprocess.Popen(["fn", "show"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(
+            ["fn", "show"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         stdout, stderr = process.communicate()
 
         # If needed, combine both outputs:
         combined_output = stdout + stderr
-        cleaned_output = combined_output.decode().replace("b'", "").replace("\x1b[31;01m", "").replace("\x1b[00m", "")
+        cleaned_output = (
+            combined_output.decode()
+            .replace("b'", "")
+            .replace("\x1b[31;01m", "")
+            .replace("\x1b[00m", "")
+        )
         return cleaned_output
     except Exception as e:
         print(f"Error: {e}")
@@ -1103,9 +1187,15 @@ def get_fn_stats(output):
 
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
+    print("graphql_stats:", graphql_stats)
 
     blocks_data = fetch_block_backend().get("data", {}).get("blocks", [])
-    current_block = int(blocks_data[0].get("block_header", {}).get("height", 0)) if blocks_data else "N/A"
+    current_block = (
+        int(blocks_data[0].get("block_header", {}).get("height", 0))
+        if blocks_data
+        else "N/A"
+    )
+    print("current_block:", current_block)
 
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
@@ -1116,6 +1206,7 @@ def get_fn_stats(output):
 
     # Extract data from validatorStatus
     validator_status = graphql_stats.get("data", {}).get("validatorStatus", {})
+    print("validator_status:", validator_status)
     online_status = validator_status.get("online", 0)
     jailed_status = validator_status.get("jailed", 0)
     proposer_count = validator_status.get("proposerCount", 0)
@@ -1127,7 +1218,11 @@ def get_fn_stats(output):
     # Extract other values
     network = extract_value(output, "Server URL")
     balance_raw = extract_value(output, "Node Balance")
-    balance = f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}" if balance_raw else "0"
+    balance = (
+        f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}"
+        if balance_raw
+        else "0"
+    )
     staked_balance = f"{eth_gwei_convert(int(validator_data.get('amount', '0'))):,.2f}"
 
     # Create the result dictionary with default values
@@ -1146,7 +1241,6 @@ def get_fn_stats(output):
         "Jailed Status": f"{Fore.GREEN}Not Jailed{Fore.MAGENTA}"
         if jailed_status == 0
         else f"{Fore.RED}Jailed{Fore.MAGENTA}",
-        "Voted Blocks": "0",  # Adjusted, as the field doesn't exist anymore
         "Missed Blocks": str(unvoted_count),
         "Commission Rate": f"{int(validator_data.get('rate', '0')) / 10000:.2f}%",
         "memo": {
@@ -1164,7 +1258,9 @@ def get_fn_stats(output):
 
         # Adjust for the new format
         your_delegation_rewards = delegation_info.get("reward", 0)
-        fn_info["Pending Rewards"] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
+        fn_info[
+            "Pending Rewards"
+        ] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
 
     return fn_info, validator_address_evm, public_address
 
@@ -1174,7 +1270,9 @@ def menu_topper() -> None:
         Load1, Load5, Load15 = os.getloadavg()
         curl_stats = capture_stats()
         now = datetime.now(timezone.utc)
-        fra = findora_gwei_convert(curl_stats["result"]["validator_info"]["voting_power"])
+        fra = findora_gwei_convert(
+            curl_stats["result"]["validator_info"]["voting_power"]
+        )
         our_version = get_container_version()
         output = fetch_fn_show_output()
         our_fn_stats, validator_address, public_address = get_fn_stats(output)
@@ -1280,7 +1378,11 @@ def rescue_menu() -> None:
 
 def migration_update() -> None:
     subprocess.call(
-        ["bash", "-x", f"{config.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh"],
+        [
+            "bash",
+            "-x",
+            f"{config.toolbox_location}/src/bin/update_{environ.get('FRA_NETWORK')}.sh",
+        ],
         cwd=config.user_home_dir,
     )
 
@@ -1290,7 +1392,11 @@ def update_fn_wallet() -> None:
     if answer:
         print("* Updating fn application now...")
         subprocess.call(
-            ["bash", "-x", f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh"],
+            [
+                "bash",
+                "-x",
+                f"{config.toolbox_location}/src/bin/fn_update_{environ.get('FRA_NETWORK')}.sh",
+            ],
             cwd=config.user_home_dir,
             stdout=sys.stdout,  # this will print the bash output directly to the main Python process's stdout
             stderr=subprocess.DEVNULL,  # this will suppress any errors
@@ -1393,7 +1499,9 @@ def migrate_to_server() -> None:
                         f"{config.migrate_dir}/priv_validator_key.json",
                         f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
                     )
-                elif os.path.exists(f"{config.migrate_dir}/config/priv_validator_key.json"):
+                elif os.path.exists(
+                    f"{config.migrate_dir}/config/priv_validator_key.json"
+                ):
                     shutil.move(
                         f"{config.migrate_dir}/config/priv_validator_key.json",
                         f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
@@ -1407,7 +1515,9 @@ def migrate_to_server() -> None:
                     f"cat {config.findora_root}/{environ.get('FRA_NETWORK')}/{environ.get('FRA_NETWORK')}_node.key "
                     + "| grep 'Mnemonic' | sed 's/^.*Mnemonic:[^ ]* //'"
                 )
-                os.remove(f"{config.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic")
+                os.remove(
+                    f"{config.findora_root}/{environ.get('FRA_NETWORK')}/node.mnemonic"
+                )
                 subprocess.call(
                     [
                         "touch",
@@ -1422,7 +1532,9 @@ def migrate_to_server() -> None:
                 print("* File copying completed, restarting services.")
                 # Wipe backup folder and re-create
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                backup_dir = f"{config.user_home_dir}/findora_backup_{format(timestamp)}"
+                backup_dir = (
+                    f"{config.user_home_dir}/findora_backup_{format(timestamp)}"
+                )
                 shutil.copytree(config.findora_backup, backup_dir)
                 shutil.rmtree(config.findora_backup)
                 shutil.rmtree(config.migrate_dir)
@@ -1454,9 +1566,13 @@ def migration_check() -> None:
         # No tmp.gen.keypair, we're out.
         return False
     if os.path.exists(f"{config.migrate_dir}/priv_validator_key.json"):
-        file_paths["priv_validator_key.json"] = f"{config.migrate_dir}/priv_validator_key.json"
+        file_paths[
+            "priv_validator_key.json"
+        ] = f"{config.migrate_dir}/priv_validator_key.json"
     elif os.path.exists(f"{config.migrate_dir}/config/priv_validator_key.json"):
-        file_paths["priv_validator_key.json"] = f"{config.migrate_dir}/config/priv_validator_key.json"
+        file_paths[
+            "priv_validator_key.json"
+        ] = f"{config.migrate_dir}/config/priv_validator_key.json"
     else:
         # No matches on priv_validator_key.json, we're out.
         return False
@@ -1476,7 +1592,9 @@ def migration_check() -> None:
 
 
 def print_migrate():
-    print(f"{Fore.CYAN}* 888 -  Migrate To This Server    - Migrate from another server to this server.{Fore.MAGENTA}")
+    print(
+        f"{Fore.CYAN}* 888 -  Migrate To This Server    - Migrate from another server to this server.{Fore.MAGENTA}"
+    )
 
 
 def backup_folder_check() -> None:
@@ -1612,7 +1730,9 @@ def run_findora_menu() -> None:
             value = int(value)
         except (ValueError, KeyError, TypeError) as e:
             print_stars()
-            print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
+            print(
+                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
+            )
         # clear before load
 
         print_stars()
@@ -1620,14 +1740,19 @@ def run_findora_menu() -> None:
             menu_options[value]()
         except (ValueError, KeyError, TypeError) as e:
             print_stars()
-            print(f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}")
+            print(
+                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
+            )
         pause_for_cause()
 
 
 def parse_flags(parser, region, network):
     # Add the arguments
     parser.add_argument(
-        "-u", "--update", action="store_true", help="Will update and/or restart your Findora container."
+        "-u",
+        "--update",
+        action="store_true",
+        help="Will update and/or restart your Findora container.",
     )
 
     parser.add_argument(
@@ -1651,13 +1776,19 @@ def parse_flags(parser, region, network):
     )
 
     parser.add_argument(
-        "--clean", action="store_true", help="Will run the clean script, removes database, reloads all data."
+        "--clean",
+        action="store_true",
+        help="Will run the clean script, removes database, reloads all data.",
     )
 
-    parser.add_argument("--fn", action="store_true", help="Will update fn wallet application.")
+    parser.add_argument(
+        "--fn", action="store_true", help="Will update fn wallet application."
+    )
 
     parser.add_argument(
-        "--installer", action="store_true", help="Will run the toolbox installer setup for mainnet or testnet."
+        "--installer",
+        action="store_true",
+        help="Will run the toolbox installer setup for mainnet or testnet.",
     )
 
     parser.add_argument(
@@ -1690,7 +1821,9 @@ def parse_flags(parser, region, network):
     if args.rescue:
         if container_running(config.container_name):
             print_stars()
-            question = ask_yes_no("* Your container is running. Are you sure you want to load the rescue menu? (Y/N) ")
+            question = ask_yes_no(
+                "* Your container is running. Are you sure you want to load the rescue menu? (Y/N) "
+            )
             print_stars()
             if question:
                 rescue_menu()
@@ -1745,14 +1878,20 @@ def parse_flags(parser, region, network):
         if answer:
             # wipe data here
             subprocess.call(
-                ["bash", "-x", f"{config.toolbox_location}/src/bin/wipe_findora_{environ.get('FRA_NETWORK')}.sh"],
+                [
+                    "bash",
+                    "-x",
+                    f"{config.toolbox_location}/src/bin/wipe_findora_{environ.get('FRA_NETWORK')}.sh",
+                ],
                 cwd=config.user_home_dir,
             )
         finish_node()
 
 
 def run_troubleshooting_process():
-    print(f"* Docker is running and working but the container '{config.container_name}' is not.")
+    print(
+        f"* Docker is running and working but the container '{config.container_name}' is not."
+    )
     while True:
         answer = ask_yes_no(
             "* Would you like to attempt to run the update_version script to try to get your container back online? (Y/N)"
@@ -1802,7 +1941,9 @@ def run_register_node() -> None:
             + f"* Current balance: {balance} FRA"
         )
     else:
-        answer = ask_yes_no(f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) ")
+        answer = ask_yes_no(
+            f"* You have {balance} FRA, would you like to register & create your validator now? (Y/N) "
+        )
         if answer:
             updater = MemoUpdaterLocalFiles(config.staker_memo_path)
             # allow edit one by one, then have commit changes at the end?
@@ -1810,24 +1951,32 @@ def run_register_node() -> None:
             # Staker Memo is saved, now we can register
         # Get initial rate
         while True:
-            answer = input("* Please enter the rate (fee) you would like to charge between 0 - 100%: ")
+            answer = input(
+                "* Please enter the rate (fee) you would like to charge between 0 - 100%: "
+            )
             if answer.isdigit():
                 rate = int(answer)
                 if 0 <= rate <= 100:
                     break
                 else:
-                    print("* Invalid input! Rate must be a whole number between 0 and 100.")
+                    print(
+                        "* Invalid input! Rate must be a whole number between 0 and 100."
+                    )
             else:
                 print("* Invalid input! Please enter a whole number.")
         # Get stake amount
         while True:
-            stake_amount = input(f"* How much would you like to stake to start (10,000 minimum, {balance} maximum)? ")
+            stake_amount = input(
+                f"* How much would you like to stake to start (10,000 minimum, {balance} maximum)? "
+            )
             if stake_amount.isdigit():
                 stake_amount = int(stake_amount)
                 if 10000 <= stake_amount <= balance:
                     break
                 else:
-                    print(f"* Invalid input! Stake amount must be a whole number between 10,000 and {balance}.")
+                    print(
+                        f"* Invalid input! Stake amount must be a whole number between 10,000 and {balance}."
+                    )
             else:
                 print("* Invalid input! Please enter a whole number.")
         print_stars()
@@ -1862,7 +2011,9 @@ def run_register_node() -> None:
             ]
 
             # Run the command and capture the output
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
             stdout, stderr = process.communicate()
 
             # Decode and print the output
