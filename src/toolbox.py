@@ -1187,7 +1187,6 @@ def get_fn_stats(output):
 
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
-    print("graphql_stats:", graphql_stats)
 
     blocks_data = fetch_block_backend().get("data", {}).get("blocks", [])
     current_block = (
@@ -1195,7 +1194,6 @@ def get_fn_stats(output):
         if blocks_data
         else "N/A"
     )
-    print("current_block:", current_block)
 
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
@@ -1206,7 +1204,6 @@ def get_fn_stats(output):
 
     # Extract data from validatorStatus
     validator_status = graphql_stats.get("data", {}).get("validatorStatus", {})
-    print("validator_status:", validator_status)
     online_status = validator_status.get("online", 0)
     jailed_status = validator_status.get("jailed", 0)
     proposer_count = validator_status.get("proposerCount", 0)
@@ -1324,7 +1321,6 @@ def menu_topper() -> None:
         f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  "
         f"* Remote Latest Block:        {our_fn_stats['Current Block']}\n"
         f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}\n"
-        f"* Voted Blocks:              {our_fn_stats['Voted Blocks']}\n"
         f"* Missed Blocks:             {our_fn_stats['Missed Blocks']}\n"
         f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}\n"
         f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}"
