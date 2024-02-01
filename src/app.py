@@ -29,7 +29,7 @@ def main() -> None:
     docker_check()
     
     # Print Loading
-    print('* Loading... ')
+    print('* Gathering API Information... ')
     print_stars()
 
     # Init parser for extra flags:
