@@ -27,6 +27,10 @@ def main() -> None:
 
     # Can this user access docker?
     docker_check()
+    
+    # Print Loading
+    print('* Loading... ')
+    print_stars()
 
     # Init parser for extra flags:
     parser = argparse.ArgumentParser(description="Findora Validator Toolbox - Help Menu")
