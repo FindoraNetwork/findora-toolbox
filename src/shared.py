@@ -189,10 +189,17 @@ def fetch_block_backend():
 
     # Check if the request was successful
     if response.status_code == 200:
-        return response.json()
+        block_data = response.json()
+        # Check if block data is valid
+        if "blocks" in block_data:
+            return block_data["blocks"]
+        else:
+            # print("Invalid block data received")
+            return 0
     else:
-        print(f"Error: {response.status_code}")
-        return None
+        # print(f"Error: {response.status_code}")
+        return 0
+
 
 
 @retrying.retry(
