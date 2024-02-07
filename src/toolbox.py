@@ -1188,7 +1188,7 @@ def process_fn_stats(output):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
-    current_block = fetch_block_backend().get("data", {}).get("blocks", [])
+    current_block = fetch_block_backend()
     
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
