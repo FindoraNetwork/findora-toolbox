@@ -628,10 +628,10 @@ def claim_findora_rewards(public_address) -> None:
         print(f"* Error: {err}")
 
 
-def get_total_send(our_fn_stats) -> None:
+def get_total_send(findora_validator_stats) -> None:
     # Get fra input and process
     total = input(
-        f'* Current balance is: {Fore.GREEN}{our_fn_stats["Balance"]}'
+        f'* Current balance is: {Fore.GREEN}{findora_validator_stats["Balance"]}'
         + f"{Fore.MAGENTA}\n*\n* How much FRA total would you like to send from your validator? "
     )
     total2 = input(
@@ -641,7 +641,7 @@ def get_total_send(our_fn_stats) -> None:
         return total
     else:
         input("*\n* Balances did not match, try again. Press enter to try again.")
-        get_total_send(our_fn_stats)
+        get_total_send(findora_validator_stats)
 
 
 def get_receiver_address() -> None:
@@ -722,8 +722,8 @@ def set_privacy(receiver_address, privacy) -> None:
 def pre_send_findora() -> None:
     # Get balance
     output = fetch_fn_show_output()
-    our_fn_stats = get_fn_stats(output)
-    send_total = get_total_send(our_fn_stats)
+    findora_validator_stats = process_fn_stats(output)
+    send_total = get_total_send(findora_validator_stats)
     express = environ.get("SEND_EXPRESS")
     convert_send_total = str(int(float(send_total) * 1000000))
     if express == "True":
@@ -794,9 +794,9 @@ def send_findora(send_amount, fra_amount, to_address, privacy="False") -> None:
     return
 
 
-def change_rate(our_fn_stats):
+def change_rate(findora_validator_stats) -> None:
     print_stars()
-    print(f"* Current Rate: {our_fn_stats['Commission Rate']}")
+    print(f"* Current Rate: {findora_validator_stats['Commission Rate']}")
     answer = input(
         "* What would you like the new rate to be?\n* Please use findora notation, "
         + "example for 5% fees use: 0.05\n* Enter your new rate now: "
@@ -821,12 +821,12 @@ def change_rate(our_fn_stats):
 
 
 class MemoUpdater(cmd2.Cmd):
-    def __init__(self, our_fn_stats):
+    def __init__(self, findora_validator_stats):
         super().__init__()
-        self.our_fn_stats = our_fn_stats
+        self.findora_validator_stats = findora_validator_stats
 
     def do_update(self, arg):
-        memo_items = {key: value for key, value in self.our_fn_stats["memo"].items()}
+        memo_items = {key: value for key, value in self.findora_validator_stats["memo"].items()}
         options = []
         for key, value in memo_items.items():
             options.append(f"{key} - {value}")
@@ -930,8 +930,8 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
 def change_validator_info():
     print_stars()
     output = fetch_fn_show_output()
-    our_fn_stats = get_fn_stats(output)
-    if "Self Delegation" not in our_fn_stats:
+    findora_validator_stats = process_fn_stats(output)
+    if "Self Delegation" not in findora_validator_stats:
         print(
             "* You have not created your validator yet. Please exit, stake with your validator "
             + "wallet and send the create validator command.\n* See our post install guide "
@@ -951,13 +951,13 @@ def change_validator_info():
         change_info_menu, title="* What would you like to update today? "
     )
     response = terminal_menu.show()
-    # add logic for choices here pass our_fn_stats to #2
+    # add logic for choices here pass findora_validator_stats to #2
     if response == 0:
-        change_rate(our_fn_stats)
+        change_rate(findora_validator_stats)
         return
     if response == 1:
         # Initialize and run
-        updater = MemoUpdater(our_fn_stats)
+        updater = MemoUpdater(findora_validator_stats)
         # allow edit one by one, then have commit changes at the end?
         updater.do_update(None)
         return
@@ -1178,7 +1178,7 @@ def fetch_fn_show_output():
         return ""
 
 
-def get_fn_stats(output):
+def process_fn_stats(output):
     public_address = extract_value(output, "Validator Node Addr")
     # Convert the validator_address to lowercase and ensure it starts with '0x'
     validator_address_evm = public_address.lower()
@@ -1189,6 +1189,8 @@ def get_fn_stats(output):
     graphql_stats = fetch_single_validator(validator_address_evm)
 
     blocks_data = fetch_block_backend().get("data", {}).get("blocks", [])
+    if blocks_data is None:
+        blocks_data = 0
     current_block = (
         int(blocks_data[0].get("block_header", {}).get("height", 0))
         if blocks_data
@@ -1272,7 +1274,7 @@ def menu_topper() -> None:
         )
         our_version = get_container_version()
         output = fetch_fn_show_output()
-        our_fn_stats, validator_address, public_address = get_fn_stats(output)
+        findora_validator_stats, validator_address, public_address = process_fn_stats(output)
         external_ip = config.our_external_ip
         online_version = get_container_version(
             f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version'
@@ -1297,12 +1299,12 @@ def menu_topper() -> None:
         + f" - {Fore.YELLOW}{external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
     print(f"* Public Address:            {validator_address}")
-    if our_fn_stats["Network"] == "https://prod-mainnet.prod.findora.org":
+    if findora_validator_stats["Network"] == "https://prod-mainnet.prod.findora.org":
         print("* Network:                   Mainnet")
-    if our_fn_stats["Network"] == "https://prod-testnet.prod.findora.org":
+    if findora_validator_stats["Network"] == "https://prod-testnet.prod.findora.org":
         print("* Network:                   Testnet")
-    print("* Server Status:             " + our_fn_stats["Server Status"])
-    print("* Jail Status:               " + our_fn_stats["Jailed Status"])
+    print("* Server Status:             " + findora_validator_stats["Server Status"])
+    print("* Jail Status:               " + findora_validator_stats["Jailed Status"])
     if curl_stats["result"]["sync_info"]["catching_up"] == "False":
         print(
             f"* Catching Up:                    {Fore.RED}{curl_stats['result']['sync_info']['catching_up']}{Fore.MAGENTA}"
@@ -1313,15 +1315,15 @@ def menu_topper() -> None:
         )
     print(
         f"* Current FRA Staked (curl): {Fore.CYAN}{'{:,}'.format(round(fra, 2))}{Fore.MAGENTA} FRA\n"
-        f"* Current FRA Staked (GQL):  {Fore.CYAN}{our_fn_stats['Total Stake GQL']}{Fore.MAGENTA} FRA\n"
-        f"* Self Stake:                {Fore.CYAN}{our_fn_stats['Self Delegation']}{Fore.MAGENTA} FRA\n"
-        f"* Balance:                   {Fore.CYAN}{our_fn_stats['Balance']}{Fore.MAGENTA} FRA\n"
-        f"* Pending Rewards:           {Fore.CYAN}{our_fn_stats['Pending Rewards']}{Fore.MAGENTA} FRA\n"
-        f"* Commission Rate:           {Fore.CYAN}{our_fn_stats['Commission Rate']}{Fore.MAGENTA}\n"
+        f"* Current FRA Staked (GQL):  {Fore.CYAN}{findora_validator_stats['Total Stake GQL']}{Fore.MAGENTA} FRA\n"
+        f"* Self Stake:                {Fore.CYAN}{findora_validator_stats['Self Delegation']}{Fore.MAGENTA} FRA\n"
+        f"* Balance:                   {Fore.CYAN}{findora_validator_stats['Balance']}{Fore.MAGENTA} FRA\n"
+        f"* Pending Rewards:           {Fore.CYAN}{findora_validator_stats['Pending Rewards']}{Fore.MAGENTA} FRA\n"
+        f"* Commission Rate:           {Fore.CYAN}{findora_validator_stats['Commission Rate']}{Fore.MAGENTA}\n"
         f"* Local Latest Block:        {curl_stats['result']['sync_info']['latest_block_height']}  "
-        f"* Remote Latest Block:        {our_fn_stats['Current Block']}\n"
-        f"* Proposed Blocks:           {our_fn_stats['Proposed Blocks']}\n"
-        f"* Missed Blocks:             {our_fn_stats['Missed Blocks']}\n"
+        f"* Remote Latest Block:        {findora_validator_stats['Current Block']}\n"
+        f"* Proposed Blocks:           {findora_validator_stats['Proposed Blocks']}\n"
+        f"* Missed Blocks:             {findora_validator_stats['Missed Blocks']}\n"
         f"* Latest Block Time:         {curl_stats['result']['sync_info']['latest_block_time'][:-11]}\n"
         f"* Current Time UTC:          {now.strftime('%Y-%m-%dT%H:%M:%S')}"
     )
@@ -1804,7 +1806,7 @@ def parse_flags(parser, region, network):
 
     if args.claim:
         output = fetch_fn_show_output()
-        our_fn_stats, validator_address, public_address = get_fn_stats(output)
+        findora_validator_stats, validator_address, public_address = process_fn_stats(output)
         claim_findora_rewards(public_address)
         finish_node()
 
@@ -1919,17 +1921,17 @@ def run_troubleshooting_process():
 def run_register_node() -> None:
     create_staker_memo()
     output = fetch_fn_show_output()
-    our_fn_stats = get_fn_stats(output)
+    findora_validator_stats = process_fn_stats(output)
     try:
-        our_fn_stats.pop("memo")
+        findora_validator_stats.pop("memo")
     except KeyError:
         pass
-    balance_str = our_fn_stats["Balance"].replace(",", "")
+    balance_str = findora_validator_stats["Balance"].replace(",", "")
     balance = float(balance_str)
     remaining = 10000 - balance
-    for i in our_fn_stats:
+    for i in findora_validator_stats:
         spaces = "                         "
-        print(f"* {i}: {spaces[len(i):]}{our_fn_stats[i]}")
+        print(f"* {i}: {spaces[len(i):]}{findora_validator_stats[i]}")
     print_stars()
     if balance < 10000:
         print(
