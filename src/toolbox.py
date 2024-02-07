@@ -1188,15 +1188,8 @@ def process_fn_stats(output):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
-    blocks_data = fetch_block_backend().get("data", {}).get("blocks", [])
-    if blocks_data is None:
-        blocks_data = 0
-    current_block = (
-        int(blocks_data[0].get("block_header", {}).get("height", 0))
-        if blocks_data
-        else "N/A"
-    )
-
+    current_block = fetch_block_backend().get("data", {}).get("blocks", [])
+    
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
     # If validator list is empty, use a default empty dictionary
