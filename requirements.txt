@@ -39,6 +39,7 @@ pyperclip>=1.8.2
 pytest>=7.4.2
 python-dotenv>=0.21.0
 requests>=2.31.0
+retrying>=1.3.4
 rlp>=3.0.0
 simple-term-menu>=1.5.2
 six>=1.16.0
