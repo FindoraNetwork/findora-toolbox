@@ -130,30 +130,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     network = set_main_or_test()
     region = set_na_or_eu()
 
-    # Check fn version and update if needed
-    check_and_update_fn_version()
     return network, region
-
-
-def check_and_update_fn_version():
-    """
-    Checks the version of 'fn' and updates it if it's not the desired version.
-    """
-    desired_version = (
-        "b8e88ae3a5aa679372822265d836151204cccbba"  # Adjust this as needed
-    )
-
-    current_version = get_fn_version()
-
-    if current_version is None:
-        print("* Error: Unable to determine 'fn' version.")
-        return
-
-    if current_version != desired_version:
-        print("* There is an upgrade available for 'fn'.")
-        update_fn_wallet()
-    else:
-        print(f"* 'fn' is up to date ({current_version}).")
 
 
 def get_fn_version():
@@ -826,7 +803,9 @@ class MemoUpdater(cmd2.Cmd):
         self.findora_validator_stats = findora_validator_stats
 
     def do_update(self, arg):
-        memo_items = {key: value for key, value in self.findora_validator_stats["memo"].items()}
+        memo_items = {
+            key: value for key, value in self.findora_validator_stats["memo"].items()
+        }
         options = []
         for key, value in memo_items.items():
             options.append(f"{key} - {value}")
@@ -1189,7 +1168,7 @@ def process_fn_stats(output):
     graphql_stats = fetch_single_validator(validator_address_evm)
 
     current_block = fetch_block_backend()
-    
+
     validator_list = graphql_stats.get("data", {}).get("validators", [])
 
     # If validator list is empty, use a default empty dictionary
@@ -1227,12 +1206,16 @@ def process_fn_stats(output):
         "Current Block": current_block,
         "Proposed Blocks": str(proposer_count),
         "Pending Pool Rewards": "0.00",  # Not provided in graphql_stats, adjust if needed
-        "Server Status": f"{Fore.GREEN}Online{Fore.MAGENTA}"
-        if online_status == 1
-        else f"{Fore.RED}Offline{Fore.MAGENTA}",
-        "Jailed Status": f"{Fore.GREEN}Not Jailed{Fore.MAGENTA}"
-        if jailed_status == 0
-        else f"{Fore.RED}Jailed{Fore.MAGENTA}",
+        "Server Status": (
+            f"{Fore.GREEN}Online{Fore.MAGENTA}"
+            if online_status == 1
+            else f"{Fore.RED}Offline{Fore.MAGENTA}"
+        ),
+        "Jailed Status": (
+            f"{Fore.GREEN}Not Jailed{Fore.MAGENTA}"
+            if jailed_status == 0
+            else f"{Fore.RED}Jailed{Fore.MAGENTA}"
+        ),
         "Missed Blocks": str(unvoted_count),
         "Commission Rate": f"{int(validator_data.get('rate', '0')) / 10000:.2f}%",
         "memo": {
@@ -1250,9 +1233,9 @@ def process_fn_stats(output):
 
         # Adjust for the new format
         your_delegation_rewards = delegation_info.get("reward", 0)
-        fn_info[
-            "Pending Rewards"
-        ] = f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
+        fn_info["Pending Rewards"] = (
+            f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
+        )
 
     return fn_info, validator_address_evm, public_address
 
@@ -1267,7 +1250,9 @@ def menu_topper() -> None:
         )
         our_version = get_container_version()
         output = fetch_fn_show_output()
-        findora_validator_stats, validator_address, public_address = process_fn_stats(output)
+        findora_validator_stats, validator_address, public_address = process_fn_stats(
+            output
+        )
         external_ip = config.our_external_ip
         online_version = get_container_version(
             f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version'
@@ -1557,13 +1542,13 @@ def migration_check() -> None:
         # No tmp.gen.keypair, we're out.
         return False
     if os.path.exists(f"{config.migrate_dir}/priv_validator_key.json"):
-        file_paths[
-            "priv_validator_key.json"
-        ] = f"{config.migrate_dir}/priv_validator_key.json"
+        file_paths["priv_validator_key.json"] = (
+            f"{config.migrate_dir}/priv_validator_key.json"
+        )
     elif os.path.exists(f"{config.migrate_dir}/config/priv_validator_key.json"):
-        file_paths[
-            "priv_validator_key.json"
-        ] = f"{config.migrate_dir}/config/priv_validator_key.json"
+        file_paths["priv_validator_key.json"] = (
+            f"{config.migrate_dir}/config/priv_validator_key.json"
+        )
     else:
         # No matches on priv_validator_key.json, we're out.
         return False
@@ -1799,7 +1784,9 @@ def parse_flags(parser, region, network):
 
     if args.claim:
         output = fetch_fn_show_output()
-        findora_validator_stats, validator_address, public_address = process_fn_stats(output)
+        findora_validator_stats, validator_address, public_address = process_fn_stats(
+            output
+        )
         claim_findora_rewards(public_address)
         finish_node()
 
