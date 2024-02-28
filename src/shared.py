@@ -320,6 +320,9 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
 
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
+        print_stars()
+        print("* There was an error with docker on your system, please resolve and try again.")
+        finish_node()
     finally:
         # Close the Docker client
         try:
