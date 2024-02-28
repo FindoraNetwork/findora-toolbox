@@ -68,7 +68,7 @@ pytest==7.4.2
 python-apt==2.0.1+ubuntu0.20.4.1
 python-dotenv==0.21.0
 pyunormalize==15.0.0
-PyYAML==5.3.1
+PyYAML==5.4
 referencing==0.30.2
 requests==2.31.0
 requests-unixsocket==0.2.0
