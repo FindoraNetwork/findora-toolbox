@@ -79,9 +79,7 @@ def get_live_version(server_url):
             match = re.search(r"Build: v([\d.]+-release)", response.text)
             if match:
                 LIVE_VERSION = match.group(1)
-                if LIVE_VERSION == "0.4.5-release":
-                    LIVE_VERSION = "0.4.4-release"
-                print(f"Extracted Version: {LIVE_VERSION}")
+                print(f"Extracted Version: v{LIVE_VERSION}")
                 return LIVE_VERSION
             else:
                 print("Regex didn't match.")
