@@ -20,7 +20,7 @@ def run_full_installer(network, region):
     if LIVE_VERSION is None:
         print("Failed to get live version from server, exiting...")
         exit(1)
-    FINDORAD_IMG = f"findoranetwork/findorad:{LIVE_VERSION}"
+    FINDORAD_IMG = f"findoranetwork/findorad:v{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
     CONTAINER_NAME = "findorad"
