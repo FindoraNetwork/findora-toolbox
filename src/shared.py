@@ -8,7 +8,6 @@ import shutil
 import urllib.request
 import tarfile
 import docker
-import socket
 import retrying
 from config import config, print_stuff
 
@@ -80,6 +79,8 @@ def get_live_version(server_url):
             match = re.search(r"Build: v([\d.]+-release)", response.text)
             if match:
                 LIVE_VERSION = match.group(1)
+                if LIVE_VERSION == "0.4.5-release":
+                    LIVE_VERSION = "0.4.4-release"
                 print(f"Extracted Version: {LIVE_VERSION}")
                 return LIVE_VERSION
             else:
@@ -322,6 +323,7 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
         print(f"* Docker API error: {e}")
         print_stars()
         print("* There was an error with docker on your system, please resolve and try again.")
+        print_stars()
         finish_node()
     finally:
         # Close the Docker client
@@ -560,11 +562,14 @@ def start_local_validator(
                     time.sleep(RETRY_INTERVAL)
             else:
                 print("* Container is not running. Exiting...")
-                exit(1)
+                finish_node()
 
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
-        exit(1)
+        print_stars()
+        print("* There was an error with docker on your system, please resolve and try again.")
+        print_stars()
+        finish_node()
     finally:
         # Close the Docker client
         client.close()
@@ -639,7 +644,7 @@ def stop_and_remove_container(container_name):
         print(f"* {container_name} container removed.")
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
-        exit(1)
+        finish_node()
     finally:
         # Close the Docker client
         client.close()

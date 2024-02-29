@@ -286,7 +286,7 @@ def docker_check():
         time.sleep(1)
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
-        exit(2)
+        finish_node()
     except docker.errors.DockerException:
         print("* There's a problem with your Docker. Are you in the `docker` group?")
         print(
@@ -298,7 +298,6 @@ def docker_check():
         print("* See: https://guides.easynode.pro/admin#docker-installation")
         print_stars()
         finish_node()
-        exit(3)
     finally:
         # Close the Docker client
         try:
@@ -419,11 +418,10 @@ def container_running(container_name: str) -> bool:
         return any(container.name == container_name for container in running_containers)
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
-        exit(2)
+        finish_node()
     except docker.errors.DockerException:
         print("* There's a problem with your Docker.")
-        print_stars()
-        exit(3)
+        finish_node()
     finally:
         # Close the Docker client
         try:
