@@ -1742,6 +1742,13 @@ def parse_flags(parser, region, network):
         action="store_true",
         help="Claim all of your pending Unclaimed FRA.",
     )
+    
+    parser.add_argument(
+        "-m",
+        "--migrate",
+        action="store_true",
+        help="Use the ~/migrate folder contents to convert this server to new keys. SHUT OFF OLD SERVER BEFORE RUNNING!",
+    )
 
     parser.add_argument(
         "--rescue",
@@ -1836,6 +1843,14 @@ def parse_flags(parser, region, network):
         else:
             run_safety_clean_launcher()
 
+    if args.migrate:
+        if os.path.exists(f"{config.migrate_dir}"):
+            if migration_check():
+                migrate_to_server()
+            else:
+                migration_instructions()
+                finish_node()
+    
     if args.stats:
         menu_topper()
         finish_node()
