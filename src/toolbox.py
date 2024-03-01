@@ -1742,7 +1742,7 @@ def parse_flags(parser, region, network):
         action="store_true",
         help="Claim all of your pending Unclaimed FRA.",
     )
-    
+
     parser.add_argument(
         "-m",
         "--migrate",
@@ -1844,13 +1844,12 @@ def parse_flags(parser, region, network):
             run_safety_clean_launcher()
 
     if args.migrate:
-        if os.path.exists(f"{config.migrate_dir}"):
-            if migration_check():
-                migrate_to_server()
-            else:
-                migration_instructions()
-                finish_node()
-    
+        if migration_check():
+            migrate_to_server()
+        else:
+            migration_instructions()
+            finish_node()
+
     if args.stats:
         menu_topper()
         finish_node()
