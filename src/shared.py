@@ -9,6 +9,7 @@ import urllib.request
 import tarfile
 import docker
 import retrying
+import json
 from config import config, print_stuff
 
 print_stars = print_stuff().printStars
@@ -189,26 +190,15 @@ def fetch_block_backend():
     # Check if the request was successful
     if response.status_code == 200:
         block_data = response.json()
+
         # Check if block data is valid
-        if "blocks" in block_data:
-            # Get the list of blocks
-            blocks = block_data["blocks"]
-
-            if blocks:
-                # Sort the blocks by height in descending order
-                sorted_blocks = sorted(
-                    blocks, key=lambda x: int(x["block_header"]["height"]), reverse=True
-                )
-
-                # Retrieve the height of the latest block
-                latest_height = int(sorted_blocks[0]["block_header"]["height"])
-
-                return latest_height
-            else:
-                # No blocks in the response
-                return 0
+        if "data" in block_data and "blocks" in block_data["data"]:
+            latest_block_height = block_data["data"]["blocks"][0]["block_header"][
+                "height"
+            ]
+            return latest_block_height
         else:
-            # Invalid block data received
+            # Invalid block data
             return 0
     else:
         # Error in the request
