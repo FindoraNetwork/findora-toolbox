@@ -191,14 +191,28 @@ def fetch_block_backend():
         block_data = response.json()
         # Check if block data is valid
         if "blocks" in block_data:
-            return block_data["blocks"]
+            # Get the list of blocks
+            blocks = block_data["blocks"]
+
+            if blocks:
+                # Sort the blocks by height in descending order
+                sorted_blocks = sorted(
+                    blocks, key=lambda x: int(x["block_header"]["height"]), reverse=True
+                )
+
+                # Retrieve the height of the latest block
+                latest_height = int(sorted_blocks[0]["block_header"]["height"])
+
+                return latest_height
+            else:
+                # No blocks in the response
+                return 0
         else:
-            # print("Invalid block data received")
+            # Invalid block data received
             return 0
     else:
-        # print(f"Error: {response.status_code}")
+        # Error in the request
         return 0
-
 
 
 @retrying.retry(
@@ -320,7 +334,9 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
         print_stars()
-        print("* There was an error with docker on your system, please resolve and try again.")
+        print(
+            "* There was an error with docker on your system, please resolve and try again."
+        )
         print_stars()
         finish_node()
     finally:
@@ -565,7 +581,9 @@ def start_local_validator(
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
         print_stars()
-        print("* There was an error with docker on your system, please resolve and try again.")
+        print(
+            "* There was an error with docker on your system, please resolve and try again."
+        )
         print_stars()
         finish_node()
     finally:
