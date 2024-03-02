@@ -1027,9 +1027,13 @@ def server_disk_check() -> None:
     )
 
 
-def get_container_version(url="http://localhost:8668/version") -> None:
+def get_container_version(url="http://localhost:8668/version", our_version=None) -> str:
     response = requests.get(url)
-    return response.text
+    
+    if response.status_code == 200 and response.text:
+        return response.text
+    else:
+        return our_version
 
 
 def findora_container_update(update) -> None:
@@ -1264,7 +1268,7 @@ def menu_topper() -> None:
         )
         external_ip = config.our_external_ip
         online_version = get_container_version(
-            f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version'
+            f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version', our_version
         )
     except TimeoutError as e:
         our_version = "No Response"
