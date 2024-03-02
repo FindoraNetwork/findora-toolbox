@@ -1175,11 +1175,22 @@ def process_fn_stats(output):
     memo_data = json.loads(validator_data.get("memo", "{}"))
 
     # Extract data from validatorStatus
-    validator_status = graphql_stats.get("data", {}).get("validatorStatus", {})
-    online_status = validator_status.get("online", 0)
-    jailed_status = validator_status.get("jailed", 0)
-    proposer_count = validator_status.get("proposerCount", 0)
-    unvoted_count = validator_status.get("unvotedCount", 0)
+    validator_status = graphql_stats.get("data", {}).get("validatorStatus")
+
+    # Check if validator_status is None to handle brand new validator w/o activation
+    if validator_status is None:
+        # Assign default values
+        online_status = 0
+        jailed_status = 1
+        proposer_count = 0
+        unvoted_count = 0
+    else:
+        # Extract values from validator_status
+        online_status = validator_status.get("online", 0)
+        jailed_status = validator_status.get("jailed", 0)
+        proposer_count = validator_status.get("proposerCount", 0)
+        unvoted_count = validator_status.get("unvotedCount", 0)
+
 
     # Parse JSON sections
     delegation_info = extract_key_value_pairs(output, "Your Delegation")
