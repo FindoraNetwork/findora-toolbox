@@ -1037,7 +1037,7 @@ def get_container_version(url="http://localhost:8668/version") -> str:
             if match:
                 return match.group(1)
     except requests.RequestException as e:
-        print(f"HTTP request exception: {e}")
+        pass
 
     try:
         # Run docker ps command and extract version from the output
@@ -1046,10 +1046,10 @@ def get_container_version(url="http://localhost:8668/version") -> str:
         if container_info:
             return container_info.group(1)
     except subprocess.CalledProcessError as e:
-        print(f"docker ps command exception: {e}")
+        pass
 
     # Return a default version or handle accordingly
-    return "default_version"
+    return "api_offline"
 
 
 def findora_container_update(update) -> None:
