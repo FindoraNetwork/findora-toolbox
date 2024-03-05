@@ -148,7 +148,6 @@ ${FINDORAD_IMG} node \
 --ledger-dir /tmp/findora \
 --tendermint-host 0.0.0.0 \
 --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
---enable-query-service \
 
 # Wait for the container to be up and the endpoint to respond
 while true; do

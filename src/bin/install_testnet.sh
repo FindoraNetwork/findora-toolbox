@@ -158,7 +158,6 @@ docker run -d \
     --checkpoint-file=/root/checkpoint.toml \
     --tendermint-host 0.0.0.0 \
     --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
-    --enable-query-service \
 
 # Wait for the container to be up and the endpoint to respond
 while true; do
