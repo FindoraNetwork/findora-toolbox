@@ -1033,20 +1033,25 @@ def get_container_version(url="http://localhost:8668/version") -> str:
         response = requests.get(url)
         if response.status_code == 200 and response.text:
             # Extract version from the response text using regular expression
-            match = re.search(r'Build: (v\d+\.\d+\.\d+-\w+)', response.text)
+            match = re.search(r"Build: (v\d+\.\d+\.\d+-\w+)", response.text)
             if match:
                 return match.group(1)
+    except requests.RequestException:
+        pass  # Handle the HTTP request exception as needed
 
+    try:
         # If the HTTP response doesn't contain the version, run docker ps command
         docker_ps_output = subprocess.check_output(["docker", "ps"]).decode("utf-8")
-        container_info = re.search(r'findoranetwork/findorad:(v\d+\.\d+\.\d+-\w+)', docker_ps_output)
+        container_info = re.search(
+            r"findoranetwork/findorad:(v\d+\.\d+\.\d+-\w+)", docker_ps_output
+        )
         if container_info:
             return container_info.group(1)
-    except (requests.RequestException, subprocess.CalledProcessError):
-        pass  # Handle the exception as needed
+    except subprocess.CalledProcessError:
+        pass  # Handle the subprocess exception as needed
 
     # Return a default version or handle accordingly
-    return "api_unresponsive"
+    return "default_version"
 
 
 def findora_container_update(update) -> None:
