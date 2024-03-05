@@ -10,6 +10,7 @@ import dotenv
 import psutil
 import cmd2
 import sys
+import re
 from datetime import datetime, timezone
 from requests.exceptions import RequestException
 from simple_term_menu import TerminalMenu
@@ -1027,13 +1028,28 @@ def server_disk_check() -> None:
     )
 
 
-def get_container_version(url="http://localhost:8668/version", our_version=None) -> str:
-    response = requests.get(url)
-    
-    if response.status_code == 200 and response.text:
-        return response.text
-    else:
-        return our_version
+def get_container_version(url="http://localhost:8668/version") -> str:
+    try:
+        response = requests.get(url)
+
+        if response.status_code == 200 and response.text:
+            # Extract version from the response text using regular expression
+            match = re.search(r"Build: (v\d+\.\d+\.\d+-\w+)", response.text)
+            if match:
+                return match.group(1)
+
+        # Run docker ps command and extract version from the output
+        docker_ps_output = subprocess.check_output(["docker", "ps"]).decode("utf-8")
+        container_info = re.search(
+            r"findoranetwork/findorad:(v\d+\.\d+\.\d+-\w+)", docker_ps_output
+        )
+        if container_info:
+            return container_info.group(1)
+    except (requests.RequestException, subprocess.CalledProcessError):
+        pass  # Handle the exception as needed
+
+    # Return a default version or handle accordingly
+    return "default_version"
 
 
 def findora_container_update(update) -> None:
@@ -1195,7 +1211,6 @@ def process_fn_stats(output):
         proposer_count = validator_status.get("proposerCount", 0)
         unvoted_count = validator_status.get("unvotedCount", 0)
 
-
     # Parse JSON sections
     delegation_info = extract_key_value_pairs(output, "Your Delegation")
 
@@ -1268,7 +1283,7 @@ def menu_topper() -> None:
         )
         external_ip = config.our_external_ip
         online_version = get_container_version(
-            f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version', our_version
+            f'https://{config.fra_env}-{environ.get("FRA_NETWORK")}.{config.fra_env}.findora.org:8668/version'
         )
     except TimeoutError as e:
         our_version = "No Response"
@@ -1322,7 +1337,7 @@ def menu_topper() -> None:
         f"* Current Disk Space Free:   {Fore.BLUE}{free_space_check(config.findora_root): >6}"
         f"{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Current Container Build:   {our_version.split()[1]}")
+    print(f"* Current Container Build:   {our_version}")
     if online_version != our_version:
         print(f"* Update Available:          {online_version}")
         update = True
