@@ -499,7 +499,7 @@ def start_local_validator(
         stop_and_remove_container(CONTAINER_NAME)
 
         # Set the command string based on the network
-        command_suffix = "--ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path='/root/.tendermint/config/priv_validator_key.json' --enable-query-service"
+        command_suffix = "--ledger-dir /tmp/findora --tendermint-host 0.0.0.0 --tendermint-node-key-config-path='/root/.tendermint/config/priv_validator_key.json'"
         command = f"node {command_suffix}"
         if network == "testnet":
             command = f"node --checkpoint-file=/root/checkpoint.toml {command_suffix}"
