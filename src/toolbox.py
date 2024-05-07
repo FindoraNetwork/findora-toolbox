@@ -1211,7 +1211,7 @@ def get_fn_values():
             finish_node()
     except Exception as e:
         print(f"Error: {e}")
-        return ""
+        finish_node()
 
 
 def process_fn_stats(
