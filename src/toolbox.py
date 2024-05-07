@@ -697,8 +697,10 @@ def set_privacy(receiver_address, privacy) -> None:
 
 def pre_send_findora() -> None:
     # Get balance
-    output = fetch_fn_show_output()
-    findora_validator_stats = process_fn_stats(output)
+    public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+    findora_validator_stats = process_fn_stats(
+        validator_address_evm, balance, server_url, delegation_info
+    )
     send_total = get_total_send(findora_validator_stats)
     express = environ.get("SEND_EXPRESS")
     convert_send_total = str(int(float(send_total) * 1000000))
@@ -907,8 +909,10 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
 
 def change_validator_info():
     print_stars()
-    output = fetch_fn_show_output()
-    findora_validator_stats = process_fn_stats(output)
+    public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+    findora_validator_stats = process_fn_stats(
+        validator_address_evm, balance, server_url, delegation_info
+    )
     if "Self Delegation" not in findora_validator_stats:
         print(
             "* You have not created your validator yet. Please exit, stake with your validator "
@@ -1151,7 +1155,7 @@ def extract_value(output, key):
     return None
 
 
-def fetch_fn_show_output():
+def get_fn_values():
     """
     Executes the 'fn show' command, processes its output, and returns the cleaned up output.
     """
@@ -1170,23 +1174,24 @@ def fetch_fn_show_output():
             .replace("\x1b[00m", "")
         )
         public_address = extract_value(cleaned_output, "Validator Node Addr")
-        if public_address:
-            return cleaned_output
+        balance = extract_value(cleaned_output, "Node Balance")
+        server_url = extract_value(cleaned_output, "Server URL")
+        delegation_info = extract_key_value_pairs(cleaned_output, "Your Delegation")
+            # Convert the validator_address to lowercase and ensure it starts with '0x'
+        validator_address_evm = public_address.lower()
+        if not validator_address_evm.startswith("0x"):
+            validator_address_evm = "0x" + validator_address_evm
+        if public_address and balance and server_url and delegation_info and validator_address_evm:
+            return public_address, balance, server_url, delegation_info, validator_address_evm
         else:
-            print("* Address not found, problem with fn, try again in a moment...")
+            print("* Fractal chain data is having some issues currently, try again in a moment...")
             finish_node()
     except Exception as e:
         print(f"Error: {e}")
         return ""
 
 
-def process_fn_stats(output):
-    public_address = extract_value(output, "Validator Node Addr")
-    # Convert the validator_address to lowercase and ensure it starts with '0x'
-    validator_address_evm = public_address.lower()
-    if not validator_address_evm.startswith("0x"):
-        validator_address_evm = "0x" + validator_address_evm
-
+def process_fn_stats(validator_address_evm, validator_balance, network, delegation_info):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
@@ -1216,15 +1221,10 @@ def process_fn_stats(output):
         proposer_count = validator_status.get("proposerCount", 0)
         unvoted_count = validator_status.get("unvotedCount", 0)
 
-    # Parse JSON sections
-    delegation_info = extract_key_value_pairs(output, "Your Delegation")
-
     # Extract other values
-    network = extract_value(output, "Server URL")
-    balance_raw = extract_value(output, "Node Balance")
     balance = (
-        f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}"
-        if balance_raw
+        f"{findora_gwei_convert(int(validator_balance.split()[0])):,.2f}"
+        if validator_balance
         else "0"
     )
     staked_balance = f"{eth_gwei_convert(int(validator_data.get('amount', '0'))):,.2f}"
@@ -1270,7 +1270,7 @@ def process_fn_stats(output):
             f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
         )
 
-    return fn_info, validator_address_evm, public_address
+    return fn_info
 
 
 def menu_topper() -> None:
@@ -1282,9 +1282,9 @@ def menu_topper() -> None:
             curl_stats["result"]["validator_info"]["voting_power"]
         )
         our_version = get_container_version()
-        output = fetch_fn_show_output()
-        findora_validator_stats, validator_address, public_address = process_fn_stats(
-            output
+        public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+        findora_validator_stats = process_fn_stats(
+            validator_address_evm, balance, server_url, delegation_info
         )
         external_ip = config.our_external_ip
         online_version = get_container_version(
@@ -1309,7 +1309,7 @@ def menu_topper() -> None:
         f"* Server Hostname & IP:      {config.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Public Address:            {validator_address}")
+    print(f"* Public Address:            {validator_address_evm}")
     if findora_validator_stats["Network"] == "https://prod-mainnet.prod.findora.org":
         print("* Network:                   Mainnet")
     if findora_validator_stats["Network"] == "https://prod-testnet.prod.findora.org":
@@ -1823,10 +1823,7 @@ def parse_flags(parser, region, network):
     args = parser.parse_args()
 
     if args.claim:
-        output = fetch_fn_show_output()
-        findora_validator_stats, validator_address, public_address = process_fn_stats(
-            output
-        )
+        public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
         claim_findora_rewards(public_address)
         finish_node()
 
@@ -1947,8 +1944,10 @@ def run_troubleshooting_process():
 
 def run_register_node() -> None:
     create_staker_memo()
-    output = fetch_fn_show_output()
-    findora_validator_stats = process_fn_stats(output)
+    public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+    findora_validator_stats = process_fn_stats(
+        validator_address_evm, balance, server_url, delegation_info
+    )
     try:
         findora_validator_stats.pop("memo")
     except KeyError:

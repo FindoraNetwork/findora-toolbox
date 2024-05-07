@@ -1,9 +1,9 @@
-from toolbox import fetch_fn_show_output, process_fn_stats
+from toolbox import get_fn_values, process_fn_stats
 import sys
 import json
 
 print('* Getting fn stats... ', end='', flush=True)
-output = fetch_fn_show_output()
+output = get_fn_values()
 print('Completed', flush=True)
 
 print('* Compiling fn information... ', end='', flush=True)
