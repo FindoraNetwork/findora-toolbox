@@ -1169,7 +1169,12 @@ def fetch_fn_show_output():
             .replace("\x1b[31;01m", "")
             .replace("\x1b[00m", "")
         )
-        return cleaned_output
+        public_address = extract_value(cleaned_output, "Validator Node Addr")
+        if public_address:
+            return cleaned_output
+        else:
+            print("* Address not found, problem with fn, try again in a moment...")
+            finish_node()
     except Exception as e:
         print(f"Error: {e}")
         return ""
