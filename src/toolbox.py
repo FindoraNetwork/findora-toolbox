@@ -697,7 +697,9 @@ def set_privacy(receiver_address, privacy) -> None:
 
 def pre_send_findora() -> None:
     # Get balance
-    public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+    public_address, balance, server_url, delegation_info, validator_address_evm = (
+        get_fn_values()
+    )
     findora_validator_stats = process_fn_stats(
         validator_address_evm, balance, server_url, delegation_info
     )
@@ -909,7 +911,9 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
 
 def change_validator_info():
     print_stars()
-    public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+    public_address, balance, server_url, delegation_info, validator_address_evm = (
+        get_fn_values()
+    )
     findora_validator_stats = process_fn_stats(
         validator_address_evm, balance, server_url, delegation_info
     )
@@ -1037,7 +1041,7 @@ def get_container_version(url="http://localhost:8668/version") -> str:
         response = requests.get(url)
         if response.status_code == 200 and response.text:
             # Extract version from the response text using regular expression
-            match = re.search(r'Build: (v\d+\.\d+\.\d+-\w+)', response.text)
+            match = re.search(r"Build: (v\d+\.\d+\.\d+-\w+)", response.text)
             if match:
                 return match.group(1)
     except requests.RequestException as e:
@@ -1046,7 +1050,9 @@ def get_container_version(url="http://localhost:8668/version") -> str:
     try:
         # Run docker ps command and extract version from the output
         docker_ps_output = subprocess.check_output(["docker", "ps"]).decode("utf-8")
-        container_info = re.search(r'findoranetwork/findorad:(v\d+\.\d+\.\d+-\w+)', docker_ps_output)
+        container_info = re.search(
+            r"findoranetwork/findorad:(v\d+\.\d+\.\d+-\w+)", docker_ps_output
+        )
         if container_info:
             return container_info.group(1)
     except subprocess.CalledProcessError as e:
@@ -1165,7 +1171,7 @@ def get_fn_values():
         )
         stdout, stderr = process.communicate()
 
-        # If needed, combine both outputs:
+        # Combine both outputs if needed
         combined_output = stdout + stderr
         cleaned_output = (
             combined_output.decode()
@@ -1173,25 +1179,44 @@ def get_fn_values():
             .replace("\x1b[31;01m", "")
             .replace("\x1b[00m", "")
         )
+
+        # Extract values from the cleaned output
         public_address = extract_value(cleaned_output, "Validator Node Addr")
         balance = extract_value(cleaned_output, "Node Balance")
         server_url = extract_value(cleaned_output, "Server URL")
         delegation_info = extract_key_value_pairs(cleaned_output, "Your Delegation")
-            # Convert the validator_address to lowercase and ensure it starts with '0x'
         validator_address_evm = public_address.lower()
         if not validator_address_evm.startswith("0x"):
             validator_address_evm = "0x" + validator_address_evm
-        if public_address and balance and server_url and delegation_info and validator_address_evm:
-            return public_address, balance, server_url, delegation_info, validator_address_evm
+
+        # Check if all variables contain data and are not errors
+        if (
+            public_address
+            and balance
+            and server_url
+            and delegation_info
+            and validator_address_evm
+        ):
+            return (
+                public_address,
+                balance,
+                server_url,
+                delegation_info,
+                validator_address_evm,
+            )
         else:
-            print("* Fractal chain data is having some issues currently, try again in a moment...")
+            print(
+                "* Fractal chain data is having some issues currently, try again in a moment..."
+            )
             finish_node()
     except Exception as e:
         print(f"Error: {e}")
         return ""
 
 
-def process_fn_stats(validator_address_evm, validator_balance, network, delegation_info):
+def process_fn_stats(
+    validator_address_evm, validator_balance, network, delegation_info
+):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
@@ -1282,7 +1307,9 @@ def menu_topper() -> None:
             curl_stats["result"]["validator_info"]["voting_power"]
         )
         our_version = get_container_version()
-        public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+        public_address, balance, server_url, delegation_info, validator_address_evm = (
+            get_fn_values()
+        )
         findora_validator_stats = process_fn_stats(
             validator_address_evm, balance, server_url, delegation_info
         )
@@ -1823,7 +1850,9 @@ def parse_flags(parser, region, network):
     args = parser.parse_args()
 
     if args.claim:
-        public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+        public_address, balance, server_url, delegation_info, validator_address_evm = (
+            get_fn_values()
+        )
         claim_findora_rewards(public_address)
         finish_node()
 
@@ -1944,7 +1973,9 @@ def run_troubleshooting_process():
 
 def run_register_node() -> None:
     create_staker_memo()
-    public_address, balance, server_url, delegation_info, validator_address_evm = get_fn_values()
+    public_address, balance, server_url, delegation_info, validator_address_evm = (
+        get_fn_values()
+    )
     findora_validator_stats = process_fn_stats(
         validator_address_evm, balance, server_url, delegation_info
     )
