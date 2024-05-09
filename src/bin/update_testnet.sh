@@ -14,6 +14,13 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 ##########################################
 # Check if container is running and stop #
 ##########################################
+if docker ps -a --format '{{.Names}}' | grep -Eq findorad; then
+    echo -e "Fractal Container found, stopping container to restart."
+    docker stop findorad
+    docker rm findorad
+    rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
+fi
+
 if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
   echo -e "Fractal Container found, stopping container to restart."
   docker stop fractal
