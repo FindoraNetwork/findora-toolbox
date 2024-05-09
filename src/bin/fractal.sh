@@ -1,6 +1,12 @@
 #!/bin/bash
 HOME_DIR=$(echo ~)
 
+# Check if the findora-toolbox directory exists and move it to fractal-toolbox
+if [ -d "$HOME_DIR/findora-toolbox" ]; then
+  mv ~/findora-toolbox ~/fractal-toolbox
+  mv ~/.findora.env ~/.fractal.env
+fi
+
 # Check if the fractal-toolbox directory exists
 if [ -d "$HOME_DIR/fractal-toolbox" ]; then
   # If it exists, go into it and pull updates
@@ -8,8 +14,8 @@ if [ -d "$HOME_DIR/fractal-toolbox" ]; then
   git pull --quiet
 else
   # If it doesn't exist, clone the repository
-  git clone https://github.com/fractalNetwork/fractal-toolbox.git ~/fractal-toolbox
-  # Go into the new directory, we already ahve updates
+  git clone https://github.com/FindoraNetwork/findora-toolbox.git ~/fractal-toolbox
+  # Go into the new directory, we already have updates
   cd ~/fractal-toolbox
 fi
 
