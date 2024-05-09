@@ -28,7 +28,7 @@ fi
 ######################
 docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
-    -v ${ROOT_DIR}/fractal:/tmp/findora \
+    -v ${ROOT_DIR}/findora:/tmp/findora \
     -p 8669:8669 \
     -p 8668:8668 \
     -p 8667:8667 \

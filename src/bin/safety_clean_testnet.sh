@@ -36,7 +36,7 @@ CHECKSUM_LATEST=$(cut -d , -f 2 "${ROOT_DIR}/latest")
 echo $CHAINDATA_URL
 
 # remove old data
-rm -rf "${ROOT_DIR}/fractal"
+rm -rf "${ROOT_DIR}/findora"
 rm -rf "${ROOT_DIR}/tendermint/data"
 rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 
@@ -53,7 +53,7 @@ done
 
 # Define the directory paths
 SNAPSHOT_DIR="${ROOT_DIR}/snapshot_data"
-LEDGER_DIR="${ROOT_DIR}/fractal"
+LEDGER_DIR="${ROOT_DIR}/findora"
 TENDERMINT_DIR="${ROOT_DIR}/tendermint/data"
 
 # Create the snapshot directory
@@ -98,7 +98,7 @@ wget -O "${ROOT_DIR}/checkpoint.toml" "${CHECKPOINT_URL}"
 ######################
 docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
-    -v ${ROOT_DIR}/fractal:/tmp/findora \
+    -v ${ROOT_DIR}/findora:/tmp/findora \
     -v ${ROOT_DIR}/checkpoint.toml:/root/checkpoint.toml \
     -p 8669:8669 \
     -p 8668:8668 \
