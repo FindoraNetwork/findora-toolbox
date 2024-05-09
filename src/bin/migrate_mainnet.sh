@@ -58,12 +58,12 @@ check_env() {
 # Check if container is running and stop #
 ##########################################
 if docker ps -a --format '{{.Names}}' | grep -Eq "^${container_name}\$"; then
-  echo -e "Findorad Container found, stopping container."
+  echo -e "Fractal Container found, stopping container."
   docker stop fractal
   docker rm fractal
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
-  echo 'Findorad container stopped or does not exist, continuing.'
+  echo 'Fractal container stopped or does not exist, continuing.'
 fi
 
 check_env
