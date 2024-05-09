@@ -201,10 +201,10 @@ def menu_reboot_server() -> str:
     if question:
         print(
             "* Stopping docker container for safety\n* Run toolbox after you reboot to get "
-            + "back online or start your container manually with `docker container start findorad`"
+            + "back online or start your container manually with `docker container start fractal`"
             + " when you re-login!"
         )
-        subprocess.call(["docker", "container", "stop", "findorad"])
+        subprocess.call(["docker", "container", "stop", "fractal"])
         os.system("sudo reboot")
     else:
         print("Invalid option.")
@@ -1468,11 +1468,11 @@ def run_ubuntu_updates() -> None:
     if question:
         print_stars()
         print("* Stopping docker container for safety")
-        subprocess.call(["docker", "container", "stop", "findorad"])
+        subprocess.call(["docker", "container", "stop", "fractal"])
         run_ubuntu_updater()
         print_stars()
-        print("* Restarting findorad container")
-        subprocess.call(["docker", "container", "start", "findorad"])
+        print("* Restarting fractal container")
+        subprocess.call(["docker", "container", "start", "fractal"])
         refresh_fn_stats()
     else:
         return
@@ -1515,7 +1515,7 @@ def migrate_to_server() -> None:
                 # start installing
                 print("* Copying Files...")
                 # stop service
-                subprocess.call(["docker", "container", "stop", "findorad"])
+                subprocess.call(["docker", "container", "stop", "fractal"])
                 # move files
                 if os.path.exists(
                     f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
@@ -1961,7 +1961,7 @@ def run_troubleshooting_process():
                 print(
                     "* Stopping toolbox so you can troubleshoot the container manually.\n"
                     + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors "
-                    + "with: docker logs findorad\n"
+                    + "with: docker logs fractal\n"
                     + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./findora.sh -u\n"
                     + "* If the above does not work you should be prompted to run a safety clean or you can do that "
                     + "manually with: ./findora.sh --clean\n"

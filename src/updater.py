@@ -11,7 +11,7 @@ def run_update_restart(network=os.environ.get("FRA_NETWORK")):
     LIVE_VERSION = get_live_version(server_url)
     FINDORAD_IMG = f"fractalfoundation/fractal:v{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
-    CONTAINER_NAME = "findorad"
+    CONTAINER_NAME = "fractal"
     ENDPOINT_STATUS_URL = "http://localhost:26657/status"
     RETRY_INTERVAL = 10
 
@@ -37,7 +37,7 @@ def run_update_restart(network=os.environ.get("FRA_NETWORK")):
             check=True,
         )
 
-    # Start findorad
+    # Start fractal
     start_local_validator(
         ROOT_DIR, FINDORAD_IMG, "updater", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
     )
