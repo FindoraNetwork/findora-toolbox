@@ -123,7 +123,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
             exit(1)
     # Check if we have a .env file, if not, create it.
     if not os.path.exists(env_file):
-        os.system(f"touch {home_dir}/.findora.env")
+        os.system(f"touch {home_dir}/.fractal.env")
     else:
         load_var_file(config.dotenv_file)
 

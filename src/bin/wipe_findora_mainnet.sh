@@ -32,4 +32,4 @@ if [ -d /data/findora/${NAMESPACE} ]; then
   sudo rm -r /data/findora/${NAMESPACE}
 fi
 sudo rm /usr/local/bin/fn
-rm ~/.findora.env
+rm ~/.fractal.env
