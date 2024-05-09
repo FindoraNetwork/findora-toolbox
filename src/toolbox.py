@@ -1051,7 +1051,7 @@ def get_container_version(url="http://localhost:8668/version") -> str:
         # Run docker ps command and extract version from the output
         docker_ps_output = subprocess.check_output(["docker", "ps"]).decode("utf-8")
         container_info = re.search(
-            r"findoranetwork/findorad:(v\d+\.\d+\.\d+-\w+)", docker_ps_output
+            r"fractalfoundation/fractal:(v\d+\.\d+\.\d+-\w+)", docker_ps_output
         )
         if container_info:
             return container_info.group(1)
