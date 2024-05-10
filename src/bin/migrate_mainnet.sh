@@ -4,7 +4,7 @@ ENV=prod
 NAMESPACE=mainnet
 SERV_URL=https://${ENV}-${NAMESPACE}.${ENV}.findora.org
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
-FINDORAD_IMG=fractalfoundation/fractal:${LIVE_VERSION}
+FRACTAL_IMG=fractalfoundation/fractal:${LIVE_VERSION}
 export ROOT_DIR=/data/findora/${NAMESPACE}
 keypath=${ROOT_DIR}/${NAMESPACE}_node.key
 migratepath=/home/${USERNAME}/migrate
@@ -82,7 +82,7 @@ $FN setup -S ${SERV_URL} || exit 1
 $FN setup -K ${ROOT_DIR}/tendermint/config/priv_validator_key.json || exit 1
 $FN setup -O ${ROOT_DIR}/node.mnemonic || exit 1
 
-docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FINDORAD_IMG} init --${NAMESPACE} || exit 1
+docker run --rm -v ${ROOT_DIR}/tendermint:/root/.tendermint ${FRACTAL_IMG} init --${NAMESPACE} || exit 1
 
 # reset permissions on tendermint folder after init
 sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
@@ -100,7 +100,7 @@ docker run -d \
     -p 26657:26657 \
     -e EVM_CHAIN_ID=2152 \
     --name fractal \
-    ${FINDORAD_IMG} node \
+    ${FRACTAL_IMG} node \
     --ledger-dir /tmp/findora \
     --tendermint-host 0.0.0.0 \
     --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \

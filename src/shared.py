@@ -268,7 +268,7 @@ def install_fn_app():
     print("* fn app installed.")
 
 
-def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
+def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FRACTAL_IMG):
     # Extract node_mnemonic from keypath file
     with open(keypath, "r") as file:
         content = file.read()
@@ -315,7 +315,7 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
 
         # Run the Docker container in blocking mode to await finish
         client.containers.run(
-            image=FINDORAD_IMG,
+            image=FRACTAL_IMG,
             command=["init", f"--{network}"],
             volumes=volumes,
             remove=True,  # Equivalent to --rm
@@ -484,7 +484,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
 def start_local_validator(
     ROOT_DIR,
-    FINDORAD_IMG,
+    FRACTAL_IMG,
     local_node_status,
     network,
     CONTAINER_NAME,
@@ -526,7 +526,7 @@ def start_local_validator(
         )
 
         container = client.containers.run(
-            image=FINDORAD_IMG,
+            image=FRACTAL_IMG,
             name=CONTAINER_NAME,
             detach=True,
             volumes=volumes,

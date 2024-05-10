@@ -4,7 +4,7 @@ USERNAME=$USER
 ENV=prod
 NAMESPACE=mainnet
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
-FINDORAD_IMG=fractalfoundation/fractal:${LIVE_VERSION}
+FRACTAL_IMG=fractalfoundation/fractal:${LIVE_VERSION}
 export ROOT_DIR=/data/findora/${NAMESPACE}
 CONTAINER_NAME=fractal
 

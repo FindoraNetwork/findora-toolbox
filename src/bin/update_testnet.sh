@@ -4,7 +4,7 @@ USERNAME=$USER
 ENV=prod
 NAMESPACE=testnet
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
-FINDORAD_IMG=fractalfoundation/fractal:${LIVE_VERSION}
+FRACTAL_IMG=fractalfoundation/fractal:${LIVE_VERSION}
 export ROOT_DIR=/data/findora/${NAMESPACE}
 CONTAINER_NAME=fractal
 
@@ -44,7 +44,7 @@ docker run -d \
     -p 26657:26657 \
     -e EVM_CHAIN_ID=2153 \
     --name fractal \
-    ${FINDORAD_IMG} node \
+    ${FRACTAL_IMG} node \
     --ledger-dir /tmp/findora \
     --checkpoint-file=/root/checkpoint.toml \
     --tendermint-host 0.0.0.0 \
