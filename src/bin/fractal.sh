@@ -4,6 +4,9 @@ HOME_DIR=$(echo ~)
 # Check if the findora-toolbox directory exists and move it to fractal-toolbox
 if [ -d "$HOME_DIR/findora-toolbox" ]; then
   mv ~/findora-toolbox ~/fractal-toolbox
+fi
+
+if [ -d "$HOME_DIR/.findora.env" ]; then
   mv ~/.findora.env ~/.fractal.env
 fi
 

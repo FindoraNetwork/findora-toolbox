@@ -21,10 +21,12 @@ def main() -> None:
     loader_intro()
     print_stars()
     
-    if os.path.exists("~/.findora.env"):
+    if os.file.exists("~/.findora.env"):
+        print_stars()
         print("You have a previous version of the Findora Toolbox installed. Please remove it before continuing.")
         print("Run the following command to remove the previous version:")
         print("wget https://raw.githubusercontent.com/FindoraNetwork/findora-toolbox/main/src/bin/fractal.sh && chmod +x fractal.sh && rm ~/findora.sh && mv ~/findora-toolbox ~/fractal-toolbox && mv .findora.env .fractal.env && ./fractal.sh -u")
+        print_stars()
         finish_node()
 
     # Load Vars / Set Network & Region
