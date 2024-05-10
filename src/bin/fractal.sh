@@ -11,7 +11,7 @@ fi
 if [ -d "$HOME_DIR/fractal-toolbox" ]; then
   # If it exists, go into it and pull updates
   cd ~/fractal-toolbox
-  git pull --quiet
+  git pull origin v0.4.10-compat --quiet
 else
   # If it doesn't exist, clone the repository
   git clone https://github.com/FindoraNetwork/findora-toolbox.git ~/fractal-toolbox
