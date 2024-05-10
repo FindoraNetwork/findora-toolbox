@@ -667,10 +667,7 @@ def stop_and_remove_container(container_name):
         
     except docker.errors.NotFound:
         print("* 'findorad' container not found.")
-    finally:
-        # Close the Docker client
-        findorad_container.close()
-
+        
     # Remove the specified file
     file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"
     if os.path.exists(file_path):
