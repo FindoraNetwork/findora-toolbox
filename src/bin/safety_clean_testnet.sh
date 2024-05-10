@@ -44,6 +44,7 @@ echo $CHAINDATA_URL
 
 rm -rf "${ROOT_DIR}/findora"
 rm -rf "${ROOT_DIR}/findorad"
+rm -rf "${ROOT_DIR}/snapshot_data"
 rm -rf "${ROOT_DIR}/tendermint/data"
 rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 
