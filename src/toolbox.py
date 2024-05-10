@@ -288,8 +288,8 @@ def docker_check():
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
         finish_node()
-    except docker.errors.DockerException:
-        print("* There's a problem with your Docker. Are you in the `docker` group?")
+    except docker.errors.DockerException as e:
+        print(f"* There's a problem with your Docker. Error: {e}\n* Are you in the `docker` group?")
         print(
             f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}"
         )
