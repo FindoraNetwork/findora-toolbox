@@ -633,6 +633,9 @@ def local_key_setup(keypath, ROOT_DIR, network):
             )
 
 
+import os
+
+
 def stop_and_remove_container(container_name):
     # Create a Docker client
     client = docker.from_env()
@@ -647,13 +650,26 @@ def stop_and_remove_container(container_name):
         container.remove()
 
     except docker.errors.NotFound:
-        print(f"* {container_name} container removed.")
+        print(f"* {container_name} container not found.")
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
         finish_node()
     finally:
         # Close the Docker client
         client.close()
+
+    # Check if 'findorad' container exists
+    try:
+        findorad_container = client.containers.get("findorad")
+        print("* 'findorad' container found, stopping & removing container...")
+        findorad_container.stop()
+        findorad_container.remove()
+        
+    except docker.errors.NotFound:
+        print("* 'findorad' container not found.")
+    finally:
+        # Close the Docker client
+        findorad_container.close()
 
     # Remove the specified file
     file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"

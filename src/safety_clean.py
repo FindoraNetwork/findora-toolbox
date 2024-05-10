@@ -22,8 +22,6 @@ def run_safety_clean(network=os.environ.get("FRA_NETWORK"), region=os.environ.ge
 
     chown_dir(ROOT_DIR, USERNAME, USERNAME)
 
-    stop_and_remove_container(CONTAINER_NAME)
-
     # get snapshot
     load_server_data(ENV, network, ROOT_DIR, region)
 
