@@ -94,8 +94,8 @@ CHAINDATA_URL=$(cut -d , -f 1 "${ROOT_DIR}/latest")
 CHECKSUM_LATEST=$(cut -d , -f 2 "${ROOT_DIR}/latest")
 echo $CHAINDATA_URL
 
-# remove old data
 rm -rf "${ROOT_DIR}/findora"
+rm -rf "${ROOT_DIR}/findorad"
 rm -rf "${ROOT_DIR}/tendermint/data"
 rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 
