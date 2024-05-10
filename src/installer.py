@@ -20,10 +20,10 @@ def run_full_installer(network, region):
     if LIVE_VERSION is None:
         print("Failed to get live version from server, exiting...")
         exit(1)
-    FINDORAD_IMG = f"findoranetwork/findorad:v{LIVE_VERSION}"
+    FINDORAD_IMG = f"fractalfoundation/fractal:v{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
     keypath = f"{ROOT_DIR}/{network}_node.key"
-    CONTAINER_NAME = "findorad"
+    CONTAINER_NAME = "fractal"
     ENDPOINT_STATUS_URL = "http://localhost:26657/status"
     RETRY_INTERVAL = 10
 
@@ -77,7 +77,7 @@ def run_full_installer(network, region):
             check=True,
         )
 
-    # Start findorad
+    # Start fractal
     start_local_validator(
         ROOT_DIR, FINDORAD_IMG, "installer", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
     )

@@ -139,4 +139,5 @@ release-from-jail/CoreEasy.py
 release-from-jail/jailcheck.py
 release-from-jail/properties.conf
 release-from-jail/validators.csv
+release-from-jail/rone.py
 /src/testing.py

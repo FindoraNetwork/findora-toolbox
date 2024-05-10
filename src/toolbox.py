@@ -123,7 +123,7 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
             exit(1)
     # Check if we have a .env file, if not, create it.
     if not os.path.exists(env_file):
-        os.system(f"touch {home_dir}/.findora.env")
+        os.system(f"touch {home_dir}/.fractal.env")
     else:
         load_var_file(config.dotenv_file)
 
@@ -201,10 +201,10 @@ def menu_reboot_server() -> str:
     if question:
         print(
             "* Stopping docker container for safety\n* Run toolbox after you reboot to get "
-            + "back online or start your container manually with `docker container start findorad`"
+            + "back online or start your container manually with `docker container start fractal`"
             + " when you re-login!"
         )
-        subprocess.call(["docker", "container", "stop", "findorad"])
+        subprocess.call(["docker", "container", "stop", "fractal"])
         os.system("sudo reboot")
     else:
         print("Invalid option.")
@@ -697,8 +697,12 @@ def set_privacy(receiver_address, privacy) -> None:
 
 def pre_send_findora() -> None:
     # Get balance
-    output = fetch_fn_show_output()
-    findora_validator_stats = process_fn_stats(output)
+    public_address, balance, server_url, delegation_info, validator_address_evm = (
+        get_fn_values()
+    )
+    findora_validator_stats = process_fn_stats(
+        validator_address_evm, balance, server_url, delegation_info
+    )
     send_total = get_total_send(findora_validator_stats)
     express = environ.get("SEND_EXPRESS")
     convert_send_total = str(int(float(send_total) * 1000000))
@@ -907,8 +911,12 @@ class MemoUpdaterLocalFiles(cmd2.Cmd):
 
 def change_validator_info():
     print_stars()
-    output = fetch_fn_show_output()
-    findora_validator_stats = process_fn_stats(output)
+    public_address, balance, server_url, delegation_info, validator_address_evm = (
+        get_fn_values()
+    )
+    findora_validator_stats = process_fn_stats(
+        validator_address_evm, balance, server_url, delegation_info
+    )
     if "Self Delegation" not in findora_validator_stats:
         print(
             "* You have not created your validator yet. Please exit, stake with your validator "
@@ -1033,7 +1041,7 @@ def get_container_version(url="http://localhost:8668/version") -> str:
         response = requests.get(url)
         if response.status_code == 200 and response.text:
             # Extract version from the response text using regular expression
-            match = re.search(r'Build: (v\d+\.\d+\.\d+-\w+)', response.text)
+            match = re.search(r"Build: (v\d+\.\d+\.\d+-\w+)", response.text)
             if match:
                 return match.group(1)
     except requests.RequestException as e:
@@ -1042,7 +1050,9 @@ def get_container_version(url="http://localhost:8668/version") -> str:
     try:
         # Run docker ps command and extract version from the output
         docker_ps_output = subprocess.check_output(["docker", "ps"]).decode("utf-8")
-        container_info = re.search(r'findoranetwork/findorad:(v\d+\.\d+\.\d+-\w+)', docker_ps_output)
+        container_info = re.search(
+            r"fractalfoundation/fractal:(v\d+\.\d+\.\d+-\w+)", docker_ps_output
+        )
         if container_info:
             return container_info.group(1)
     except subprocess.CalledProcessError as e:
@@ -1151,7 +1161,7 @@ def extract_value(output, key):
     return None
 
 
-def fetch_fn_show_output():
+def get_fn_values():
     """
     Executes the 'fn show' command, processes its output, and returns the cleaned up output.
     """
@@ -1161,7 +1171,7 @@ def fetch_fn_show_output():
         )
         stdout, stderr = process.communicate()
 
-        # If needed, combine both outputs:
+        # Combine both outputs if needed
         combined_output = stdout + stderr
         cleaned_output = (
             combined_output.decode()
@@ -1169,19 +1179,44 @@ def fetch_fn_show_output():
             .replace("\x1b[31;01m", "")
             .replace("\x1b[00m", "")
         )
-        return cleaned_output
+
+        # Extract values from the cleaned output
+        public_address = extract_value(cleaned_output, "Validator Node Addr")
+        balance = extract_value(cleaned_output, "Node Balance")
+        server_url = extract_value(cleaned_output, "Server URL")
+        delegation_info = extract_key_value_pairs(cleaned_output, "Your Delegation")
+        validator_address_evm = public_address.lower()
+        if not validator_address_evm.startswith("0x"):
+            validator_address_evm = "0x" + validator_address_evm
+
+        # Check if all variables contain data and are not errors
+        if (
+            public_address
+            and balance
+            and server_url
+            and delegation_info
+            and validator_address_evm
+        ):
+            return (
+                public_address,
+                balance,
+                server_url,
+                delegation_info,
+                validator_address_evm,
+            )
+        else:
+            print(
+                "* Fractal chain data is having some issues currently, try again in a moment..."
+            )
+            finish_node()
     except Exception as e:
         print(f"Error: {e}")
-        return ""
+        finish_node()
 
 
-def process_fn_stats(output):
-    public_address = extract_value(output, "Validator Node Addr")
-    # Convert the validator_address to lowercase and ensure it starts with '0x'
-    validator_address_evm = public_address.lower()
-    if not validator_address_evm.startswith("0x"):
-        validator_address_evm = "0x" + validator_address_evm
-
+def process_fn_stats(
+    validator_address_evm, validator_balance, network, delegation_info
+):
     # Get validator data
     graphql_stats = fetch_single_validator(validator_address_evm)
 
@@ -1211,15 +1246,10 @@ def process_fn_stats(output):
         proposer_count = validator_status.get("proposerCount", 0)
         unvoted_count = validator_status.get("unvotedCount", 0)
 
-    # Parse JSON sections
-    delegation_info = extract_key_value_pairs(output, "Your Delegation")
-
     # Extract other values
-    network = extract_value(output, "Server URL")
-    balance_raw = extract_value(output, "Node Balance")
     balance = (
-        f"{findora_gwei_convert(int(balance_raw.split()[0])):,.2f}"
-        if balance_raw
+        f"{findora_gwei_convert(int(validator_balance.split()[0])):,.2f}"
+        if validator_balance
         else "0"
     )
     staked_balance = f"{eth_gwei_convert(int(validator_data.get('amount', '0'))):,.2f}"
@@ -1265,7 +1295,7 @@ def process_fn_stats(output):
             f"{findora_gwei_convert(your_delegation_rewards):,.2f}"
         )
 
-    return fn_info, validator_address_evm, public_address
+    return fn_info
 
 
 def menu_topper() -> None:
@@ -1277,9 +1307,11 @@ def menu_topper() -> None:
             curl_stats["result"]["validator_info"]["voting_power"]
         )
         our_version = get_container_version()
-        output = fetch_fn_show_output()
-        findora_validator_stats, validator_address, public_address = process_fn_stats(
-            output
+        public_address, balance, server_url, delegation_info, validator_address_evm = (
+            get_fn_values()
+        )
+        findora_validator_stats = process_fn_stats(
+            validator_address_evm, balance, server_url, delegation_info
         )
         external_ip = config.our_external_ip
         online_version = get_container_version(
@@ -1304,7 +1336,7 @@ def menu_topper() -> None:
         f"* Server Hostname & IP:      {config.server_host_name}{Style.RESET_ALL}{Fore.MAGENTA}"
         + f" - {Fore.YELLOW}{external_ip}{Style.RESET_ALL}{Fore.MAGENTA}"
     )
-    print(f"* Public Address:            {validator_address}")
+    print(f"* Public Address:            {validator_address_evm}")
     if findora_validator_stats["Network"] == "https://prod-mainnet.prod.findora.org":
         print("* Network:                   Mainnet")
     if findora_validator_stats["Network"] == "https://prod-testnet.prod.findora.org":
@@ -1436,11 +1468,11 @@ def run_ubuntu_updates() -> None:
     if question:
         print_stars()
         print("* Stopping docker container for safety")
-        subprocess.call(["docker", "container", "stop", "findorad"])
+        subprocess.call(["docker", "container", "stop", "fractal"])
         run_ubuntu_updater()
         print_stars()
-        print("* Restarting findorad container")
-        subprocess.call(["docker", "container", "start", "findorad"])
+        print("* Restarting fractal container")
+        subprocess.call(["docker", "container", "start", "fractal"])
         refresh_fn_stats()
     else:
         return
@@ -1483,7 +1515,7 @@ def migrate_to_server() -> None:
                 # start installing
                 print("* Copying Files...")
                 # stop service
-                subprocess.call(["docker", "container", "stop", "findorad"])
+                subprocess.call(["docker", "container", "stop", "fractal"])
                 # move files
                 if os.path.exists(
                     f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key'
@@ -1818,9 +1850,8 @@ def parse_flags(parser, region, network):
     args = parser.parse_args()
 
     if args.claim:
-        output = fetch_fn_show_output()
-        findora_validator_stats, validator_address, public_address = process_fn_stats(
-            output
+        public_address, balance, server_url, delegation_info, validator_address_evm = (
+            get_fn_values()
         )
         claim_findora_rewards(public_address)
         finish_node()
@@ -1930,7 +1961,7 @@ def run_troubleshooting_process():
                 print(
                     "* Stopping toolbox so you can troubleshoot the container manually.\n"
                     + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors "
-                    + "with: docker logs findorad\n"
+                    + "with: docker logs fractal\n"
                     + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./findora.sh -u\n"
                     + "* If the above does not work you should be prompted to run a safety clean or you can do that "
                     + "manually with: ./findora.sh --clean\n"
@@ -1942,8 +1973,12 @@ def run_troubleshooting_process():
 
 def run_register_node() -> None:
     create_staker_memo()
-    output = fetch_fn_show_output()
-    findora_validator_stats = process_fn_stats(output)
+    public_address, balance, server_url, delegation_info, validator_address_evm = (
+        get_fn_values()
+    )
+    findora_validator_stats = process_fn_stats(
+        validator_address_evm, balance, server_url, delegation_info
+    )
     try:
         findora_validator_stats.pop("memo")
     except KeyError:

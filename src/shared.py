@@ -364,7 +364,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
         CHAINDATA_URL, CHECKSUM_LATEST = file.read().strip().split(",")
 
     # Remove old data
-    shutil.rmtree(os.path.join(ROOT_DIR, "findorad"), ignore_errors=True)
+    shutil.rmtree(os.path.join(ROOT_DIR, "fractal"), ignore_errors=True)
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "data"), ignore_errors=True)
     shutil.rmtree(
         os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"),
@@ -422,7 +422,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
     # Define the directory paths
     SNAPSHOT_DIR = os.path.join(ROOT_DIR, "snapshot_data")
-    LEDGER_DIR = os.path.join(ROOT_DIR, "findorad")
+    LEDGER_DIR = os.path.join(ROOT_DIR, "fractal")
     TENDERMINT_DIR = os.path.join(ROOT_DIR, "tendermint", "data")
 
     # Create the snapshot directory
@@ -510,7 +510,7 @@ def start_local_validator(
         # Define the base volumes
         volumes = {
             f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
-            f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
+            f"{ROOT_DIR}/findora": {"bind": "/tmp/findora", "mode": "rw"},
         }
 
         # Add additional volume for testnet

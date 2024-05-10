@@ -49,21 +49,21 @@ class Config:
         # Load environment variables from .env file
         load_dotenv()
         
-        self.toolbox_version = "1.6.3"
+        self.toolbox_version = "2.0.0"
         self.server_host_name = socket.gethostname()
         self.user_home_dir = os.path.expanduser("~")
-        self.dotenv_file = f"{self.user_home_dir}/.findora.env"
+        self.dotenv_file = f"{self.user_home_dir}/.fractal.env"
         self.active_user_name = os.path.split(self.user_home_dir)[-1]
         self.findora_root = "/data/findora"
         self.findora_root_mainnet = f"{self.findora_root}/mainnet"
         self.findora_root_testnet = f"{self.findora_root}/testnet"
-        self.toolbox_location = os.path.join(self.user_home_dir, "findora-toolbox")
+        self.toolbox_location = os.path.join(self.user_home_dir, "fractal-toolbox")
         self.staker_memo_path = os.path.join(self.user_home_dir, "staker_memo")
         self.our_external_ip = get_url()
-        self.container_name = "findorad"
+        self.container_name = "fractal"
         self.migrate_dir = os.path.join(self.user_home_dir, "migrate")
         self.fra_env = "prod"
-        self.findora_backup = os.path.join(self.user_home_dir, "findora_backup")
+        self.findora_backup = os.path.join(self.user_home_dir, "fractal_backup")
         # self.graphql_endpoint_1 = "https://graph.findora.org"
         # self.graphql_endpoint_2 = "https://mainnet2.graph.findora.org"
         self.graphql_endpoint = "https://mainnet3.graph.findora.org"

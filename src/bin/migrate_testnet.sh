@@ -4,12 +4,12 @@ ENV=prod
 NAMESPACE=testnet
 SERV_URL=https://${ENV}-${NAMESPACE}.${ENV}.findora.org
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
-FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
+FINDORAD_IMG=fractalfoundation/fractal:${LIVE_VERSION}
 export ROOT_DIR=/data/findora/${NAMESPACE}
 keypath=${ROOT_DIR}/${NAMESPACE}_node.key
 migratepath=/home/${USERNAME}/migrate
 FN=${ROOT_DIR}/bin/fn
-container_name=findorad
+container_name=fractal
 
 check_env() {
     for i in wget curl; do
@@ -57,13 +57,20 @@ check_env() {
 ##########################################
 # Check if container is running and stop #
 ##########################################
+if docker ps -a --format '{{.Names}}' | grep -Eq findorad; then
+    echo -e "Fractal Container found, stopping container to restart."
+    docker stop findorad
+    docker rm findorad
+    rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
+fi
+
 if docker ps -a --format '{{.Names}}' | grep -Eq "^${container_name}\$"; then
-  echo -e "Findorad Container found, stopping container."
-  docker stop findorad
-  docker rm findorad
+  echo -e "Fractal Container found, stopping container."
+  docker stop fractal
+  docker rm fractal
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
-  echo 'Findorad container stopped or does not exist, continuing.'
+  echo 'Fractal container stopped or does not exist, continuing.'
 fi
 
 check_env
@@ -85,7 +92,7 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}/tendermint
 ###################
 docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
-    -v ${ROOT_DIR}/findorad:/tmp/findora \
+    -v ${ROOT_DIR}/findora:/tmp/findora \
     -v ${ROOT_DIR}/checkpoint.toml:/root/checkpoint.toml \
     -p 8669:8669 \
     -p 8668:8668 \
@@ -93,7 +100,7 @@ docker run -d \
     -p 8545:8545 \
     -p 26657:26657 \
     -e EVM_CHAIN_ID=2153 \
-    --name findorad \
+    --name fractal \
     ${FINDORAD_IMG} node \
     --ledger-dir /tmp/findora \
     --checkpoint-file=/root/checkpoint.toml \
