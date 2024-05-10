@@ -14,15 +14,13 @@ def run_safety_clean(network=os.environ.get("FRA_NETWORK"), region=os.environ.ge
     ENV = "prod"
     server_url = f"https://{ENV}-{network}.{ENV}.findora.org"
     LIVE_VERSION = get_live_version(server_url)
-    FINDORAD_IMG = f"findoranetwork/findorad:v{LIVE_VERSION}"
+    FRACTAL_IMG = f"fractalfoundation/fractal:v{LIVE_VERSION}"
     ROOT_DIR = f"/data/findora/{network}"
-    CONTAINER_NAME = "findorad"
+    CONTAINER_NAME = "fractal"
     ENDPOINT_STATUS_URL = "http://localhost:26657/status"
     RETRY_INTERVAL = 10
 
     chown_dir(ROOT_DIR, USERNAME, USERNAME)
-
-    stop_and_remove_container(CONTAINER_NAME)
 
     # get snapshot
     load_server_data(ENV, network, ROOT_DIR, region)
@@ -40,7 +38,7 @@ def run_safety_clean(network=os.environ.get("FRA_NETWORK"), region=os.environ.ge
             check=True,
         )
 
-    # Start findorad
+    # Start fractal
     start_local_validator(
-        ROOT_DIR, FINDORAD_IMG, "safety_clean", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
+        ROOT_DIR, FRACTAL_IMG, "safety_clean", network, CONTAINER_NAME, ENDPOINT_STATUS_URL, RETRY_INTERVAL
     )

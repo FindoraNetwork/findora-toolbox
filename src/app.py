@@ -40,7 +40,7 @@ def main() -> None:
     if not os.path.exists("/usr/local/bin/fn"):
         # It does not, let's ask to install!
         menu_install_findora(network, region)
-    # fn is found, is the findorad container running? Run the 'docker ps' command and filter the output using 'grep'
+    # fn is found, is the fractal container running? Run the 'docker ps' command and filter the output using 'grep'
     elif container_running(config.container_name):
         backup_folder_check()
         run_findora_menu()

@@ -268,7 +268,7 @@ def install_fn_app():
     print("* fn app installed.")
 
 
-def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORAD_IMG):
+def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FRACTAL_IMG):
     # Extract node_mnemonic from keypath file
     with open(keypath, "r") as file:
         content = file.read()
@@ -315,7 +315,7 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FINDORA
 
         # Run the Docker container in blocking mode to await finish
         client.containers.run(
-            image=FINDORAD_IMG,
+            image=FRACTAL_IMG,
             command=["init", f"--{network}"],
             volumes=volumes,
             remove=True,  # Equivalent to --rm
@@ -364,7 +364,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
         CHAINDATA_URL, CHECKSUM_LATEST = file.read().strip().split(",")
 
     # Remove old data
-    shutil.rmtree(os.path.join(ROOT_DIR, "findorad"), ignore_errors=True)
+    shutil.rmtree(os.path.join(ROOT_DIR, "fractal"), ignore_errors=True)
     shutil.rmtree(os.path.join(ROOT_DIR, "tendermint", "data"), ignore_errors=True)
     shutil.rmtree(
         os.path.join(ROOT_DIR, "tendermint", "config", "addrbook.json"),
@@ -422,7 +422,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
     # Define the directory paths
     SNAPSHOT_DIR = os.path.join(ROOT_DIR, "snapshot_data")
-    LEDGER_DIR = os.path.join(ROOT_DIR, "findorad")
+    LEDGER_DIR = os.path.join(ROOT_DIR, "fractal")
     TENDERMINT_DIR = os.path.join(ROOT_DIR, "tendermint", "data")
 
     # Create the snapshot directory
@@ -484,7 +484,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
 def start_local_validator(
     ROOT_DIR,
-    FINDORAD_IMG,
+    FRACTAL_IMG,
     local_node_status,
     network,
     CONTAINER_NAME,
@@ -510,7 +510,7 @@ def start_local_validator(
         # Define the base volumes
         volumes = {
             f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
-            f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
+            f"{ROOT_DIR}/findora": {"bind": "/tmp/findora", "mode": "rw"},
         }
 
         # Add additional volume for testnet
@@ -526,7 +526,7 @@ def start_local_validator(
         )
 
         container = client.containers.run(
-            image=FINDORAD_IMG,
+            image=FRACTAL_IMG,
             name=CONTAINER_NAME,
             detach=True,
             volumes=volumes,
@@ -633,6 +633,9 @@ def local_key_setup(keypath, ROOT_DIR, network):
             )
 
 
+import os
+
+
 def stop_and_remove_container(container_name):
     # Create a Docker client
     client = docker.from_env()
@@ -647,13 +650,26 @@ def stop_and_remove_container(container_name):
         container.remove()
 
     except docker.errors.NotFound:
-        print(f"* {container_name} container removed.")
+        print(f"* {container_name} container not found.")
     except docker.errors.APIError as e:
         print(f"* Docker API error: {e}")
         finish_node()
     finally:
         # Close the Docker client
         client.close()
+
+    # Check if 'findorad' container exists
+    try:
+        findorad_container = client.containers.get("findorad")
+        print("* 'findorad' container found, stopping & removing container...")
+        findorad_container.stop()
+        findorad_container.remove()
+        
+    except docker.errors.NotFound:
+        print("* 'findorad' container not found.")
+    finally:
+        # Close the Docker client
+        findorad_container.close()
 
     # Remove the specified file
     file_path = "/data/findora/mainnet/tendermint/config/addrbook.json"

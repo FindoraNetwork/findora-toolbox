@@ -4,8 +4,8 @@ ENV=prod
 NAMESPACE=mainnet
 SERV_URL=https://${ENV}-${NAMESPACE}.${ENV}.findora.org
 LIVE_VERSION=$(curl -s https://${ENV}-${NAMESPACE}.${ENV}.findora.org:8668/version | awk -F\  '{print $2}')
-FINDORAD_IMG=findoranetwork/findorad:${LIVE_VERSION}
-CONTAINER_NAME=findorad
+FRACTAL_IMG=fractalfoundation/fractal:${LIVE_VERSION}
+CONTAINER_NAME=fractal
 
 export ROOT_DIR=/data/findora/${NAMESPACE}
 
@@ -15,13 +15,20 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 ##########################################
 # Check if container is running and stop #
 ##########################################
+if docker ps -a --format '{{.Names}}' | grep -Eq findorad; then
+    echo -e "Findorad Container found, stopping container to restart."
+    docker stop findorad
+    docker rm findorad
+    rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
+fi
+
 if docker ps -a --format '{{.Names}}' | grep -Eq ${CONTAINER_NAME}; then
-  echo -e "Findorad Container found, stopping container to restart."
-  docker stop findorad
-  docker rm findorad
+  echo -e "Fractal Container found, stopping container to restart."
+  docker stop fractal
+  docker rm fractal
   rm -rf /data/findora/mainnet/tendermint/config/addrbook.json
 else
-  echo 'Findorad container stopped or does not exist, continuing.'
+  echo 'Fractal container stopped or does not exist, continuing.'
 fi
 
 ###################
@@ -35,7 +42,7 @@ CHECKSUM_LATEST=$(cut -d , -f 2 "${ROOT_DIR}/latest")
 echo $CHAINDATA_URL
 
 # remove old data
-rm -rf "${ROOT_DIR}/findorad"
+rm -rf "${ROOT_DIR}/findora"
 rm -rf "${ROOT_DIR}/tendermint/data"
 rm -rf "${ROOT_DIR}/tendermint/config/addrbook.json"
 
@@ -52,7 +59,7 @@ done
 
 # Define the directory paths
 SNAPSHOT_DIR="${ROOT_DIR}/snapshot_data"
-LEDGER_DIR="${ROOT_DIR}/findorad"
+LEDGER_DIR="${ROOT_DIR}/findora"
 TENDERMINT_DIR="${ROOT_DIR}/tendermint/data"
 
 # Create the snapshot directory
@@ -91,15 +98,15 @@ rm -rf "${ROOT_DIR}/snapshot"
 ######################
 docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
-    -v ${ROOT_DIR}/findorad:/tmp/findora \
+    -v ${ROOT_DIR}/findora:/tmp/findora \
     -p 8669:8669 \
     -p 8668:8668 \
     -p 8667:8667 \
     -p 8545:8545 \
     -p 26657:26657 \
     -e EVM_CHAIN_ID=2152 \
-    --name findorad \
-    ${FINDORAD_IMG} node \
+    --name fractal \
+    ${FRACTAL_IMG} node \
     --ledger-dir /tmp/findora \
     --tendermint-host 0.0.0.0 \
     --tendermint-node-key-config-path="/root/.tendermint/config/priv_validator_key.json" \
@@ -107,7 +114,7 @@ docker run -d \
 # Wait for the container to be up and the endpoint to respond
 while true; do
     # Check if the container is running
-    if docker ps --format '{{.Names}}' | grep -Eq '^findorad$'; then
+    if docker ps --format '{{.Names}}' | grep -Eq '^fractal$'; then
         # Check the response from the curl endpoint
         if curl -s 'http://localhost:26657/status' > /dev/null; then
             echo "Container is up and endpoint is responding."
