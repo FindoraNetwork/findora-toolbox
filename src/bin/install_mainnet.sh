@@ -110,7 +110,7 @@ done
 
 # Define the directory paths
 SNAPSHOT_DIR="${ROOT_DIR}/snapshot_data"
-LEDGER_DIR="${ROOT_DIR}/findora"
+LEDGER_DIR="${ROOT_DIR}/findorad"
 TENDERMINT_DIR="${ROOT_DIR}/tendermint/data"
 
 # Create the snapshot directory
