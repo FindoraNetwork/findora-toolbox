@@ -17,8 +17,6 @@ def run_update_restart(network=os.environ.get("FRA_NETWORK")):
 
     chown_dir(ROOT_DIR, USERNAME, USERNAME)
 
-    stop_and_remove_container(CONTAINER_NAME)
-
     # get checkpoint on testnet
     if network == "testnet":
         CHECKPOINT_URL = (
