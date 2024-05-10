@@ -21,7 +21,7 @@ def main() -> None:
     loader_intro()
     print_stars()
     
-    if os.path.exists("~/.findora.env"):
+    if os.path.exists(f"{config.user_home_dir}/.findora.env"):
         print_stars()
         print("You have a previous version of the Findora Toolbox installed. Please remove it before continuing.")
         print("Run the following command to remove the previous version:")
