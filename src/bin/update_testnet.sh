@@ -35,7 +35,7 @@ sudo chown -R ${USERNAME}:${USERNAME} ${ROOT_DIR}
 ######################
 docker run -d \
     -v ${ROOT_DIR}/tendermint:/root/.tendermint \
-    -v ${ROOT_DIR}/findora:/tmp/findora \
+    -v ${ROOT_DIR}/findorad:/tmp/findora \
     -v ${ROOT_DIR}/checkpoint.toml:/root/checkpoint.toml \
     -p 8669:8669 \
     -p 8668:8668 \
