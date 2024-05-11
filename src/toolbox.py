@@ -1744,9 +1744,6 @@ def run_findora_menu() -> None:
             print(
                 f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
             )
-        # clear before load
-
-        print_stars()
         try:
             menu_options[value]()
         except (ValueError, KeyError, TypeError) as e:
