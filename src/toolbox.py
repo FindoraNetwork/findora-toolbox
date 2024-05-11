@@ -1774,32 +1774,29 @@ def parse_flags(parser, region, network):
     )
 
     parser.add_argument(
-        "-m",
-        "--migrate",
-        action="store_true",
-        help="Use the ~/migrate folder contents to convert this server to new keys. SHUT OFF OLD SERVER BEFORE RUNNING!",
-    )
-
-    parser.add_argument(
         "--rescue",
         action="store_true",
         help="Will run the rescue menu with full options, if your container is not running.",
     )
 
     parser.add_argument(
-        "-sc",
         "--safetyclean",
         action="store_true",
         help="Will run the safety clean script, removes database, reloads all data.",
     )
 
     parser.add_argument(
-        "-fn",
         "--fnupdate",
         action="store_true",
         help="Will update fn wallet application.",
     )
 
+    parser.add_argument(
+        "--migrate",
+        action="store_true",
+        help="Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate.",
+    )
+    
     parser.add_argument(
         "--installer",
         action="store_true",
