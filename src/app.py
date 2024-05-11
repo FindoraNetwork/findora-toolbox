@@ -18,7 +18,7 @@ from config import config
 
 def main() -> None:   
     print_stars()
-    print("Welcome to the Fractal Validator Toolbox!")
+    print("* Welcome to the Fractal Validator Toolbox!")
     print_stars()
     
     # Check for previous version of the toolbox, halt if found until upgraded manually
