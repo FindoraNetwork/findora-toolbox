@@ -26,7 +26,9 @@ def main() -> None:
         print("* WARNING: You have the Findora Toolbox installed and not the new Fractal Toolbox.")
         print_stars()
         print("* Please run the following command to convert from the findora toolbox to fractal toolbox and start the upgrade process:")
+        print()
         print("cd && wget -O fractal.sh https://raw.githubusercontent.com/FindoraNetwork/findora-toolbox/main/src/bin/fractal.sh && chmod +x fractal.sh && rm ~/findora.sh && mv ~/findora-toolbox ~/fractal-toolbox && mv .findora.env .fractal.env && ./fractal.sh -u")
+        print()
         print_stars()
         finish_node()
 
