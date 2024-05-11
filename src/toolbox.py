@@ -57,7 +57,7 @@ def loader_intro():
 *    ██║   ██║   ██║██║   ██║██║     ██████╔╝██║   ██║ ╚███╔╝ 
 *    ██║   ██║   ██║██║   ██║██║     ██╔══██╗██║   ██║ ██╔██╗ 
 *    ██║   ╚██████╔╝╚██████╔╝███████╗██████╔╝╚██████╔╝██╔╝ ██╗
-*    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝                                                            
+*    ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝
 *
 *     Fractal Validator Management
 *     Created by Patrick @ https://EasyNode.pro
@@ -1413,7 +1413,7 @@ def update_fn_wallet() -> None:
         )
 
 
-def menu_install_findora(network, region) -> None:
+def menu_install_fractal(network, region) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
@@ -1751,74 +1751,28 @@ def run_findora_menu() -> None:
 
 
 def parse_flags(parser, region, network):
+    # Define the flags and their descriptions
+    flags = [
+        ("-u", "Will update and/or restart your Fractal container."),
+        ("-s", "Will show your stats if Fractal is installed and running."),
+        ("-c", "Will allow you to claim and then send FRA to a fra1 address."),
+        ("--rescue", "Will run the rescue menu with full options, if your container is not running."),
+        ("--safetyclean", "Will run the safety clean script, removes database, reloads all data."),
+        ("--fnupdate", "Will update fn wallet application."),
+        ("--migrate", "Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate."),
+        ("--installer", "Will run the toolbox installer setup for mainnet or testnet."),
+        ("--register", "Will register your validator on chain after server is synced and deposit is made."),
+        ("--ultrareset", "WARNING: This will remove all data on your server, make sure you have backups of all key files and data."),
+    ]
+
     # Add the arguments
-    parser.add_argument(
-        "-u",
-        "--update",
-        action="store_true",
-        help="Will update and/or restart your Findora container.",
-    )
+    for flag, help_text in flags:
+        parser.add_argument(flag, action="store_true", help=help_text)
 
-    parser.add_argument(
-        "-s",
-        "--stats",
-        action="store_true",
-        help="Run your stats if Findora is installed and running.",
-    )
-
-    parser.add_argument(
-        "-c",
-        "--claim",
-        action="store_true",
-        help="Claim all of your pending Unclaimed FRA.",
-    )
-
-    parser.add_argument(
-        "--rescue",
-        action="store_true",
-        help="Will run the rescue menu with full options, if your container is not running.",
-    )
-
-    parser.add_argument(
-        "--safetyclean",
-        action="store_true",
-        help="Will run the safety clean script, removes database, reloads all data.",
-    )
-
-    parser.add_argument(
-        "--fnupdate",
-        action="store_true",
-        help="Will update fn wallet application.",
-    )
-
-    parser.add_argument(
-        "--migrate",
-        action="store_true",
-        help="Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate.",
-    )
-    
-    parser.add_argument(
-        "--installer",
-        action="store_true",
-        help="Will run the toolbox installer setup for mainnet or testnet.",
-    )
-
-    parser.add_argument(
-        "--register",
-        action="store_true",
-        help="Will register your validator on chain after server is synced and deposit is made.",
-    )
-
-    parser.add_argument(
-        "--ultrareset",
-        action="store_true",
-        help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
-    )
-
-    # parse the arguments
+    # Parse the arguments
     args = parser.parse_args()
 
-    if args.claim:
+    if args.c:
         public_address, balance, server_url, delegation_info, validator_address_evm = (
             get_fn_values()
         )
@@ -1826,7 +1780,7 @@ def parse_flags(parser, region, network):
         finish_node()
 
     if args.installer:
-        menu_install_findora(network, region)
+        menu_install_fractal(network, region)
 
     if args.fnupdate:
         update_fn_wallet()
@@ -1845,7 +1799,7 @@ def parse_flags(parser, region, network):
         else:
             rescue_menu()
 
-    if args.update:
+    if args.u:
         if container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
@@ -1880,7 +1834,7 @@ def parse_flags(parser, region, network):
             migration_instructions()
             finish_node()
 
-    if args.stats:
+    if args.s:
         menu_topper()
         finish_node()
 

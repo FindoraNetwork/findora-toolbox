@@ -2,7 +2,7 @@ import os
 import argparse
 from toolbox import (
     run_findora_menu,
-    menu_install_findora,
+    menu_install_fractal,
     backup_folder_check,
     print_stars,
     loader_intro,
@@ -48,7 +48,7 @@ def main() -> None:
     # If `fn` isn't installed, run full installer.
     if not os.path.exists("/usr/local/bin/fn"):
         # It does not, let's ask to install!
-        menu_install_findora(network, region)
+        menu_install_fractal(network, region)
 
     # Can this user access docker and is our container up?
     if container_running(config.container_name):
@@ -59,7 +59,7 @@ def main() -> None:
 
         # Init parser for extra flags:
         parser = argparse.ArgumentParser(
-            description="Findora Validator Toolbox - Help Menu"
+            description="Fractal Validator Toolbox - Help Menu"
         )
         parse_flags(parser, region, network)
 
