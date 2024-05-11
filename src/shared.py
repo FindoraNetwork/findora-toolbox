@@ -510,7 +510,7 @@ def start_local_validator(
         # Define the base volumes
         volumes = {
             f"{ROOT_DIR}/tendermint": {"bind": "/root/.tendermint", "mode": "rw"},
-            f"{ROOT_DIR}/findora": {"bind": "/tmp/findora", "mode": "rw"},
+            f"{ROOT_DIR}/findorad": {"bind": "/tmp/findora", "mode": "rw"},
         }
 
         # Add additional volume for testnet
