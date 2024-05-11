@@ -1753,45 +1753,21 @@ def run_findora_menu() -> None:
 def parse_flags(parser, region, network):
     # Define the flags and their descriptions
     flags = [
-        ("-u", "--update", "Will update and/or restart your Findora container."),
-        ("-s", "--stats", "Run your stats if Findora is installed and running."),
-        ("-c", "--claim", "Claim all of your pending Unclaimed FRA."),
-        (
-            "--rescue",
-            None,
-            "Will run the rescue menu with full options, if your container is not running.",
-        ),
-        (
-            "--safetyclean",
-            None,
-            "Will run the safety clean script, removes database, reloads all data.",
-        ),
-        ("--fnupdate", None, "Will update fn wallet application."),
-        (
-            "--migrate",
-            None,
-            "Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate.",
-        ),
-        (
-            "--installer",
-            None,
-            "Will run the toolbox installer setup for mainnet or testnet.",
-        ),
-        (
-            "--register",
-            None,
-            "Will register your validator on chain after server is synced and deposit is made.",
-        ),
-        (
-            "--ultrareset",
-            None,
-            "WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
-        ),
+        ("-u", "Will update and/or restart your Findora container."),
+        ("-s", "Run your stats if Findora is installed and running."),
+        ("-c", "Claim all of your pending Unclaimed FRA."),
+        ("--rescue", "Will run the rescue menu with full options, if your container is not running."),
+        ("--safetyclean", "Will run the safety clean script, removes database, reloads all data."),
+        ("--fnupdate", "Will update fn wallet application."),
+        ("--migrate", "Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate."),
+        ("--installer", "Will run the toolbox installer setup for mainnet or testnet."),
+        ("--register", "Will register your validator on chain after server is synced and deposit is made."),
+        ("--ultrareset", "WARNING: This will remove all data on your server, make sure you have backups of all key files and data."),
     ]
 
     # Add the arguments
-    for short_flag, long_flag, help_text in flags:
-        parser.add_argument(short_flag, long_flag, action="store_true", help=help_text)
+    for flag, help_text in flags:
+        parser.add_argument(flag, action="store_true", help=help_text)
 
     # Parse the arguments
     args = parser.parse_args()
