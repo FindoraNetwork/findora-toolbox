@@ -519,15 +519,13 @@ def menu_findora() -> None:
 
 
 def get_curl_stats() -> None:
-    print(Fore.GREEN)
     try:
         response = requests.get("http://localhost:26657/status")
         stats = json.loads(response.text)
         print_stars()
-        pprint(stats)
+        pprint(Fore.GREEN + stats + Fore.MAGENTA)
     except subprocess.CalledProcessError as err:
         print(f"* No response from the rpc. Error: {err}")
-    print(Fore.MAGENTA)
 
 
 def capture_stats() -> None:
