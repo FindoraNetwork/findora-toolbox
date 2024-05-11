@@ -44,9 +44,7 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 # loader intro splash screen
 def loader_intro():
-    print_stars()
     p = """*
-*
 * ███████╗██████╗  █████╗  ██████╗████████╗ █████╗ ██╗        
 * ██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██║        
 * █████╗  ██████╔╝███████║██║        ██║   ███████║██║        
@@ -63,7 +61,6 @@ def loader_intro():
 *
 *     Fractal Validator Management
 *     Created by Patrick @ https://EasyNode.pro
-*
 *"""
     print(p)
     return
@@ -277,36 +274,6 @@ def get_size(bytes, suffix="B"):
         bytes /= factor
 
 
-def docker_check():
-    try:
-        # Create a Docker client to check if Docker is installed and running
-        client = docker.from_env()
-        client.ping()
-        print("* Docker ready.")
-        print_stars()
-        time.sleep(1)
-    except docker.errors.APIError as e:
-        print(f"* Docker API error: {e}")
-        finish_node()
-    except docker.errors.DockerException as e:
-        print(f"* There's a problem with your Docker. Error: {e}\n* Are you in the `docker` group?")
-        print(
-            f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}"
-        )
-        print(
-            "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
-        )
-        print("* See: https://guides.easynode.pro/admin#docker-installation")
-        print_stars()
-        finish_node()
-    finally:
-        # Close the Docker client
-        try:
-            client.close()
-        except UnboundLocalError:
-            pass  # client was not successfully initialized
-
-
 def all_sys_info():
     print("=" * 40, "System Information", "=" * 40)
     uname = platform.uname()
@@ -421,7 +388,19 @@ def container_running(container_name: str) -> bool:
         print(f"* Docker API error: {e}")
         finish_node()
     except docker.errors.DockerException:
-        print("* There's a problem with your Docker.")
+        print(
+            f"* There's a problem with your Docker and we can't get a list of containers."
+        )
+        print("* Error: {e}\n* Are you in the `docker` group?")
+        print(f"* To add your current user to the docker group run the following:")
+        print()
+        print(f"sudo usermod -aG docker {config.active_user_name}")
+        print()
+        print(
+            "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
+        )
+        print("* See: https://guides.easynode.pro/admin#docker-installation")
+        print_stars()
         finish_node()
     finally:
         # Close the Docker client
@@ -487,9 +466,8 @@ def set_main_or_test() -> None:
 
 
 def menu_findora() -> None:
-    print(Fore.MAGENTA)
     update, public_address = menu_topper()
-    print("* Findora Validator Toolbox - Menu Options:")
+    print(Fore.MAGENTA + "* Findora Validator Toolbox - Menu Options:")
     print("*")
     print(
         "*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!"
@@ -541,16 +519,14 @@ def menu_findora() -> None:
 
 
 def get_curl_stats() -> None:
-    print_stars()
-    print(Fore.GREEN)
     try:
         response = requests.get("http://localhost:26657/status")
         stats = json.loads(response.text)
         print_stars()
-        pprint(stats)
+        # Format the output with color codes
+        print(Fore.GREEN + f"Stats: {json.dumps(stats, indent=4)}" + Fore.RESET)
     except subprocess.CalledProcessError as err:
         print(f"* No response from the rpc. Error: {err}")
-    print(Fore.MAGENTA)
 
 
 def capture_stats() -> None:
@@ -565,7 +541,6 @@ def capture_stats() -> None:
 
 
 def refresh_fn_stats() -> None:
-    print_stars()
     try:
         output = subprocess.check_output(["fn", "show"])
         output = output.decode().replace("b'", "")
@@ -581,7 +556,6 @@ import subprocess
 
 
 def claim_findora_rewards(public_address) -> None:
-    print_stars()
     try:
         print("* Claiming all pending FRA rewards now.")
         result = subprocess.call(
@@ -1753,32 +1727,26 @@ def run_findora_menu() -> None:
         888: migrate_to_server,
         999: menu_reboot_server,
     }
-    # Keep this loop going so when an item ends the menu reloads
+
     while True:
         load_var_file(config.dotenv_file)
         public_address = menu_findora()
-        # Pick an option, any option
         value = input("* Enter your option: ")
-        # Try/Catch - If it's not a number, goodbye, try again
-        if value == "":
-            run_findora_menu()
-        try:
-            value = int(value)
-        except (ValueError, KeyError, TypeError) as e:
-            print_stars()
-            print(
-                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
-            )
-        # clear before load
 
-        print_stars()
-        try:
-            menu_options[value]()
-        except (ValueError, KeyError, TypeError) as e:
+        if not value.isdigit():  # Check if input is not a number
             print_stars()
-            print(
-                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
-            )
+            print("* Invalid option. Please enter a valid number.")
+            pause_for_cause()
+            continue  # Reload the menu
+
+        value = int(value)
+        if value not in menu_options:
+            print_stars()
+            print("* Invalid option. Please enter a valid number.")
+            pause_for_cause()
+            continue  # Reload the menu
+
+        menu_options[value]()  # Execute the selected option
         pause_for_cause()
 
 
@@ -1806,28 +1774,29 @@ def parse_flags(parser, region, network):
     )
 
     parser.add_argument(
-        "-m",
-        "--migrate",
-        action="store_true",
-        help="Use the ~/migrate folder contents to convert this server to new keys. SHUT OFF OLD SERVER BEFORE RUNNING!",
-    )
-
-    parser.add_argument(
         "--rescue",
         action="store_true",
         help="Will run the rescue menu with full options, if your container is not running.",
     )
 
     parser.add_argument(
-        "--clean",
+        "--safetyclean",
         action="store_true",
-        help="Will run the clean script, removes database, reloads all data.",
+        help="Will run the safety clean script, removes database, reloads all data.",
     )
 
     parser.add_argument(
-        "--fn", action="store_true", help="Will update fn wallet application."
+        "--fnupdate",
+        action="store_true",
+        help="Will update fn wallet application.",
     )
 
+    parser.add_argument(
+        "--migrate",
+        action="store_true",
+        help="Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate.",
+    )
+    
     parser.add_argument(
         "--installer",
         action="store_true",
@@ -1859,7 +1828,7 @@ def parse_flags(parser, region, network):
     if args.installer:
         menu_install_findora(network, region)
 
-    if args.fn:
+    if args.fnupdate:
         update_fn_wallet()
 
     if args.rescue:
@@ -1890,7 +1859,7 @@ def parse_flags(parser, region, network):
         else:
             run_update_restart(os.environ.get("FRA_NETWORK"))
 
-    if args.clean:
+    if args.safetyclean:
         if container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
