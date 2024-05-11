@@ -44,7 +44,6 @@ string_stars_reset = print_stuff(reset=1).stringStars
 
 # loader intro splash screen
 def loader_intro():
-    print_stars()
     p = """*
 *
 * ███████╗██████╗  █████╗  ██████╗████████╗ █████╗ ██╗        
@@ -543,7 +542,6 @@ def menu_findora() -> None:
 
 
 def get_curl_stats() -> None:
-    print_stars()
     print(Fore.GREEN)
     try:
         response = requests.get("http://localhost:26657/status")
@@ -567,7 +565,6 @@ def capture_stats() -> None:
 
 
 def refresh_fn_stats() -> None:
-    print_stars()
     try:
         output = subprocess.check_output(["fn", "show"])
         output = output.decode().replace("b'", "")
@@ -583,7 +580,6 @@ import subprocess
 
 
 def claim_findora_rewards(public_address) -> None:
-    print_stars()
     try:
         print("* Claiming all pending FRA rewards now.")
         result = subprocess.call(
