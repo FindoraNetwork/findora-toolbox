@@ -1753,8 +1753,8 @@ def run_findora_menu() -> None:
 def parse_flags(parser, region, network):
     # Define the flags and their descriptions
     flags = [
-        ("-u", "Will update and/or restart your Findora container."),
-        ("-s", "Run your stats if Findora is installed and running."),
+        ("-u", "Will update and/or restart your Fractal container."),
+        ("-s", "Will show your stats if Fractal is installed and running."),
         ("-c", "Claim all of your pending Unclaimed FRA."),
         ("--rescue", "Will run the rescue menu with full options, if your container is not running."),
         ("--safetyclean", "Will run the safety clean script, removes database, reloads all data."),
