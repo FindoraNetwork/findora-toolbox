@@ -6,7 +6,6 @@ from toolbox import (
     backup_folder_check,
     print_stars,
     loader_intro,
-    docker_check,
     container_running,
     run_troubleshooting_process,
     parse_flags,
@@ -16,18 +15,27 @@ from toolbox import (
 from config import config
 
 
-def main() -> None:   
+def main() -> None:
     print_stars()
     print("* Welcome to the Fractal Validator Toolbox!")
     print_stars()
-    
+
     # Check for previous version of the toolbox, halt if found until upgraded manually
     if os.path.exists(f"{config.user_home_dir}/.findora.env"):
-        print("* WARNING: You have the Findora Toolbox installed and not the new Fractal Toolbox.")
+        print(
+            "* WARNING: You have the Findora Toolbox installed and not the new Fractal Toolbox."
+        )
         print_stars()
-        print("* Please run the following command to convert from the findora toolbox to fractal toolbox and start the upgrade process:")
+        print(
+            "* Please run the following command to convert from the findora toolbox to fractal toolbox and start the upgrade process:"
+        )
         print()
-        print("cd && wget -O fractal.sh https://raw.githubusercontent.com/FindoraNetwork/findora-toolbox/main/src/bin/fractal.sh && chmod +x fractal.sh && rm ~/findora.sh && mv ~/findora-toolbox ~/fractal-toolbox && mv .findora.env .fractal.env && ./fractal.sh -u")
+        print(
+            "cd && wget -O fractal.sh https://raw.githubusercontent.com/FindoraNetwork/findora-toolbox/main/src/bin/fractal.sh\n"
+        )
+        print(
+            "&& chmod +x fractal.sh && rm ~/findora.sh && mv ~/findora-toolbox ~/fractal-toolbox && mv .findora.env .fractal.env && ./fractal.sh -u"
+        )
         print()
         print_stars()
         finish_node()
@@ -37,27 +45,29 @@ def main() -> None:
         config.dotenv_file, config.user_home_dir, config.active_user_name
     )
 
-    # Can this user access docker?
-    docker_check()
-    
-    # Print Loading
-    print('* Gathering Validator Information... ')
-    print_stars()
-
-    # Init parser for extra flags:
-    parser = argparse.ArgumentParser(description="Findora Validator Toolbox - Help Menu")
-    parse_flags(parser, region, network)
-    
-    # Intro w/ stars below
-    loader_intro()
-    print_stars()
-
     # If `fn` isn't installed, run full installer.
     if not os.path.exists("/usr/local/bin/fn"):
         # It does not, let's ask to install!
         menu_install_findora(network, region)
-    # fn is found, is the fractal container running? Run the 'docker ps' command and filter the output using 'grep'
-    elif container_running(config.container_name):
+
+    # Can this user access docker and is our container up?
+    if container_running(config.container_name):
+
+        # Print Loading
+        print("* Gathering Validator Information... ")
+        print_stars()
+
+        # Init parser for extra flags:
+        parser = argparse.ArgumentParser(
+            description="Findora Validator Toolbox - Help Menu"
+        )
+        parse_flags(parser, region, network)
+
+        # Intro
+        loader_intro()
+
+        # fn is found, is the fractal container running? Run the 'docker ps' command and filter the output using 'grep'
+
         backup_folder_check()
         run_findora_menu()
     else:

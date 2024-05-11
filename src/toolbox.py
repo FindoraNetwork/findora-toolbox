@@ -45,7 +45,6 @@ string_stars_reset = print_stuff(reset=1).stringStars
 # loader intro splash screen
 def loader_intro():
     p = """*
-*
 * ███████╗██████╗  █████╗  ██████╗████████╗ █████╗ ██╗        
 * ██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝██╔══██╗██║        
 * █████╗  ██████╔╝███████║██║        ██║   ███████║██║        
@@ -62,7 +61,6 @@ def loader_intro():
 *
 *     Fractal Validator Management
 *     Created by Patrick @ https://EasyNode.pro
-*
 *"""
     print(p)
     return
@@ -276,38 +274,6 @@ def get_size(bytes, suffix="B"):
         bytes /= factor
 
 
-def docker_check():
-    try:
-        # Create a Docker client to check if Docker is installed and running
-        client = docker.from_env()
-        client.ping()
-        print("* Docker ready.")
-        print_stars()
-        time.sleep(1)
-    except docker.errors.APIError as e:
-        print(f"* Docker API error: {e}")
-        finish_node()
-    except docker.errors.DockerException as e:
-        print(
-            f"* There's a problem with your Docker. Error: {e}\n* Are you in the `docker` group?"
-        )
-        print(
-            f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}"
-        )
-        print(
-            "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
-        )
-        print("* See: https://guides.easynode.pro/admin#docker-installation")
-        print_stars()
-        finish_node()
-    finally:
-        # Close the Docker client
-        try:
-            client.close()
-        except UnboundLocalError:
-            pass  # client was not successfully initialized
-
-
 def all_sys_info():
     print("=" * 40, "System Information", "=" * 40)
     uname = platform.uname()
@@ -422,7 +388,19 @@ def container_running(container_name: str) -> bool:
         print(f"* Docker API error: {e}")
         finish_node()
     except docker.errors.DockerException:
-        print("* There's a problem with your Docker.")
+        print(
+            f"* There's a problem with your Docker and we can't get a list of containers."
+        )
+        print("* Error: {e}\n* Are you in the `docker` group?")
+        print(f"* To add your current user to the docker group run the following:")
+        print()
+        print(f"sudo usermod -aG docker {config.active_user_name}")
+        print()
+        print(
+            "* We will halt, make sure running the command `docker` works properly before starting the toolbox again."
+        )
+        print("* See: https://guides.easynode.pro/admin#docker-installation")
+        print_stars()
         finish_node()
     finally:
         # Close the Docker client
