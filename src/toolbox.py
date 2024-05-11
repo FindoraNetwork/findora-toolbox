@@ -488,9 +488,8 @@ def set_main_or_test() -> None:
 
 
 def menu_findora() -> None:
-    print(Fore.MAGENTA)
     update, public_address = menu_topper()
-    print("* Findora Validator Toolbox - Menu Options:")
+    print(Fore.MAGENTA + "* Findora Validator Toolbox - Menu Options:")
     print("*")
     print(
         "*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!"
