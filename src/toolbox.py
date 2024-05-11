@@ -1772,7 +1772,7 @@ def parse_flags(parser, region, network):
     # Parse the arguments
     args = parser.parse_args()
 
-    if args.claim:
+    if args.c:
         public_address, balance, server_url, delegation_info, validator_address_evm = (
             get_fn_values()
         )
@@ -1799,7 +1799,7 @@ def parse_flags(parser, region, network):
         else:
             rescue_menu()
 
-    if args.update:
+    if args.u:
         if container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
@@ -1834,7 +1834,7 @@ def parse_flags(parser, region, network):
             migration_instructions()
             finish_node()
 
-    if args.stats:
+    if args.s:
         menu_topper()
         finish_node()
 
