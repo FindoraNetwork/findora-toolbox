@@ -1755,7 +1755,7 @@ def parse_flags(parser, region, network):
     flags = [
         ("-u", "Will update and/or restart your Fractal container."),
         ("-s", "Will show your stats if Fractal is installed and running."),
-        ("-c", "Claim all of your pending Unclaimed FRA."),
+        ("-c", "Will allow you to claim and then send FRA to a fra1 address."),
         ("--rescue", "Will run the rescue menu with full options, if your container is not running."),
         ("--safetyclean", "Will run the safety clean script, removes database, reloads all data."),
         ("--fnupdate", "Will update fn wallet application."),
