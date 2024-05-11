@@ -1726,29 +1726,26 @@ def run_findora_menu() -> None:
         888: migrate_to_server,
         999: menu_reboot_server,
     }
-    # Keep this loop going so when an item ends the menu reloads
+
     while True:
         load_var_file(config.dotenv_file)
         public_address = menu_findora()
-        # Pick an option, any option
         value = input("* Enter your option: ")
-        # Try/Catch - If it's not a number, goodbye, try again
-        if value == "":
-            run_findora_menu()
-        try:
-            value = int(value)
-        except (ValueError, KeyError, TypeError) as e:
+
+        if not value.isdigit():  # Check if input is not a number
             print_stars()
-            print(
-                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
-            )
-        try:
-            menu_options[value]()
-        except (ValueError, KeyError, TypeError) as e:
+            print("* Invalid option. Please enter a valid number.")
+            pause_for_cause()
+            continue  # Reload the menu
+
+        value = int(value)
+        if value not in menu_options:
             print_stars()
-            print(
-                f"* {value} is not a valid number, try again. Press enter to continue.\n* Error: {e}"
-            )
+            print("* Invalid option. Please enter a valid number.")
+            pause_for_cause()
+            continue  # Reload the menu
+
+        menu_options[value]()  # Execute the selected option
         pause_for_cause()
 
 
