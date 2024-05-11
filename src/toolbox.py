@@ -1413,7 +1413,7 @@ def update_fn_wallet() -> None:
         )
 
 
-def menu_install_findora(network, region) -> None:
+def menu_install_fractal(network, region) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
@@ -1780,7 +1780,7 @@ def parse_flags(parser, region, network):
         finish_node()
 
     if args.installer:
-        menu_install_findora(network, region)
+        menu_install_fractal(network, region)
 
     if args.fnupdate:
         update_fn_wallet()
