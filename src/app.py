@@ -65,6 +65,8 @@ def main() -> None:
 
         # Intro
         loader_intro()
+        print_stars()
+        print("* Loading Validator Menu...")
 
         # fn is found, is the fractal container running? Run the 'docker ps' command and filter the output using 'grep'
 
