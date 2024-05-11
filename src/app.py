@@ -23,8 +23,9 @@ def main() -> None:
     
     # Check for previous version of the toolbox, halt if found until upgraded manually
     if os.path.exists(f"{config.user_home_dir}/.findora.env"):
-        print("You have the Findora Toolbox installed and not the new Fractal Toolbox.")
-        print("Please run the following command to convert from the findora toolbox to fractal toolbox and start the upgrade process:")
+        print("* WARNING: You have the Findora Toolbox installed and not the new Fractal Toolbox.")
+        print_stars()
+        print("* Please run the following command to convert from the findora toolbox to fractal toolbox and start the upgrade process:")
         print("cd && wget -O fractal.sh https://raw.githubusercontent.com/FindoraNetwork/findora-toolbox/main/src/bin/fractal.sh && chmod +x fractal.sh && rm ~/findora.sh && mv ~/findora-toolbox ~/fractal-toolbox && mv .findora.env .fractal.env && ./fractal.sh -u")
         print_stars()
         finish_node()
