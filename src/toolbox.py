@@ -523,7 +523,8 @@ def get_curl_stats() -> None:
         response = requests.get("http://localhost:26657/status")
         stats = json.loads(response.text)
         print_stars()
-        pprint(Fore.GREEN + stats + Fore.MAGENTA)
+        # Format the output with color codes
+        print(Fore.GREEN + f"Stats: {json.dumps(stats, indent=4)}" + Fore.RESET)
     except subprocess.CalledProcessError as err:
         print(f"* No response from the rpc. Error: {err}")
 
