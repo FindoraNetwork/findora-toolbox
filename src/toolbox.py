@@ -289,7 +289,9 @@ def docker_check():
         print(f"* Docker API error: {e}")
         finish_node()
     except docker.errors.DockerException as e:
-        print(f"* There's a problem with your Docker. Error: {e}\n* Are you in the `docker` group?")
+        print(
+            f"* There's a problem with your Docker. Error: {e}\n* Are you in the `docker` group?"
+        )
         print(
             f"* Add your current user to the docker group with: sudo usermod -aG docker {config.active_user_name}"
         )
@@ -1819,13 +1821,17 @@ def parse_flags(parser, region, network):
     )
 
     parser.add_argument(
-        "--clean",
+        "-sc",
+        "--safetyclean",
         action="store_true",
-        help="Will run the clean script, removes database, reloads all data.",
+        help="Will run the safety clean script, removes database, reloads all data.",
     )
 
     parser.add_argument(
-        "--fn", action="store_true", help="Will update fn wallet application."
+        "-fn",
+        "--fnupdate",
+        action="store_true",
+        help="Will update fn wallet application.",
     )
 
     parser.add_argument(
@@ -1859,7 +1865,7 @@ def parse_flags(parser, region, network):
     if args.installer:
         menu_install_findora(network, region)
 
-    if args.fn:
+    if args.fnupdate:
         update_fn_wallet()
 
     if args.rescue:
@@ -1890,7 +1896,7 @@ def parse_flags(parser, region, network):
         else:
             run_update_restart(os.environ.get("FRA_NETWORK"))
 
-    if args.clean:
+    if args.safetyclean:
         if container_running(config.container_name):
             print_stars()
             question = ask_yes_no(

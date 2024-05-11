@@ -16,11 +16,12 @@ from toolbox import (
 from config import config
 
 
-def main() -> None:
-    # Intro w/ stars below
-    loader_intro()
+def main() -> None:   
+    print_stars()
+    print("Welcome to the Fractal Validator Toolbox!")
     print_stars()
     
+    # Check for previous version of the toolbox, halt if found until upgraded manually
     if os.path.exists(f"{config.user_home_dir}/.findora.env"):
         print_stars()
         print("You have a previous version of the Findora Toolbox installed. Please remove it before continuing.")
@@ -29,7 +30,7 @@ def main() -> None:
         print_stars()
         finish_node()
 
-    # Load Vars / Set Network & Region
+    # Check & Load Vars / Set Network & Region
     network, region = check_preflight_setup(
         config.dotenv_file, config.user_home_dir, config.active_user_name
     )
@@ -38,12 +39,16 @@ def main() -> None:
     docker_check()
     
     # Print Loading
-    print('* Gathering API Information... ')
+    print('* Gathering Validator Information... ')
     print_stars()
 
     # Init parser for extra flags:
     parser = argparse.ArgumentParser(description="Findora Validator Toolbox - Help Menu")
     parse_flags(parser, region, network)
+    
+    # Intro w/ stars below
+    loader_intro()
+    print_stars()
 
     # If `fn` isn't installed, run full installer.
     if not os.path.exists("/usr/local/bin/fn"):
