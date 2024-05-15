@@ -422,7 +422,7 @@ def load_server_data(ENV, network, ROOT_DIR, region):
 
     # Define the directory paths
     SNAPSHOT_DIR = os.path.join(ROOT_DIR, "snapshot_data")
-    LEDGER_DIR = os.path.join(ROOT_DIR, "fractal")
+    LEDGER_DIR = os.path.join(ROOT_DIR, "findorad")
     TENDERMINT_DIR = os.path.join(ROOT_DIR, "tendermint", "data")
 
     # Create the snapshot directory
