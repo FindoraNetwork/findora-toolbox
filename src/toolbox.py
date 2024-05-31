@@ -374,7 +374,7 @@ def coming_soon():
     print_stars()
 
 
-def container_running(container_name: str) -> bool:
+def check_container_running(container_name: str) -> bool:
     try:
         # Create a Docker client
         client = docker.from_env()
@@ -1786,7 +1786,7 @@ def parse_flags(parser, region, network):
         update_fn_wallet()
 
     if args.rescue:
-        if container_running(config.container_name):
+        if check_container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
                 "* Your container is running. Are you sure you want to load the rescue menu? (Y/N) "
@@ -1800,7 +1800,7 @@ def parse_flags(parser, region, network):
             rescue_menu()
 
     if args.u:
-        if container_running(config.container_name):
+        if check_container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
                 "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
@@ -1814,7 +1814,7 @@ def parse_flags(parser, region, network):
             run_update_restart(os.environ.get("FRA_NETWORK"))
 
     if args.safetyclean:
-        if container_running(config.container_name):
+        if check_container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
                 "* Your container is running. Are you sure you want to run the safety_clean script? (Y/N) "
