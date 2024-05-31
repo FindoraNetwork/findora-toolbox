@@ -6,7 +6,7 @@ from toolbox import (
     backup_folder_check,
     print_stars,
     loader_intro,
-    container_running,
+    check_container_running,
     run_troubleshooting_process,
     parse_flags,
     check_preflight_setup,
@@ -51,7 +51,7 @@ def main() -> None:
         menu_install_fractal(network, region)
 
     # Can this user access docker and is our container up?
-    if container_running(config.container_name):
+    if check_container_running(config.container_name):
 
         # Print Loading
         print("* Gathering Validator Information... ")
