@@ -50,18 +50,18 @@ def main() -> None:
         # It does not, let's ask to install!
         menu_install_fractal(network, region)
 
+    # Init parser for extra flags:
+    parser = argparse.ArgumentParser(
+        description="Fractal Validator Toolbox - Help Menu"
+    )
+    parse_flags(parser, region, network)
+
     # Can this user access docker and is our container up?
     if check_container_running(config.container_name):
 
         # Print Loading
         print("* Gathering Validator Information... ")
         print_stars()
-
-        # Init parser for extra flags:
-        parser = argparse.ArgumentParser(
-            description="Fractal Validator Toolbox - Help Menu"
-        )
-        parse_flags(parser, region, network)
 
         # Intro
         loader_intro()
