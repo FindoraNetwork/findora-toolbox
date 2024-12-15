@@ -49,7 +49,7 @@ class Config:
         # Load environment variables from .env file
         load_dotenv()
         
-        self.toolbox_version = "2.0.1"
+        self.toolbox_version = "2.0.2"
         self.server_host_name = socket.gethostname()
         self.user_home_dir = os.path.expanduser("~")
         self.dotenv_file = f"{self.user_home_dir}/.fractal.env"
