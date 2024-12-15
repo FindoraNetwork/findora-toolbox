@@ -38,8 +38,6 @@ def main() -> None:
         description="Fractal Validator Toolbox - Help Menu"
     )
     parse_flags(parser, region, network)
-    
-    print("* Test after parse_flags")
 
     # Can this user access docker and is our container up?
     if check_container_running(config.container_name):
@@ -52,6 +50,8 @@ def main() -> None:
         loader_intro()
         print_stars()
         print("* Loading Validator Menu...")
+        
+        # Somewhere after this
 
         # fn is found, is the fractal container running? Run the 'docker ps' command and filter the output using 'grep'
 

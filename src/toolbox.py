@@ -12,7 +12,7 @@ import cmd2
 import sys
 import re
 from datetime import datetime, timezone
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, ConnectionError, Timeout, HTTPError
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
 from os import environ
@@ -558,15 +558,49 @@ def get_curl_stats() -> None:
         print(f"* No response from the rpc. Error: {err}")
 
 
-def capture_stats() -> None:
-    try:
-        response = requests.get("http://localhost:26657/status")
-        response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
-        stats = json.loads(response.text)
-        return stats
-    except (RequestException, json.JSONDecodeError) as e:
-        print(f"* Error: {e}\n* Is Docker running?")
-        finish_node()
+def capture_stats(max_retries=3, timeout=5, retry_delay=1) -> None:
+    """
+    Capture node stats from the API.
+
+    Args:
+    - max_retries (int): Maximum number of retries if the request fails.
+    - timeout (int): Timeout in seconds for the request.
+    - retry_delay (int): Delay in seconds between retries.
+
+    Returns:
+    - stats (dict): Node stats if the request is successful.
+    """
+
+    retries = 0
+    while retries <= max_retries:
+        try:
+            response = requests.get("http://localhost:26657/status", timeout=timeout)
+            response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
+            stats = json.loads(response.text)
+            return stats
+        except (ConnectionError, Timeout) as e:
+            print(f"* Error: {e}\n* Is Docker running? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except HTTPError as e:
+            print(f"* HTTP Error: {e}\n* Is the node running correctly? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except json.JSONDecodeError as e:
+            print(f"* JSON Decode Error: {e}\n* Is the node returning valid JSON? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except RequestException as e:
+            print(f"* Request Error: {e}\n* Is the request valid? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except Exception as e:
+            print(f"* Unexpected Error: {e}\n* Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+
+    print(f"* Failed to capture stats after {max_retries} retries. Giving up.")
+    finish_node()
 
 
 def refresh_fn_stats() -> None:
@@ -1781,34 +1815,80 @@ def run_fractal_menu() -> None:
 
 def parse_flags(parser, region, network):
     # Define the flags and their descriptions
-    flags = [
-        ("-u", "Will update and/or restart your Fractal container."),
-        ("-s", "Will show your stats if Fractal is installed and running."),
-        ("-c", "Will allow you to claim and then send FRA to a fra1 address."),
-        ("--rescue", "Will run the rescue menu with full options, if your container is not running."),
-        ("--safetyclean", "Will run the safety clean script, removes database, reloads all data."),
-        ("--fnupdate", "Will update fn wallet application."),
-        ("--migrate", "Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate."),
-        ("--installer", "Will run the toolbox installer setup for mainnet or testnet."),
-        ("--register", "Will register your validator on chain after server is synced and deposit is made."),
-        ("--ultrareset", "WARNING: This will remove all data on your server, make sure you have backups of all key files and data."),
-    ]
-
-    # Add the arguments
-    for flag, help_text in flags:
-        parser.add_argument(flag, action="store_true", help=help_text)
-
+    parser.add_argument(
+        "-u",
+        "--update",
+        action="store_true",
+        help="Will update and/or restart your Fractal container.",
+    )
+    
+    parser.add_argument(
+        "-s",
+        "--stats",
+        action="store_true",
+        help="Will show your stats if Fractal is installed and running.",
+    )
+    
+    parser.add_argument(
+        "-c",
+        "--claim",
+        action="store_true",
+        help="Will allow you to claim and then send FRA to a fra1 address.",
+    )
+    
+    parser.add_argument(
+        "--rescue",
+        action="store_true",
+        help="Will run the rescue menu with full options, if your container is not running.",
+    )
+    
+    parser.add_argument(
+        "--safetyclean",
+        action="store_true",
+        help="Will run the safety clean script, removes database, reloads all data.",
+    )
+    
+    parser.add_argument(
+        "--fnupdate",
+        action="store_true",
+        help="Will update fn wallet application.",
+    )
+    
+    parser.add_argument(
+        "--migrate",
+        action="store_true",
+        help="Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate.",
+    )
+    
+    parser.add_argument(
+        "--install",
+        action="store_true",
+        help="Will run the toolbox installer setup for mainnet or testnet.",
+    )
+    
+    parser.add_argument(
+        "--register",
+        action="store_true",
+        help="Will register your validator on chain after server is synced and deposit is made.",
+    )
+    
+    parser.add_argument(
+        "--ultrareset",
+        action="store_true",
+        help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
+    )
+    
     # Parse the arguments
     args = parser.parse_args()
 
-    if args.c:
+    if args.claim:
         public_address, balance, server_url, delegation_info, validator_address_evm = (
             get_fn_values()
         )
         claim_findora_rewards(public_address)
         finish_node()
 
-    if args.installer:
+    if args.install:
         menu_install_fractal(network, region)
 
     if args.fnupdate:
@@ -1828,7 +1908,7 @@ def parse_flags(parser, region, network):
         else:
             rescue_menu()
 
-    if args.u:
+    if args.u update:
         if check_container_running(config.container_name):
             print_stars()
             question = ask_yes_no(
@@ -1863,7 +1943,7 @@ def parse_flags(parser, region, network):
             migration_instructions()
             finish_node()
 
-    if args.s:
+    if args.stats:
         menu_topper()
         finish_node()
 
