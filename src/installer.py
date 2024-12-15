@@ -45,7 +45,7 @@ def run_full_installer(network, region):
 
     # Create backup directory
     subprocess.run(
-        ["mkdir", "-p", f"/home/{USERNAME}/findora_backup"],
+        ["mkdir", "-p", f"/home/{USERNAME}/fractal_backup/config"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         check=True,

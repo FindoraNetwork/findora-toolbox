@@ -48,7 +48,7 @@ def compare_two_files(input1, input2) -> None:
 
 def finish_node():
     print(
-        "* Thanks for using Findora Toolbox\n"
+        "* Thanks for using Fractal Toolbox\n"
         + "* Please consider joining our discord & supporting us one time\n"
         + "* or monthly at https://bit.ly/easynodediscord today!\n*\n* Goodbye!"
     )
@@ -280,8 +280,8 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FRACTAL
         file.write(node_mnemonic)
 
     # Copy node.mnemonic to backup directory
-    shutil.copy(node_mnemonic_path, f"/home/{USERNAME}/findora_backup/node.mnemonic")
-    print(f"* Setup {node_mnemonic_path}, copied to ~/findora_backup/node.mnemonic")
+    shutil.copy(node_mnemonic_path, f"/home/{USERNAME}/fractal_backup/node.mnemonic")
+    print(f"* Setup {node_mnemonic_path}, copied to ~/fractal_backup/node.mnemonic")
 
     # Run FN setup commands
     execute_command(["fn", "setup", "-S", server_url])
@@ -340,13 +340,13 @@ def local_server_setup(keypath, ROOT_DIR, USERNAME, server_url, network, FRACTAL
     chown_dir(os.path.join(ROOT_DIR), USERNAME, USERNAME)
 
     # Backup new priv_validator_key.json
-    if os.path.exists(f"/home/{USERNAME}/findora_backup/config"):
-        shutil.rmtree(f"/home/{USERNAME}/findora_backup/config")
+    if os.path.exists(f"/home/{USERNAME}/fractal_backup/config"):
+        shutil.rmtree(f"/home/{USERNAME}/fractal_backup/config")
     shutil.copytree(
         os.path.join(ROOT_DIR, "tendermint/config"),
-        f"/home/{USERNAME}/findora_backup/config",
+        f"/home/{USERNAME}/fractal_backup/config",
     )
-    print("* Copied new priv_validator_key.json to ~/findora_backup/config")
+    print("* Copied new priv_validator_key.json to ~/fractal_backup/config")
 
 
 def load_server_data(ENV, network, ROOT_DIR, region):
@@ -596,11 +596,11 @@ def start_local_validator(
 
 def local_key_setup(keypath, ROOT_DIR, network):
     if not os.path.isfile(keypath):
-        if os.path.isfile(f"{config.user_home_dir}/findora_backup/tmp.gen.keypair"):
+        if os.path.isfile(f"{config.user_home_dir}/fractal_backup/tmp.gen.keypair"):
             subprocess.run(
                 [
                     "cp",
-                    f"{config.user_home_dir}/findora_backup/tmp.gen.keypair",
+                    f"{config.user_home_dir}/fractal_backup/tmp.gen.keypair",
                     f"{ROOT_DIR}/{network}_node.key",
                 ],
                 stdout=subprocess.DEVNULL,
@@ -625,11 +625,11 @@ def local_key_setup(keypath, ROOT_DIR, network):
                 subprocess.run(["fn", "genkey"], stdout=file, text=True)
             shutil.copyfile(
                 f"{ROOT_DIR}/{network}_node.key",
-                f"{config.user_home_dir}/findora_backup/tmp.gen.keypair",
+                f"{config.user_home_dir}/fractal_backup/tmp.gen.keypair",
             )
             print(
                 f"* No tmp.gen.keypair file detected, generated file, created {network}_node.key and "
-                "copied to ~/findora_backup/tmp.gen.keypair"
+                "copied to ~/fractal_backup/tmp.gen.keypair"
             )
 
 

@@ -12,7 +12,7 @@ import cmd2
 import sys
 import re
 from datetime import datetime, timezone
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, ConnectionError, Timeout, HTTPError
 from simple_term_menu import TerminalMenu
 from collections import namedtuple
 from os import environ
@@ -131,6 +131,35 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     return network, region
 
 
+def old_version_check():
+    # Check for previous version of the toolbox, halt if found until upgraded manually
+    if os.path.exists(f"{config.user_home_dir}/.findora.env"):
+        print(
+            "* WARNING: You have the Fractal Toolbox installed and not the new Fractal Toolbox."
+        )
+        print_stars()
+        print(
+            "* Converting from Fractal Toolbox to Fractal Toolbox and starting the upgrade process..."
+        )
+        print()
+
+        script = """
+        cd
+        wget -O fractal.sh https://raw.githubusercontent.com/FindoraNetwork/findora-toolbox/main/src/bin/fractal.sh
+        chmod +x fractal.sh
+        rm ~/findora.sh
+        mv ~/findora-toolbox ~/fractal-toolbox
+        mv .findora.env .fractal.env
+        """
+
+        try:
+            subprocess.check_call(script, shell=True, executable="/bin/bash")
+            print("Conversion and upgrade successful.")
+            finish_node()
+        except subprocess.CalledProcessError as e:
+            print(f"Error running conversion and upgrade script. Error: {e}")
+
+
 def get_fn_version():
     """
     Get the version of 'fn'.
@@ -190,7 +219,7 @@ def menu_reboot_server() -> str:
         Fore.RED
         + f"* {Fore.RED}WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.{Fore.MAGENTA}\n\n"
         + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: "
-        + "python3 ~/findora-toolbox/start.py\n"
+        + "python3 ~/fractal-toolbox/start.py\n"
         + Fore.WHITE
         + "* We will stop your container safely before restarting\n* Are you sure you would "
         + "like to proceed with rebooting your server? (Y/N) "
@@ -467,7 +496,7 @@ def set_main_or_test() -> None:
 
 def menu_findora() -> None:
     update, public_address = menu_topper()
-    print(Fore.MAGENTA + "* Findora Validator Toolbox - Menu Options:")
+    print(Fore.MAGENTA + "* Fractal Validator Toolbox - Menu Options:")
     print("*")
     print(
         "*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!"
@@ -529,15 +558,49 @@ def get_curl_stats() -> None:
         print(f"* No response from the rpc. Error: {err}")
 
 
-def capture_stats() -> None:
-    try:
-        response = requests.get("http://localhost:26657/status")
-        response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
-        stats = json.loads(response.text)
-        return stats
-    except (RequestException, json.JSONDecodeError) as e:
-        print(f"* Error: {e}\n* Is Docker running?")
-        finish_node()
+def capture_stats(max_retries=3, timeout=5, retry_delay=1) -> None:
+    """
+    Capture node stats from the API.
+
+    Args:
+    - max_retries (int): Maximum number of retries if the request fails.
+    - timeout (int): Timeout in seconds for the request.
+    - retry_delay (int): Delay in seconds between retries.
+
+    Returns:
+    - stats (dict): Node stats if the request is successful.
+    """
+
+    retries = 0
+    while retries <= max_retries:
+        try:
+            response = requests.get("http://localhost:26657/status", timeout=timeout)
+            response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
+            stats = json.loads(response.text)
+            return stats
+        except (ConnectionError, Timeout) as e:
+            print(f"* Error: {e}\n* Is Docker running? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except HTTPError as e:
+            print(f"* HTTP Error: {e}\n* Is the node running correctly? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except json.JSONDecodeError as e:
+            print(f"* JSON Decode Error: {e}\n* Is the node returning valid JSON? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except RequestException as e:
+            print(f"* Request Error: {e}\n* Is the request valid? Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+        except Exception as e:
+            print(f"* Unexpected Error: {e}\n* Retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retries += 1
+
+    print(f"* Failed to capture stats after {max_retries} retries. Giving up.")
+    finish_node()
 
 
 def refresh_fn_stats() -> None:
@@ -752,7 +815,7 @@ def change_rate(findora_validator_stats) -> None:
     print_stars()
     print(f"* Current Rate: {findora_validator_stats['Commission Rate']}")
     answer = input(
-        "* What would you like the new rate to be?\n* Please use findora notation, "
+        "* What would you like the new rate to be?\n* Please use fractal notation, "
         + "example for 5% fees use: 0.05\n* Enter your new rate now: "
     )
     answer2 = input("* Please re-enter your new rate to confirm: ")
@@ -1039,12 +1102,12 @@ def get_container_version(url="http://localhost:8668/version") -> str:
 def findora_container_update(update) -> None:
     if update:
         print(
-            f"{Fore.CYAN}*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora{Fore.MAGENTA}"
+            f"{Fore.CYAN}*   8 -  Update Fractal Container  - Pull & Restart the latest container from Fractal{Fore.MAGENTA}"
         )
         return
     else:
         print(
-            "*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora"
+            "*   8 -  Update Fractal Container  - Pull & Restart the latest container from Fractal"
         )
         return
 
@@ -1299,10 +1362,8 @@ def menu_topper() -> None:
         print(f"* Timeout error: {e}")
         print_stars()
         input()
-    print(Fore.MAGENTA)
-    print_stars()
     print(
-        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}Findora Toolbox Management Menu"
+        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}Fractal Toolbox Management Menu"
         + f"                 v{config.toolbox_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://findora.org *"
     )
     print_stars()
@@ -1417,8 +1478,8 @@ def menu_install_fractal(network, region) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
-        + f"\n* But...it doesn't look like you have Findora {network} installed."
-        + "\n* We will setup Findora validator software on this server with a temporary key and wallet file."
+        + f"\n* But...it doesn't look like you have Fractal {network} installed."
+        + "\n* We will setup Fractal validator software on this server with a temporary key and wallet file."
         + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or "
         + "start a migration."
         + "\n* Read more about migrating an existing validator here: "
@@ -1545,8 +1606,8 @@ def migrate_to_server() -> None:
                 backup_dir = (
                     f"{config.user_home_dir}/findora_backup_{format(timestamp)}"
                 )
-                shutil.copytree(config.findora_backup, backup_dir)
-                shutil.rmtree(config.findora_backup)
+                shutil.copytree(config.fractal_backup, backup_dir)
+                shutil.rmtree(config.fractal_backup)
                 shutil.rmtree(config.migrate_dir)
                 backup_folder_check()
                 # Restart container
@@ -1609,79 +1670,79 @@ def print_migrate():
 
 def backup_folder_check() -> None:
     # check for backup folder
-    if os.path.exists(config.findora_backup) is False:
+    if os.path.exists(config.fractal_backup) is False:
         # No dir = mkdir and backup all files
-        os.mkdir(config.findora_backup)
+        os.mkdir(config.fractal_backup)
         # add all files
         shutil.copy(
             f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-            f"{config.findora_backup}/tmp.gen.keypair",
+            f"{config.fractal_backup}/tmp.gen.keypair",
         )
         shutil.copytree(
             f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-            f"{config.findora_backup}/config",
+            f"{config.fractal_backup}/config",
         )
         return
     else:
         # check for tmp.gen.keypair, backup if missing
-        if os.path.exists(f"{config.findora_backup}/tmp.gen.keypair"):
+        if os.path.exists(f"{config.fractal_backup}/tmp.gen.keypair"):
             # found tmp.gen.keypair in backups, compare to live
             if (
                 compare_two_files(
-                    f"{config.findora_backup}/tmp.gen.keypair",
+                    f"{config.fractal_backup}/tmp.gen.keypair",
                     f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
                 )
                 is False
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your file {config.findora_backup}/tmp.gen.keypair does not match "
+                    f"* Your file {config.fractal_backup}/tmp.gen.keypair does not match "
                     + f'your live {environ.get("FRA_NETWORK")}_node.key.'
-                    + f"\n* Do you want to copy the live key into the {config.findora_backup} folder now? (Y/N) "
+                    + f"\n* Do you want to copy the live key into the {config.fractal_backup} folder now? (Y/N) "
                 )
                 if question:
                     # Copy key back
-                    os.remove(f"{config.findora_backup}/tmp.gen.keypair")
+                    os.remove(f"{config.fractal_backup}/tmp.gen.keypair")
                     shutil.copy(
                         f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-                        f"{config.findora_backup}/tmp.gen.keypair",
+                        f"{config.fractal_backup}/tmp.gen.keypair",
                     )
         else:
             # Key file didn't exist, back it up
             shutil.copy(
                 f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-                f"{config.findora_backup}/tmp.gen.keypair",
+                f"{config.fractal_backup}/tmp.gen.keypair",
             )
-        if os.path.exists(f"{config.findora_backup}/config") and os.path.exists(
-            f"{config.findora_backup}/config/priv_validator_key.json"
+        if os.path.exists(f"{config.fractal_backup}/config") and os.path.exists(
+            f"{config.fractal_backup}/config/priv_validator_key.json"
         ):
             # found config folder & priv_validator_key.json
             if (
                 compare_two_files(
-                    f"{config.findora_backup}/config/priv_validator_key.json",
+                    f"{config.fractal_backup}/config/priv_validator_key.json",
                     f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
                 )
                 is False
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your file {config.findora_backup}/config/priv_validator_key.json does not match your "
+                    f"* Your file {config.fractal_backup}/config/priv_validator_key.json does not match your "
                     + f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
-                    + f"\n* Do you want to copy your config folder into {config.findora_backup}/config ? (Y/N) "
+                    + f"\n* Do you want to copy your config folder into {config.fractal_backup}/config ? (Y/N) "
                 )
                 if question:
                     # Copy folder back
-                    shutil.rmtree(f"{config.findora_backup}/config")
+                    shutil.rmtree(f"{config.fractal_backup}/config")
                     shutil.copytree(
                         f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-                        f"{config.findora_backup}/config",
+                        f"{config.fractal_backup}/config",
                     )
         else:
             # Key file didn't exist, back it up
-            shutil.rmtree(f"{config.findora_backup}/config")
+            shutil.rmtree(f"{config.fractal_backup}/config")
             shutil.copytree(
                 f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-                f"{config.findora_backup}/config",
+                f"{config.fractal_backup}/config",
             )
 
 
@@ -1705,7 +1766,7 @@ def run_safety_clean_launcher() -> None:
         run_safety_clean(os.environ.get("FRA_NETWORK"), os.environ.get("FRA_REGION"))
 
 
-def run_findora_menu() -> None:
+def run_fractal_menu() -> None:
     menu_options = {
         0: finish_node,
         1: get_curl_stats,
@@ -1752,38 +1813,96 @@ def run_findora_menu() -> None:
 
 def parse_flags(parser, region, network):
     # Define the flags and their descriptions
-    flags = [
-        ("-u", "Will update and/or restart your Fractal container."),
-        ("-s", "Will show your stats if Fractal is installed and running."),
-        ("-c", "Will allow you to claim and then send FRA to a fra1 address."),
-        ("--rescue", "Will run the rescue menu with full options, if your container is not running."),
-        ("--safetyclean", "Will run the safety clean script, removes database, reloads all data."),
-        ("--fnupdate", "Will update fn wallet application."),
-        ("--migrate", "Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate."),
-        ("--installer", "Will run the toolbox installer setup for mainnet or testnet."),
-        ("--register", "Will register your validator on chain after server is synced and deposit is made."),
-        ("--ultrareset", "WARNING: This will remove all data on your server, make sure you have backups of all key files and data."),
-    ]
-
-    # Add the arguments
-    for flag, help_text in flags:
-        parser.add_argument(flag, action="store_true", help=help_text)
-
+    parser.add_argument(
+        "-u",
+        "--update",
+        action="store_true",
+        help="Will update and/or restart your Fractal container.",
+    )
+    
+    parser.add_argument(
+        "-s",
+        "--stats",
+        action="store_true",
+        help="Will show your stats if Fractal is installed and running.",
+    )
+    
+    parser.add_argument(
+        "-c",
+        "--claim",
+        action="store_true",
+        help="Will allow you to claim and then send FRA to a fra1 address.",
+    )
+    
+    parser.add_argument(
+        "--rescue",
+        action="store_true",
+        help="Will run the rescue menu with full options, if your container is not running.",
+    )
+    
+    parser.add_argument(
+        "--safetyclean",
+        action="store_true",
+        help="Will run the safety clean script, removes database, reloads all data.",
+    )
+    
+    parser.add_argument(
+        "--fnupdate",
+        action="store_true",
+        help="Will update fn wallet application.",
+    )
+    
+    parser.add_argument(
+        "--migrate",
+        action="store_true",
+        help="Shut down your old server before running this command! Migrate your old keys to this server via ~/migrate.",
+    )
+    
+    parser.add_argument(
+        "--install",
+        action="store_true",
+        help="Will run the toolbox installer setup for mainnet or testnet.",
+    )
+    
+    parser.add_argument(
+        "--register",
+        action="store_true",
+        help="Will register your validator on chain after server is synced and deposit is made.",
+    )
+    
+    parser.add_argument(
+        "--ultrareset",
+        action="store_true",
+        help="WARNING: This will remove all data on your server, make sure you have backups of all key files and data.",
+    )
+    
     # Parse the arguments
     args = parser.parse_args()
+    
+    if args.update:
+        if check_container_running(config.container_name):
+            print_stars()
+            question = ask_yes_no(
+                "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
+            )
+            print_stars()
+            if question:
+                run_update_restart(os.environ.get("FRA_NETWORK"))
+            else:
+                finish_node()
+        else:
+            run_update_restart(os.environ.get("FRA_NETWORK"))
 
-    if args.c:
+    if args.stats:
+        menu_topper()
+        finish_node()
+
+    if args.claim:
         public_address, balance, server_url, delegation_info, validator_address_evm = (
             get_fn_values()
         )
         claim_findora_rewards(public_address)
         finish_node()
-
-    if args.installer:
-        menu_install_fractal(network, region)
-
-    if args.fnupdate:
-        update_fn_wallet()
 
     if args.rescue:
         if check_container_running(config.container_name):
@@ -1799,20 +1918,6 @@ def parse_flags(parser, region, network):
         else:
             rescue_menu()
 
-    if args.u:
-        if check_container_running(config.container_name):
-            print_stars()
-            question = ask_yes_no(
-                "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
-            )
-            print_stars()
-            if question:
-                run_update_restart(os.environ.get("FRA_NETWORK"))
-            else:
-                finish_node()
-        else:
-            run_update_restart(os.environ.get("FRA_NETWORK"))
-
     if args.safetyclean:
         if check_container_running(config.container_name):
             print_stars()
@@ -1827,6 +1932,9 @@ def parse_flags(parser, region, network):
         else:
             run_safety_clean_launcher()
 
+    if args.fnupdate:
+        update_fn_wallet()
+
     if args.migrate:
         if migration_check():
             migrate_to_server()
@@ -1834,9 +1942,8 @@ def parse_flags(parser, region, network):
             migration_instructions()
             finish_node()
 
-    if args.s:
-        menu_topper()
-        finish_node()
+    if args.install:
+        menu_install_fractal(network, region)
 
     if args.register:
         run_register_node()
@@ -1860,6 +1967,7 @@ def parse_flags(parser, region, network):
                 cwd=config.user_home_dir,
             )
         finish_node()
+    return
 
 
 def run_troubleshooting_process():
@@ -1885,9 +1993,9 @@ def run_troubleshooting_process():
                     "* Stopping toolbox so you can troubleshoot the container manually.\n"
                     + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors "
                     + "with: docker logs fractal\n"
-                    + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./findora.sh -u\n"
+                    + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./fractal.sh -u\n"
                     + "* If the above does not work you should be prompted to run a safety clean or you can do that "
-                    + "manually with: ./findora.sh --clean\n"
+                    + "manually with: ./fractal.sh --clean\n"
                     + "* If you are still having issues please reach out on our Discord: https://bit.ly/easynodediscord\n"
                 )
                 print_stars()

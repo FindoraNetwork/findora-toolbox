@@ -49,7 +49,7 @@ class Config:
         # Load environment variables from .env file
         load_dotenv()
         
-        self.toolbox_version = "2.0.0"
+        self.toolbox_version = "2.0.2"
         self.server_host_name = socket.gethostname()
         self.user_home_dir = os.path.expanduser("~")
         self.dotenv_file = f"{self.user_home_dir}/.fractal.env"
@@ -63,7 +63,7 @@ class Config:
         self.container_name = "fractal"
         self.migrate_dir = os.path.join(self.user_home_dir, "migrate")
         self.fra_env = "prod"
-        self.findora_backup = os.path.join(self.user_home_dir, "fractal_backup")
+        self.fractal_backup = os.path.join(self.user_home_dir, "fractal_backup")
         # self.graphql_endpoint_1 = "https://graph.findora.org"
         # self.graphql_endpoint_2 = "https://mainnet2.graph.findora.org"
         self.graphql_endpoint = "https://mainnet3.graph.findora.org"
@@ -85,7 +85,7 @@ class Config:
             "container_name",
             "migrate_dir",
             "fra_env",
-            "findora_backup",
+            "fractal_backup",
             "graphql_endpoint",
             # "graphql_endpoint_1",
             # "graphql_endpoint_2",
