@@ -48,7 +48,7 @@ def compare_two_files(input1, input2) -> None:
 
 def finish_node():
     print(
-        "* Thanks for using Findora Toolbox\n"
+        "* Thanks for using Fractal Toolbox\n"
         + "* Please consider joining our discord & supporting us one time\n"
         + "* or monthly at https://bit.ly/easynodediscord today!\n*\n* Goodbye!"
     )

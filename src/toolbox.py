@@ -135,11 +135,11 @@ def old_version_check():
     # Check for previous version of the toolbox, halt if found until upgraded manually
     if os.path.exists(f"{config.user_home_dir}/.findora.env"):
         print(
-            "* WARNING: You have the Findora Toolbox installed and not the new Fractal Toolbox."
+            "* WARNING: You have the Fractal Toolbox installed and not the new Fractal Toolbox."
         )
         print_stars()
         print(
-            "* Converting from Findora Toolbox to Fractal Toolbox and starting the upgrade process..."
+            "* Converting from Fractal Toolbox to Fractal Toolbox and starting the upgrade process..."
         )
         print()
 
@@ -496,7 +496,7 @@ def set_main_or_test() -> None:
 
 def menu_findora() -> None:
     update, public_address = menu_topper()
-    print(Fore.MAGENTA + "* Findora Validator Toolbox - Menu Options:")
+    print(Fore.MAGENTA + "* Fractal Validator Toolbox - Menu Options:")
     print("*")
     print(
         "*   1 -  Show 'curl' stats info    - Run this to show your local curl stats!"
@@ -1102,12 +1102,12 @@ def get_container_version(url="http://localhost:8668/version") -> str:
 def findora_container_update(update) -> None:
     if update:
         print(
-            f"{Fore.CYAN}*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora{Fore.MAGENTA}"
+            f"{Fore.CYAN}*   8 -  Update Fractal Container  - Pull & Restart the latest container from Fractal{Fore.MAGENTA}"
         )
         return
     else:
         print(
-            "*   8 -  Update Findora Container  - Pull & Restart the latest container from Findora"
+            "*   8 -  Update Fractal Container  - Pull & Restart the latest container from Fractal"
         )
         return
 
@@ -1365,7 +1365,7 @@ def menu_topper() -> None:
     print(Fore.MAGENTA)
     print_stars()
     print(
-        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}Findora Toolbox Management Menu"
+        f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}Fractal Toolbox Management Menu"
         + f"                 v{config.toolbox_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://findora.org *"
     )
     print_stars()
@@ -1480,8 +1480,8 @@ def menu_install_fractal(network, region) -> None:
     # Run installer ya'll!
     print(
         "* We've detected that Docker is properly installed for this user, excellent!"
-        + f"\n* But...it doesn't look like you have Findora {network} installed."
-        + "\n* We will setup Findora validator software on this server with a temporary key and wallet file."
+        + f"\n* But...it doesn't look like you have Fractal {network} installed."
+        + "\n* We will setup Fractal validator software on this server with a temporary key and wallet file."
         + "\n* After installation finishes, wait for the blockchain to sync before you create a validator or "
         + "start a migration."
         + "\n* Read more about migrating an existing validator here: "
