@@ -27,8 +27,6 @@ def main() -> None:
     network, region = check_preflight_setup(
         config.dotenv_file, config.user_home_dir, config.active_user_name
     )
-    
-    print("test after check preflight setup")
 
     # If `fn` isn't installed, run full installer.
     if not os.path.exists("/usr/local/bin/fn"):
@@ -40,6 +38,8 @@ def main() -> None:
         description="Fractal Validator Toolbox - Help Menu"
     )
     parse_flags(parser, region, network)
+    
+    print("* Test after parse_flags")
 
     # Can this user access docker and is our container up?
     if check_container_running(config.container_name):

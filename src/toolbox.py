@@ -1889,6 +1889,7 @@ def parse_flags(parser, region, network):
                 cwd=config.user_home_dir,
             )
         finish_node()
+    return
 
 
 def run_troubleshooting_process():
