@@ -131,6 +131,35 @@ def check_preflight_setup(env_file, home_dir, USERNAME=config.active_user_name):
     return network, region
 
 
+def old_version_check():
+    # Check for previous version of the toolbox, halt if found until upgraded manually
+    if os.path.exists(f"{config.user_home_dir}/.findora.env"):
+        print(
+            "* WARNING: You have the Findora Toolbox installed and not the new Fractal Toolbox."
+        )
+        print_stars()
+        print(
+            "* Converting from Findora Toolbox to Fractal Toolbox and starting the upgrade process..."
+        )
+        print()
+
+        script = """
+        cd
+        wget -O fractal.sh https://raw.githubusercontent.com/FindoraNetwork/findora-toolbox/main/src/bin/fractal.sh
+        chmod +x fractal.sh
+        rm ~/findora.sh
+        mv ~/findora-toolbox ~/fractal-toolbox
+        mv .findora.env .fractal.env
+        """
+
+        try:
+            subprocess.check_call(script, shell=True, executable="/bin/bash")
+            print("Conversion and upgrade successful.")
+            finish_node()
+        except subprocess.CalledProcessError as e:
+            print(f"Error running conversion and upgrade script. Error: {e}")
+
+
 def get_fn_version():
     """
     Get the version of 'fn'.
@@ -1545,8 +1574,8 @@ def migrate_to_server() -> None:
                 backup_dir = (
                     f"{config.user_home_dir}/findora_backup_{format(timestamp)}"
                 )
-                shutil.copytree(config.findora_backup, backup_dir)
-                shutil.rmtree(config.findora_backup)
+                shutil.copytree(config.fractal_backup, backup_dir)
+                shutil.rmtree(config.fractal_backup)
                 shutil.rmtree(config.migrate_dir)
                 backup_folder_check()
                 # Restart container
@@ -1609,79 +1638,79 @@ def print_migrate():
 
 def backup_folder_check() -> None:
     # check for backup folder
-    if os.path.exists(config.findora_backup) is False:
+    if os.path.exists(config.fractal_backup) is False:
         # No dir = mkdir and backup all files
-        os.mkdir(config.findora_backup)
+        os.mkdir(config.fractal_backup)
         # add all files
         shutil.copy(
             f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-            f"{config.findora_backup}/tmp.gen.keypair",
+            f"{config.fractal_backup}/tmp.gen.keypair",
         )
         shutil.copytree(
             f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-            f"{config.findora_backup}/config",
+            f"{config.fractal_backup}/config",
         )
         return
     else:
         # check for tmp.gen.keypair, backup if missing
-        if os.path.exists(f"{config.findora_backup}/tmp.gen.keypair"):
+        if os.path.exists(f"{config.fractal_backup}/tmp.gen.keypair"):
             # found tmp.gen.keypair in backups, compare to live
             if (
                 compare_two_files(
-                    f"{config.findora_backup}/tmp.gen.keypair",
+                    f"{config.fractal_backup}/tmp.gen.keypair",
                     f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
                 )
                 is False
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your file {config.findora_backup}/tmp.gen.keypair does not match "
+                    f"* Your file {config.fractal_backup}/tmp.gen.keypair does not match "
                     + f'your live {environ.get("FRA_NETWORK")}_node.key.'
-                    + f"\n* Do you want to copy the live key into the {config.findora_backup} folder now? (Y/N) "
+                    + f"\n* Do you want to copy the live key into the {config.fractal_backup} folder now? (Y/N) "
                 )
                 if question:
                     # Copy key back
-                    os.remove(f"{config.findora_backup}/tmp.gen.keypair")
+                    os.remove(f"{config.fractal_backup}/tmp.gen.keypair")
                     shutil.copy(
                         f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-                        f"{config.findora_backup}/tmp.gen.keypair",
+                        f"{config.fractal_backup}/tmp.gen.keypair",
                     )
         else:
             # Key file didn't exist, back it up
             shutil.copy(
                 f'{config.findora_root}/{environ.get("FRA_NETWORK")}/{environ.get("FRA_NETWORK")}_node.key',
-                f"{config.findora_backup}/tmp.gen.keypair",
+                f"{config.fractal_backup}/tmp.gen.keypair",
             )
-        if os.path.exists(f"{config.findora_backup}/config") and os.path.exists(
-            f"{config.findora_backup}/config/priv_validator_key.json"
+        if os.path.exists(f"{config.fractal_backup}/config") and os.path.exists(
+            f"{config.fractal_backup}/config/priv_validator_key.json"
         ):
             # found config folder & priv_validator_key.json
             if (
                 compare_two_files(
-                    f"{config.findora_backup}/config/priv_validator_key.json",
+                    f"{config.fractal_backup}/config/priv_validator_key.json",
                     f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json',
                 )
                 is False
             ):
                 # If they are the same we're done, if they are false ask to update
                 question = ask_yes_no(
-                    f"* Your file {config.findora_backup}/config/priv_validator_key.json does not match your "
+                    f"* Your file {config.fractal_backup}/config/priv_validator_key.json does not match your "
                     + f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config/priv_validator_key.json.'
-                    + f"\n* Do you want to copy your config folder into {config.findora_backup}/config ? (Y/N) "
+                    + f"\n* Do you want to copy your config folder into {config.fractal_backup}/config ? (Y/N) "
                 )
                 if question:
                     # Copy folder back
-                    shutil.rmtree(f"{config.findora_backup}/config")
+                    shutil.rmtree(f"{config.fractal_backup}/config")
                     shutil.copytree(
                         f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-                        f"{config.findora_backup}/config",
+                        f"{config.fractal_backup}/config",
                     )
         else:
             # Key file didn't exist, back it up
-            shutil.rmtree(f"{config.findora_backup}/config")
+            shutil.rmtree(f"{config.fractal_backup}/config")
             shutil.copytree(
                 f'{config.findora_root}/{environ.get("FRA_NETWORK")}/tendermint/config',
-                f"{config.findora_backup}/config",
+                f"{config.fractal_backup}/config",
             )
 
 
@@ -1705,7 +1734,7 @@ def run_safety_clean_launcher() -> None:
         run_safety_clean(os.environ.get("FRA_NETWORK"), os.environ.get("FRA_REGION"))
 
 
-def run_findora_menu() -> None:
+def run_fractal_menu() -> None:
     menu_options = {
         0: finish_node,
         1: get_curl_stats,
