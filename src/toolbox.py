@@ -219,7 +219,7 @@ def menu_reboot_server() -> str:
         Fore.RED
         + f"* {Fore.RED}WARNING: YOU WILL MISS BLOCKS WHILE YOU REBOOT YOUR ENTIRE SERVER.{Fore.MAGENTA}\n\n"
         + "* Reconnect after a few moments & Run the Validator Toolbox Menu again with: "
-        + "python3 ~/findora-toolbox/start.py\n"
+        + "python3 ~/fractal-toolbox/start.py\n"
         + Fore.WHITE
         + "* We will stop your container safely before restarting\n* Are you sure you would "
         + "like to proceed with rebooting your server? (Y/N) "
@@ -781,7 +781,7 @@ def change_rate(findora_validator_stats) -> None:
     print_stars()
     print(f"* Current Rate: {findora_validator_stats['Commission Rate']}")
     answer = input(
-        "* What would you like the new rate to be?\n* Please use findora notation, "
+        "* What would you like the new rate to be?\n* Please use fractal notation, "
         + "example for 5% fees use: 0.05\n* Enter your new rate now: "
     )
     answer2 = input("* Please re-enter your new rate to confirm: ")
@@ -1914,9 +1914,9 @@ def run_troubleshooting_process():
                     "* Stopping toolbox so you can troubleshoot the container manually.\n"
                     + "* Here's what we suggest in order to try to troubleshoot:\n\n* 1 - Check docker logs for errors "
                     + "with: docker logs fractal\n"
-                    + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./findora.sh -u\n"
+                    + "* 2 - Restart the toolbox with the -u flag to run the upgrade_script: ./fractal.sh -u\n"
                     + "* If the above does not work you should be prompted to run a safety clean or you can do that "
-                    + "manually with: ./findora.sh --clean\n"
+                    + "manually with: ./fractal.sh --clean\n"
                     + "* If you are still having issues please reach out on our Discord: https://bit.ly/easynodediscord\n"
                 )
                 print_stars()
