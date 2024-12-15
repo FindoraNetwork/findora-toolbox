@@ -27,6 +27,8 @@ def main() -> None:
     network, region = check_preflight_setup(
         config.dotenv_file, config.user_home_dir, config.active_user_name
     )
+    
+    print("test after check preflight setup")
 
     # If `fn` isn't installed, run full installer.
     if not os.path.exists("/usr/local/bin/fn"):
