@@ -1362,7 +1362,6 @@ def menu_topper() -> None:
         print(f"* Timeout error: {e}")
         print_stars()
         input()
-    print(Fore.MAGENTA + string_stars())
     print(
         f"{Style.RESET_ALL}{Fore.MAGENTA}* {Fore.MAGENTA}Fractal Toolbox Management Menu"
         + f"                 v{config.toolbox_version}{Style.RESET_ALL}{Fore.MAGENTA}   https://findora.org *"
