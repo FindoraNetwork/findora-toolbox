@@ -1880,6 +1880,24 @@ def parse_flags(parser, region, network):
     
     # Parse the arguments
     args = parser.parse_args()
+    
+    if args.update:
+        if check_container_running(config.container_name):
+            print_stars()
+            question = ask_yes_no(
+                "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
+            )
+            print_stars()
+            if question:
+                run_update_restart(os.environ.get("FRA_NETWORK"))
+            else:
+                finish_node()
+        else:
+            run_update_restart(os.environ.get("FRA_NETWORK"))
+
+    if args.stats:
+        menu_topper()
+        finish_node()
 
     if args.claim:
         public_address, balance, server_url, delegation_info, validator_address_evm = (
@@ -1887,12 +1905,6 @@ def parse_flags(parser, region, network):
         )
         claim_findora_rewards(public_address)
         finish_node()
-
-    if args.install:
-        menu_install_fractal(network, region)
-
-    if args.fnupdate:
-        update_fn_wallet()
 
     if args.rescue:
         if check_container_running(config.container_name):
@@ -1908,20 +1920,6 @@ def parse_flags(parser, region, network):
         else:
             rescue_menu()
 
-    if args.u update:
-        if check_container_running(config.container_name):
-            print_stars()
-            question = ask_yes_no(
-                "* Your container is running. Are you sure you want to run the upgrade_script? (Y/N) "
-            )
-            print_stars()
-            if question:
-                run_update_restart(os.environ.get("FRA_NETWORK"))
-            else:
-                finish_node()
-        else:
-            run_update_restart(os.environ.get("FRA_NETWORK"))
-
     if args.safetyclean:
         if check_container_running(config.container_name):
             print_stars()
@@ -1936,6 +1934,9 @@ def parse_flags(parser, region, network):
         else:
             run_safety_clean_launcher()
 
+    if args.fnupdate:
+        update_fn_wallet()
+
     if args.migrate:
         if migration_check():
             migrate_to_server()
@@ -1943,9 +1944,8 @@ def parse_flags(parser, region, network):
             migration_instructions()
             finish_node()
 
-    if args.stats:
-        menu_topper()
-        finish_node()
+    if args.install:
+        menu_install_fractal(network, region)
 
     if args.register:
         run_register_node()
